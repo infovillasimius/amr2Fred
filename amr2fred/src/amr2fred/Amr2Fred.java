@@ -54,8 +54,8 @@ public class Amr2Fred extends Application {
         amrTextField.setPrefColumnCount(80);
         grid.add(amrTextField, 1, 1);
 
-        Label fredLabel = new Label("get the tree:");
-        grid.add(fredLabel, 0, 2);
+        Label fredLabel = new Label("get amr tree:");
+        grid.add(fredLabel, 0, 2,2,1);
 
         Text fred = new Text();
         grid.add(fred, 0,3,3, 2);
@@ -67,11 +67,22 @@ public class Amr2Fred extends Application {
             
             @Override
             public void handle(ActionEvent event) {
-                String amr = amrTextField.getText();
-                Parser instance = Parser.getInstance();
-                Node expResult = null;
-                Node result = instance.parse(amr);
-                fred.setText(result.toString());
+                 
+                if(amrTextField.getLength()>3){
+                    String amr = amrTextField.getText();
+                    Parser instance = Parser.getInstance();
+                    Node result = instance.parse(amr);
+                    if (result!=null){
+                        //fred.setText(result.toString());
+                        fred.setText(instance.predicate(result).toString());
+                    } else {
+                        fred.setText("Sintassi non corretta");
+                    }
+                } else if(amrTextField.getLength()==0){ 
+                    fred.setText("Nessun testo inserito");
+                } else {
+                    fred.setText("Sintassi non corretta");      
+                }
             }
         });
         

@@ -13,6 +13,7 @@ import java.util.Objects;
  * @author anto
  */
 public class Node {
+    public static int liv=0;
     String relation;
     String var;
     ArrayList<Node> list;
@@ -25,7 +26,21 @@ public class Node {
 
     @Override
     public String toString() {
-        return "\nNode{" + "relation=" + relation + ", var=" + var + ", list=" + list + '}';
+        String stringa="\n"+this.spaces(liv);
+        if(relation!="top"){
+             stringa=stringa+"{" + relation + " -> " + var + " -> ";
+             
+        } else {
+            stringa=stringa+"{" + var + " -> ";
+        }
+        if(!list.isEmpty()){Node.liv++;
+            
+            stringa=stringa+list + '}';
+            Node.liv--;
+        } else {
+            stringa=stringa+list + '}';
+        }
+        return stringa;
     } 
 
     @Override
@@ -62,4 +77,25 @@ public class Node {
         newNode.list=node.list;
         return newNode;
     }
+    
+    public Node getInstance (){
+        for(Node n: this.list){
+            if(n.relation.equalsIgnoreCase("instance")){
+                return n;
+            }
+        }
+        
+        return null;
+    }
+    
+    public String spaces(int n){
+        
+        String spaces="";
+        for (int i=0 ; i<n ; i++){
+            spaces = spaces.concat("\t");
+        }
+        return spaces;
+    }
+    
+    
 }

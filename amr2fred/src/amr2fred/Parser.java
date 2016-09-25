@@ -15,15 +15,19 @@ import java.util.Arrays;
 public class Parser {
     private static Parser parser;
     private ArrayList<Node> nodes;
+    private ArrayList<Couple> couples;
 
     private Parser() {
         this.nodes=new ArrayList<>();
+        this.couples=new ArrayList<>();
     }
     
     public static Parser getInstance(){
         if (parser==null){
             parser=new Parser();
         }
+        parser.nodes=new ArrayList<>();
+        parser.couples=new ArrayList<>();
         return parser;
     }
     
@@ -111,12 +115,8 @@ public class Parser {
         String word;
         ArrayList<String> list=new ArrayList<>();
         
-        amr=amr.replace("(", " ( ");
-        amr=amr.replace(")", " ) ");
+        amr=normalize(amr);
         
-        while(amr.contains("  ")){
-            amr=amr.replace("  ", " ");
-        }
         try{
             while(amr.length()>1){
                 inizio=amr.indexOf(" ")+1;
@@ -138,7 +138,60 @@ public class Parser {
         return root;
     }
     
+    public String normalize(String amr){
+        amr=amr.replace("(", " ( ");
+        amr=amr.replace(")", " ) ");
+        amr=amr.replace("/", " / ");
+        
+        while(amr.contains("  ")){
+            amr=amr.replace("  ", " ");
+        }
+        
+        return amr;
+    }
     
     
+    public Node predicate(Node root){
+       
+        Node instance=root.getInstance();
+        if (instance==null){
+            return root;
+        }
+        
+        if (instance.var.length()>3){
+            String idVerb=instance.var.substring(instance.var.length()-3);
+                
+            if(idVerb.matches("-[0-9]+")){
+                root.var=instance.var.substring(0, instance.var.length()-3)+"_"+occurrence(instance.var.substring(0, instance.var.length()-3));
+                instance.relation="rdf:type";
+                instance.var=instance.var.substring(0, 1).toUpperCase()+instance.var.substring(1,instance.var.length()-3).toLowerCase();               
+            }
+        }
+        
+        for (Node n: root.list){
+            
+            if(n.relation.equalsIgnoreCase(":polarity"))
+            
+            
+            
+            n=predicate(n);
+        }
+        
+        return root;
+    }
     
+    private int occurrence(String word){
+        int occorrenceNum=1;
+        for(Couple c:this.couples){
+            if (word.equalsIgnoreCase(c.getWord())){
+                occorrenceNum++;
+                c.setOccurence(occorrenceNum);
+            }
+        }
+        if (occorrenceNum==1){
+            this.couples.add(new Couple(1,word));
+        }
+        return occorrenceNum;
+    }
+   
 }

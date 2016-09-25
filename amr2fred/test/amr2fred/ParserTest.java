@@ -45,7 +45,7 @@ public class ParserTest {
     @Test
     public void testParse() {
         System.out.println("parse");
-        String amr = "(w / want-01 :arg0 (b / boy) :arg1 (b2 / believe-01 :arg0 (g / girl) :arg1 b :polarity - ))";
+        String amr = "(w / want-01 :polarity - :arg0 (b / boy) :arg1 (b2 / believe-01 :arg0 (g / girl) :arg1 b))";
         Parser instance = Parser.getInstance();
         Node expResult = null;
         Node result = instance.parse(amr);
