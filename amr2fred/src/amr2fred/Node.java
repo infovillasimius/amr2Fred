@@ -63,7 +63,7 @@ public class Node {
             return false;
         }
         final Node other = (Node) obj;
-        if (!Objects.equals(this.var, other.var)) {
+        if (!this.var.toString().equalsIgnoreCase(other.var.toString())) {
             return false;
         }
         if (!Objects.equals(this.list, other.list)) {

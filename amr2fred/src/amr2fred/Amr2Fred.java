@@ -54,7 +54,7 @@ public class Amr2Fred extends Application {
         amrTextField.setPrefColumnCount(80);
         grid.add(amrTextField, 1, 1);
 
-        Label fredLabel = new Label("get amr tree:");
+        Label fredLabel = new Label("get (something about) Fred tree: ");
         grid.add(fredLabel, 0, 2,2,1);
 
         Text fred = new Text();
@@ -74,7 +74,7 @@ public class Amr2Fred extends Application {
                     Node result = instance.parse(amr);
                     if (result!=null){
                         //fred.setText(result.toString());
-                        fred.setText(instance.predicate(result).toString());
+                        fred.setText(result.toString());
                     } else {
                         fred.setText("Sintassi non corretta");
                     }
