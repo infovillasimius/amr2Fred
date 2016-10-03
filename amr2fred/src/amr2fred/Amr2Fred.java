@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -34,12 +35,12 @@ public class Amr2Fred extends Application {
         primaryStage.setTitle("amr2fred");
         
         GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
+        grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Scene scene = new Scene(grid, 1000, 400);
+        Scene scene = new Scene(grid, 1000, 600);
         primaryStage.setScene(scene);
         
         
@@ -50,16 +51,22 @@ public class Amr2Fred extends Application {
         Label amr = new Label("Type amr:");
         grid.add(amr, 0, 1);
 
-        TextField amrTextField = new TextField();
+        TextArea amrTextField = new TextArea();
         amrTextField.setPrefColumnCount(80);
+        amrTextField.setPrefRowCount(6);
         grid.add(amrTextField, 1, 1);
 
-        Label fredLabel = new Label("get (something about) Fred tree: ");
+        Label fredLabel = new Label("Click the button to get (something about) Fred tree: ");
         grid.add(fredLabel, 0, 2,2,1);
 
-        Text fred = new Text();
-        grid.add(fred, 0,3,3, 2);
+        TextArea fred = new TextArea();
+        fred.setEditable(false);
+        fred.setPrefRowCount(16);
+        grid.add(fred, 0,4,3, 2);
         
+        Text err = new Text();
+        err.setFont(Font.font("Tahoma", FontWeight.BOLD, 10));
+        grid.add(err, 0, 7, 3, 1);
         
         Button btn = new Button();
         btn.setText("AMR to Fred");
@@ -75,18 +82,30 @@ public class Amr2Fred extends Application {
                     if (result!=null){
                         //fred.setText(result.toString());
                         fred.setText(result.toString());
+                        if(result.getTreStatus()==1){
+                            err.setText("Warning! Something went wrong: one node is not ok!");
+                        } else if(result.getTreStatus()>0){
+                            err.setText("Warning! Something went wrong: "+result.getTreStatus()+" nodes are not ok!");
+                        } else {
+                            err.setText(" ");
+                        }
                     } else {
-                        fred.setText("Sintassi non corretta");
+                        fred.setText("Sintax error");
                     }
                 } else if(amrTextField.getLength()==0){ 
-                    fred.setText("Nessun testo inserito");
+                    fred.setText("No text");
                 } else {
-                    fred.setText("Sintassi non corretta");      
+                    fred.setText("Sintax error");      
                 }
+                
+                
+                
+                
+                
             }
         });
         
-        grid.add(btn, 0, 6,3,1);
+        grid.add(btn, 0, 3,3,1);
         
         primaryStage.show();
     }

@@ -46,7 +46,9 @@ public class ParserTest {
     public void testParse() {
         System.out.println("parse");
         //String amr = "(w / want-01 :polarity - :arg0 (b / boy) :arg1 (b2 / believe-01 :arg0 (g / girl) :arg1 b))";
-        String amr = "(f / fight :prep-against (d / dog) :mode imperative)";
+        //String amr = "(f / fight-01 :prep-against (d / dog) :mode imperative)";
+        //String amr ="(r / recommend-01 :ARG1 (g / go-02 :ARG0 (b / boy)) :polarity -)";
+        String amr ="(p / possible-01 :ARG1 (r / rain-01))";
         Parser instance = Parser.getInstance();
         Node expResult = null;
         Node result = instance.parse(amr);

@@ -49,21 +49,23 @@ public class ReaderTest {
     @Test
     public void testJreader() {
         System.out.println("jreader");
-        Element predicate=Reader.jreader("fight");
-        List argmaps = predicate.getChildren();
-        Iterator argmapIterator= argmaps.iterator();
-        while (argmapIterator.hasNext()) {
-            Element argmap = (Element) argmapIterator.next();
-            Attribute pbRoleset = argmap.getAttribute("pb-roleset");
-            Attribute vnClass = argmap.getAttribute("vn-class");
-            System.out.println(pbRoleset.getValue()+" "+vnClass.getValue());
-            List roles = argmap.getChildren();
-            Iterator rolesIterator=roles.iterator();
-            while (rolesIterator.hasNext()){
-                Element role=(Element) rolesIterator.next();
-                Attribute pbArg = role.getAttribute("pb-arg");
-                Attribute vnTheta = role.getAttribute("vn-theta");
-                System.out.println(pbArg.getValue()+" "+vnTheta.getValue());
+        Element predicate=Reader.jreader("pirl");
+        if (predicate!=null){
+            List argmaps = predicate.getChildren();
+            Iterator argmapIterator= argmaps.iterator();
+            while (argmapIterator.hasNext()) {
+                Element argmap = (Element) argmapIterator.next();
+                Attribute pbRoleset = argmap.getAttribute("pb-roleset");
+                Attribute vnClass = argmap.getAttribute("vn-class");
+                System.out.println(pbRoleset.getValue()+" "+vnClass.getValue());
+                List roles = argmap.getChildren();
+                Iterator rolesIterator=roles.iterator();
+                while (rolesIterator.hasNext()){
+                    Element role=(Element) rolesIterator.next();
+                    Attribute pbArg = role.getAttribute("pb-arg");
+                    Attribute vnTheta = role.getAttribute("vn-theta");
+                    System.out.println(pbArg.getValue()+" "+vnTheta.getValue());
+                }
             }
         }
     }
