@@ -5,6 +5,8 @@
  */
 package amr2fred;
 
+import static amr2fred.Glossary.ENDLESS;
+import static amr2fred.Glossary.RECURSIVE_ERROR;
 import amr2fred.Glossary.nodeStatus;
 import static amr2fred.Glossary.nodeStatus.AMR;
 import amr2fred.Glossary.wordType;
@@ -23,14 +25,18 @@ public class Node {
     String var;
     ArrayList<Node> list;
     private nodeStatus status;
-    private wordType type; 
+    private wordType type;
+    static int id;
+    private int nodeId;
 
     public Node(String var, String relation) {
         this.var = var;
         this.relation = relation;
         this.list = new ArrayList<>();
         this.status = AMR;
-        this.type=OTHER;
+        this.type = OTHER;
+        this.nodeId = id;
+        Node.id += 1;
     }
 
     public Node(String var, String relation, nodeStatus status) {
@@ -38,11 +44,16 @@ public class Node {
         this.var = var;
         this.status = status;
         this.list = new ArrayList<>();
-        this.type=OTHER;
+        this.type = OTHER;
+        this.nodeId = id;
+        Node.id += 1;
     }
 
     @Override
     public String toString() {
+        if (Parser.endless > ENDLESS) {
+            return RECURSIVE_ERROR;
+        }
         String stringa = "\n" + this.spaces(liv);
         if (relation != "top") {
             stringa = stringa + "{" + relation + " -> " + var + " -> ";
@@ -58,8 +69,8 @@ public class Node {
         } else {
             stringa = stringa + list + '}';
         }
-        if(status.ordinal()>0){
-            stringa="\n*begin of incorrect node*"+stringa+"*end of incorrect node*\n";
+        if (status.ordinal() > 0) {
+            stringa = "\n"+this.spaces(liv)+"<error"+liv+">" + stringa + "</error"+liv+">";
         }
         return stringa;
     }
@@ -84,18 +95,31 @@ public class Node {
             return false;
         }
         final Node other = (Node) obj;
-        if (!this.var.toString().equalsIgnoreCase(other.var.toString())) {
+        if (this.nodeId != other.nodeId) {
             return false;
         }
-        if (!Objects.equals(this.list, other.list)) {
-            return false;
-        }
+
         return true;
     }
 
     public Node getCopy(Node node, String relation) {
-        Node newNode = new Node(node.var, relation);
+        Node newNode = new Node(node.var, relation, node.status);
         newNode.list = node.list;
+        newNode.nodeId = node.nodeId;
+        return newNode;
+    }
+
+    public Node getCopy() {
+        if (Parser.endless > ENDLESS) {
+            return null;
+        }
+        Parser.endless += 1;
+        Node newNode = new Node(var, relation, status);
+        newNode.list = new ArrayList<>();
+        for (Node n : list) {
+            newNode.list.add(n.getCopy());
+        }
+        newNode.nodeId = nodeId;
         return newNode;
     }
 
@@ -136,9 +160,12 @@ public class Node {
     }
 
     public int getTreStatus() {
+        if (Parser.endless > ENDLESS) {
+            return 1000000;
+        }
         int somma = this.status.ordinal();
-        for(Node n:list){
-            somma=somma+n.getTreStatus();
+        for (Node n : list) {
+            somma = somma + n.getTreStatus();
         }
         return somma;
     }
@@ -150,7 +177,39 @@ public class Node {
     public void setType(wordType type) {
         this.type = type;
     }
-    
-    
+
+    public String toString2() {
+        if (Parser.endless > ENDLESS) {
+            return RECURSIVE_ERROR;
+        }
+        String stringa = "\n" + this.spaces(liv);
+        if (relation != "top") {
+            stringa = stringa + "{" + relation + " -> " + var + " -> ";
+
+        } else {
+            stringa = "{" + var + " -> ";
+        }
+        if (!list.isEmpty()) {
+            Node.liv++;
+
+            stringa = stringa + list2String(list) + '}';
+            Node.liv--;
+        } else {
+            stringa = stringa + list2String(list) + '}';
+        }
+
+        return stringa;
+    }
+
+    private String list2String(ArrayList<Node> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        String string = "";
+        for (Node n : list) {
+            string += n.toString2();
+        }
+        return string;
+    }
 
 }
