@@ -5,12 +5,15 @@
  */
 package amr2fred;
 
+import static amr2fred.Glossary.ARG_OF;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.FRED;
 import static amr2fred.Glossary.TOP;
+import static amr2fred.Glossary.nodeStatus.ERROR;
 import static amr2fred.Glossary.nodeStatus.OK;
 import static amr2fred.Glossary.nodeStatus.REMOVE;
 import static amr2fred.Glossary.wordType.VERB;
+import static amr2fred.NumberToWord.convert;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +32,7 @@ public class Parser {
     private ArrayList<Node> toAdd;
     private Node rootCopy;
     static int endless;
+    private boolean topic = true;
 
     private Parser() {
         this.nodes = new ArrayList<>();
@@ -200,7 +204,7 @@ public class Parser {
         if (endless > Glossary.ENDLESS) {
             return root;
         }
-
+        root = this.argOf(root);
         root = this.listElaboration(root);
         root = this.verbsInterpretation(root);
 
@@ -208,7 +212,9 @@ public class Parser {
     }
 
     private Node modality(Node root) {
-        //Elaborazione modality
+        if (root == null || root.getInstance() == null) {
+            return root;
+        }
         Node instance = root.getInstance();
         String lemma = instance.var.substring(0, instance.var.length() - 3);
         if (lemma.equalsIgnoreCase("likely") || lemma.equalsIgnoreCase("recommend")) {
@@ -219,17 +225,22 @@ public class Parser {
                 root.list.addAll(arg1.list);
                 root.list.remove(arg1);
                 root.list.remove(instance);
-                root = predicate(root);
+                root = modality(root);
+                root.setStatus(OK);
             }
         } else if (lemma.equalsIgnoreCase("obligate")) {
             Node arg2 = root.getChild(":arg2");
             if (arg2 != null) {
+                System.out.println(root.var);
                 root.var = arg2.var;
+                System.out.println(root);
                 root.list.add(new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK));
                 root.list.addAll(arg2.list);
                 root.list.remove(arg2);
                 root.list.remove(instance);
-                root = predicate(root);
+                root = modality(root);
+                System.out.println(root);
+                root.setStatus(OK);
             }
         } else if (lemma.equalsIgnoreCase("possible") || lemma.equalsIgnoreCase("permit")) {
             Node arg1 = root.getChild(":arg1");
@@ -239,7 +250,8 @@ public class Parser {
                 root.list.addAll(arg1.list);
                 root.list.remove(arg1);
                 root.list.remove(instance);
-                root = predicate(root);
+                root = modality(root);
+                root.setStatus(OK);
             }
 
         }
@@ -255,16 +267,17 @@ public class Parser {
             return root;
         }
 
-        if (instance == null || root.getStatus() == OK) {
-            //setEquals(root); //verificare comportamento
+        if (instance == null) {
             return root;
         }
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches("-[0-9]+")) {
             root.setType(VERB);
-
+            topic = false;
             root = modality(root);
-
+            if (root.getStatus() == OK) {
+                return root;
+            }
             //Elaborazione della instance e trasferimento verbo nella root, seguito dal numero di occorrenza
             root.var = FRED + instance.var.substring(0, instance.var.length() - 3) + "_" + occurrence(instance.var.substring(0, instance.var.length() - 3));
             instance.relation = Glossary.RDF_TYPE;
@@ -288,7 +301,7 @@ public class Parser {
                 if (instanceInList != null) {
                     n.var = nVar;
                     instanceInList.relation = Glossary.RDF_TYPE;
-                    instanceInList.var = FRED + instance.var.substring(0, 1).toUpperCase() + instance.var.substring(1).toLowerCase();
+                    instanceInList.var = FRED + firstUpper(instance.var);
                     if (!instanceInList.relation.matches(Glossary.ARG)) {
                         instanceInList.setStatus(OK);
                     }
@@ -306,7 +319,7 @@ public class Parser {
 
     private Node listElaboration(Node root) {
         //Elaborazione della lista
-        System.out.print(OK);
+
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
             if (n.relation.equalsIgnoreCase(":polarity")) {
@@ -347,15 +360,27 @@ public class Parser {
                 n.setStatus(OK);
             } else if (n.relation.equalsIgnoreCase(":poss")) {
                 n.relation = FRED + root.var.replaceAll(FRED, "") + "Of";
-            } else if (n.relation.equalsIgnoreCase(":mod") && n.getInstance() != null && Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
-                n.relation = Glossary.QUANT_HAS_DETERMINER;
-                n.var = n.getInstance().var;
+            } else if (n.relation.equalsIgnoreCase(":mod") && n.getInstance() != null) {
+                if (Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
+                    n.relation = Glossary.QUANT_HAS_DETERMINER;
+                } else {
+                    n.relation = Glossary.RDF_TYPE;
+                }
+                n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
-                if (root.list.size() == 1 && root.relation == TOP) {
+                if (/*root.list.size() == 1*/topic && root.relation.equalsIgnoreCase(TOP)) {
                     toAdd.add(new Node(Glossary.TOPIC, Glossary.DUL_HAS_QUALITY, OK));
                 }
                 n.setStatus(OK);
-
+            } else if (n.relation.equalsIgnoreCase(":domain") && n.getInstance() != null) {
+                n.relation = Glossary.RDF_TYPE;
+                n.var = FRED + firstUpper(n.getInstance().var);
+                n.list.remove(n.getInstance());
+                n.setStatus(OK);
+            } else if (n.relation.equalsIgnoreCase(":quant") && n.getInstance() == null) {
+                n.relation=Glossary.DUL_HAS_DATA_VALUE;
+                toAdd.add(new Node(convert(Integer.parseInt(n.var)),Glossary.QUANT_HAS_QUANTIFIER,OK));
+                n.setStatus(OK);
             }
             /*else if(n.relation.equalsIgnoreCase(":poss")){
             n.relation="boxing:hasThruthValue";
@@ -435,6 +460,25 @@ public class Parser {
         for (Node n : getEquals(root)) {
             n.var = root.var;
         }
+    }
+
+    private String firstUpper(String string) {
+        string = string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+        return string;
+    }
+
+    private Node argOf(Node root) {
+        if (root == null || root.list.isEmpty() || root.getArgOf() == null) {
+            return root;
+        }
+
+        Node n = root.getArgOf();
+        root.list.remove(n);
+        String arg = n.relation;
+        n.relation = root.relation;
+        root.relation = arg.substring(0, arg.length() - 3);
+        n.list.add(root);
+        return argOf(n);
     }
 
 }

@@ -59,7 +59,7 @@ public class Amr2Fred extends Application {
         Label fredLabel = new Label("Click the button to get (something about) Fred tree: ");
         grid.add(fredLabel, 0, 2, 2, 1);
 
-        Label removedLabel = new Label("Errors & Removed Nodes");
+        Label removedLabel = new Label("AMR tree, Errors & Removed Nodes");
         grid.add(removedLabel, 3, 3, 4, 1);
 
         TextArea fred = new TextArea();
@@ -89,6 +89,7 @@ public class Amr2Fred extends Application {
                     String amr = amrTextField.getText();
                     Parser instance = Parser.getInstance();
                     Node result = instance.parse(amr);
+                    removed.setText("");
 
                     if (!instance.getRemoved().isEmpty()) {
                         String removedNodes = "Removed nodes:\n";
@@ -98,7 +99,7 @@ public class Amr2Fred extends Application {
                         removed.setText(removedNodes);
                     } 
                     if (instance.getRootCopy() != null) {
-                        removed.setText("AMR tree:\n"+instance.getRootCopy().toString2());
+                        removed.setText("AMR tree:\n"+instance.getRootCopy().toString2()+"\n\n"+removed.getText());
                     }
 
                     if (result != null) {

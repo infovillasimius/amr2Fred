@@ -5,10 +5,12 @@
  */
 package amr2fred;
 
+import static amr2fred.Glossary.ARG_OF;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.RECURSIVE_ERROR;
 import amr2fred.Glossary.nodeStatus;
 import static amr2fred.Glossary.nodeStatus.AMR;
+import static amr2fred.Glossary.nodeStatus.ERROR;
 import amr2fred.Glossary.wordType;
 import static amr2fred.Glossary.wordType.OTHER;
 import java.util.ArrayList;
@@ -138,6 +140,15 @@ public class Node {
             if (n.relation.equalsIgnoreCase(relation)) {
                 return n;
             }
+        }
+        return null;
+    }
+    
+    public Node getArgOf (){
+        for (Node n : this.list) {
+            if (n.relation.matches(ARG_OF)){
+                return n;
+            }    
         }
         return null;
     }

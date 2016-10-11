@@ -18,6 +18,7 @@ public class Glossary {
     public static final String FRED = "fred:";
     public static final String DUL_EVENT = "dul:Event";
     public static final String DUL_HAS_QUALITY = "dul:hasQuality";
+    public static final String DUL_HAS_DATA_VALUE="dul:hasDataValue";
 
     public static final String BOXING_NECESSARY = "boxing:Necessary";
     public static final String BOXING_POSSIBLE = "boxing:Possible";
@@ -27,6 +28,7 @@ public class Glossary {
     public static final String BOXING_HAS_THRUTH_VALUE = "boxing:hasThruthValue";
     
     public static final String QUANT_HAS_DETERMINER = "quant:hasDeterminer";
+    public static final String QUANT_HAS_QUANTIFIER="quant:hasQuantifier";
     
     public static final String OWL_THING="owl:Thing";
 
@@ -40,6 +42,7 @@ public class Glossary {
     public static final String TOPIC = "fred:Topic";
 
     public static final String ARG = ":arg.";
+    public static final String ARG_OF = ":arg.-of";
     
     public static final String PERSON = " I i you You YOU we We WE they They THEY ";
     public static final String MALE = " he He HE ";
