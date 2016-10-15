@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
@@ -30,16 +31,18 @@ import javafx.stage.Stage;
  */
 public class Amr2Fred extends Application {
 
+    Stage secondStage = new Stage();
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("amr2fred");
+        results();
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        
 
         Scene scene = new Scene(grid, 1000, 600);
         primaryStage.setScene(scene);
@@ -58,6 +61,9 @@ public class Amr2Fred extends Application {
 
         Label fredLabel = new Label("Click the button to get (something about) Fred tree: ");
         grid.add(fredLabel, 0, 2, 2, 1);
+
+        CheckBox cb = new CheckBox("Remove incorrect nodes");
+        grid.add(cb, 3, 2, 4, 1);
 
         Label removedLabel = new Label("AMR tree, Errors & Removed Nodes");
         grid.add(removedLabel, 3, 3, 4, 1);
@@ -84,34 +90,39 @@ public class Amr2Fred extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-
+                fred.setText("");
                 if (amrTextField.getLength() > 3) {
                     String amr = amrTextField.getText();
                     Parser instance = Parser.getInstance();
                     Node result = instance.parse(amr);
                     removed.setText("");
 
-                    if (!instance.getRemoved().isEmpty()) {
-                        String removedNodes = "Removed nodes:\n";
-                        for (Node n : instance.getRemoved()) {
-                            removedNodes += n.toString2() + "\n";
-                        }
-                        removed.setText(removedNodes);
-                    } 
-                    if (instance.getRootCopy() != null) {
-                        removed.setText("AMR tree:\n"+instance.getRootCopy().toString2()+"\n\n"+removed.getText());
-                    }
-
                     if (result != null) {
-                        
+                        if (cb.isSelected()) {
+                            result = instance.check(result);
+                            
+                        }
                         fred.setText(result.toString());
+
+                        if (!instance.getRemoved().isEmpty()) {
+                            String removedNodes = "Removed nodes:\n";
+                            for (Node n : instance.getRemoved()) {
+                                removedNodes += n.toString2() + "\n";
+                            }
+                            removed.setText(removedNodes);
+                        }
+
+                        if (instance.getRootCopy() != null) {
+                            removed.setText("AMR tree:\n" + instance.getRootCopy().toString2() + "\n\n" + removed.getText());
+                        }
+
                         if (result.getTreStatus() == 1) {
                             err.setText("Warning! Something went wrong: one node is not ok!");
                         } else if (result.getTreStatus() > 999999) {
                             err.setText("Warning! Something went wrong: there is a recursive error!");
                         } else if (result.getTreStatus() > 0) {
                             err.setText("Warning! Something went wrong: " + result.getTreStatus() + " nodes are not ok!");
-                        }else {
+                        } else {
                             err.setText(" ");
                         }
                     } else {
@@ -123,12 +134,39 @@ public class Amr2Fred extends Application {
                     fred.setText("Sintax error");
                 }
 
+                //secondStage.show();
             }
         });
 
         grid.add(btn, 0, 3, 3, 1);
 
         primaryStage.show();
+    }
+
+    private void results() {
+
+        secondStage.setTitle("Results");
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+
+        Scene scene = new Scene(grid, 400, 400);
+        secondStage.setScene(scene);
+
+        Text scenetitle = new Text("Results");
+        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        grid.add(scenetitle, 0, 0, 3, 1);
+
+        Label amr = new Label("ciao:");
+        grid.add(amr, 0, 1);
+
+        TextArea amrTextField = new TextArea();
+        amrTextField.setPrefColumnCount(80);
+        amrTextField.setPrefRowCount(6);
+        grid.add(amrTextField, 1, 1, 6, 1);
+
     }
 
     /**

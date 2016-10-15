@@ -38,14 +38,16 @@ public class PredMatrixTest {
     }
 
     /**
-     * Test of read method, of class PredMatrix.
+     * Test of getPredMatrix method, of class PredMatrix.
      */
     @Test
-    public void testRead() {
-        System.out.println("read");
-        //PredMatrix.read();
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+    public void testGetPredMatrix() {
+        System.out.println("getPredMatrix");
+        PredMatrix expResult = null;
+        PredMatrix result = PredMatrix.getPredMatrix();
+        System.out.println(Line.FIRSTLINE);
+        System.out.println(result.getMatrix().get(5).getLine());
+        System.out.println(result.find("id:want.01", Glossary.lineFields.ID_PRED).get(0).getLine());
     }
     
 }

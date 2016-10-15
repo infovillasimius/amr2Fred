@@ -30,6 +30,7 @@ public class Node {
     private wordType type;
     static int id;
     private int nodeId;
+    private String verb;
 
     public Node(String var, String relation) {
         this.var = var;
@@ -148,8 +149,10 @@ public class Node {
         for (Node n : this.list) {
             if (n.relation.matches(ARG_OF)){
                 return n;
-            }    
+            }
+            //System.out.println(n.relation+" "+n.relation.matches(ARG_OF));
         }
+        
         return null;
     }
 
@@ -222,5 +225,15 @@ public class Node {
         }
         return string;
     }
+
+    public String getVerb() {
+        return verb;
+    }
+
+    public void setVerb(String verb) {
+        this.verb = verb;
+    }
+    
+    
 
 }

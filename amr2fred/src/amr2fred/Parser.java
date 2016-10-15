@@ -5,19 +5,15 @@
  */
 package amr2fred;
 
-import static amr2fred.Glossary.ARG_OF;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.FRED;
 import static amr2fred.Glossary.TOP;
-import static amr2fred.Glossary.nodeStatus.ERROR;
 import static amr2fred.Glossary.nodeStatus.OK;
 import static amr2fred.Glossary.nodeStatus.REMOVE;
 import static amr2fred.Glossary.wordType.VERB;
 import static amr2fred.NumberToWord.convert;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import org.jdom.Element;
 
 /**
  *
@@ -73,7 +69,27 @@ public class Parser {
             }
         }
         root = predicate(root);
-        //root= findVnClass(root);
+        root= findVnClass(root);
+        return root;
+    }
+    
+    public Node check(Node root){
+     
+        for(Iterator<Node> it = root.list.iterator(); it.hasNext();){
+            Node n=it.next();
+            if (n.getStatus() != OK) {
+                this.removed.add(n);
+                it.remove();
+            } else {
+                n = check(n);
+            }
+        }
+        
+        if(root.getStatus()!=OK){
+            System.out.println(root.relation+" "+root.var+" "+root.getTreStatus()+" "+root.getStatus());
+            return null;
+        }
+        System.out.println(root);
         return root;
     }
 
@@ -206,7 +222,7 @@ public class Parser {
         }
         root = this.argOf(root);
         root = this.listElaboration(root);
-        root = this.verbsInterpretation(root);
+        root = this.instanceElaboration(root);
 
         return root;
     }
@@ -258,7 +274,7 @@ public class Parser {
         return root;
     }
 
-    private Node verbsInterpretation(Node root) {
+    private Node instanceElaboration(Node root) {
         //Interpretazione verbi ed eliminazione instance (per essere un verbo deve terminare con -xx)
         Node instance = root.getInstance();
 
@@ -410,19 +426,8 @@ public class Parser {
             return null;
         }
         if (root.getType() == VERB) {
-            String lemma = root.getChild(Glossary.RDF_TYPE).var;
-            //System.out.println(lemma);
-
-            Element predicate = Reader.jreader(lemma);
-            List argmaps = predicate.getChildren();
-            if (argmaps.size() == 1) {
-                Element argmap = (Element) argmaps.get(0);
-                System.out.println(lemma + " -> " + argmap.getAttributeValue(Glossary.VN_CLASS));
-            } else {
-                System.out.println(argmaps.size());
-            }
-            //Reader.getRole(lemma, predicate);
-
+            String lemma = root.getChild(Glossary.RDF_TYPE).var.toLowerCase();
+            
         }
 
         for (Node n : root.list) {
@@ -469,10 +474,12 @@ public class Parser {
 
     private Node argOf(Node root) {
         if (root == null || root.list.isEmpty() || root.getArgOf() == null) {
+            
             return root;
         }
-
+        
         Node n = root.getArgOf();
+        //System.out.println(n +" ok");
         root.list.remove(n);
         String arg = n.relation;
         n.relation = root.relation;
@@ -480,5 +487,6 @@ public class Parser {
         n.list.add(root);
         return argOf(n);
     }
+    
 
 }
