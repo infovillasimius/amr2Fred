@@ -1,20 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this template FILE, choose Tools | Templates
  * and open the template in the editor.
  */
 package amr2fred;
 
 import static amr2fred.Line.lineComparator;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,11 +22,11 @@ import java.util.logging.Logger;
  */
 public class PredMatrix {
 
-    private static String file = "resource/predmatrix.txt";
-    //public static String file="resource/PredicateMatrix.v1.3.txt";
-    private static String file2 = "resource/prova.txt";
+   
+    private static String FILE =getPath()+"resource/predmatrix.txt";
+    private static final String FILE2 = "resource/predmatrix.txt";
     private static PredMatrix p;
-    private ArrayList<Line> matrix;
+    private final ArrayList<Line> matrix;
 
     private PredMatrix() {
         this.matrix = read();
@@ -36,6 +34,8 @@ public class PredMatrix {
 
     public static PredMatrix getPredMatrix() {
         if (p == null) {
+            
+            //System.out.println(FILE);
             p = new PredMatrix();
         }
         return p;
@@ -44,7 +44,7 @@ public class PredMatrix {
     private ArrayList<Line> read() {
         try {
             ArrayList<Line> l = new ArrayList<>();
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = new BufferedReader(new FileReader(FILE));
             String line = reader.readLine();
             line = reader.readLine();
 
@@ -57,36 +57,14 @@ public class PredMatrix {
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            FILE=FILE2;
+            return read();
         } catch (IOException ex) {
             Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    private void scriviFile() {
-
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(this.file));
-            String line = reader.readLine();
-            FileWriter f = new FileWriter(this.file2);
-            BufferedWriter bw = new BufferedWriter(f);
-            bw.write(line + "\n");
-
-            while (line != null) {
-
-                line = reader.readLine();
-                if (line != null && line.startsWith("id:eng")) {
-                    bw.write(line + "\n");
-
-                }
-            }
-
-            bw.flush();
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public ArrayList<Line> getMatrix() {
         return matrix;
@@ -99,6 +77,27 @@ public class PredMatrix {
         });
         list.sort(lineComparator);
         return list;
+    }
+    
+        public ArrayList<Line> find(String word, Glossary.lineFields field,Glossary.lineFields field2, String value) {
+        ArrayList<Line> list=new ArrayList<>();
+        matrix.stream().filter((l) -> (l.getLine().get(field.ordinal()).equalsIgnoreCase(word)) 
+                && l.getLine().get(field2.ordinal()).equalsIgnoreCase(value)).forEach((l) -> {
+            list.add(l);
+        });
+        list.sort(lineComparator);
+        return list;
+    }
+        
+        private static String getPath(){
+        try {
+            String path = PredMatrix.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            return decodedPath.substring(0, decodedPath.length()-12);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Amr2Fred.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
     }
 
 }

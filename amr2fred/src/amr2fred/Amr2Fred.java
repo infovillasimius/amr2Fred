@@ -5,6 +5,11 @@
  */
 package amr2fred;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,11 +37,13 @@ import javafx.stage.Stage;
 public class Amr2Fred extends Application {
 
     Stage secondStage = new Stage();
+    PredMatrix pred=PredMatrix.getPredMatrix();
+    
+    
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("amr2fred");
-        results();
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -47,7 +54,7 @@ public class Amr2Fred extends Application {
         Scene scene = new Scene(grid, 1000, 600);
         primaryStage.setScene(scene);
 
-        Text scenetitle = new Text("Welcome to amr2fred");
+        Text scenetitle = new Text("Welcome to amr2fred") ;
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 3, 1);
 
@@ -77,7 +84,7 @@ public class Amr2Fred extends Application {
         TextArea removed = new TextArea();
         removed.setEditable(false);
         removed.setPrefRowCount(16);
-        //removed.setPrefColumnCount(40);       
+        removed.setText("");       
         grid.add(removed, 3, 4, 4, 1);
 
         Text err = new Text();
@@ -134,7 +141,7 @@ public class Amr2Fred extends Application {
                     fred.setText("Sintax error");
                 }
 
-                //secondStage.show();
+                
             }
         });
 
@@ -143,31 +150,7 @@ public class Amr2Fred extends Application {
         primaryStage.show();
     }
 
-    private void results() {
-
-        secondStage.setTitle("Results");
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.TOP_CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        Scene scene = new Scene(grid, 400, 400);
-        secondStage.setScene(scene);
-
-        Text scenetitle = new Text("Results");
-        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        grid.add(scenetitle, 0, 0, 3, 1);
-
-        Label amr = new Label("ciao:");
-        grid.add(amr, 0, 1);
-
-        TextArea amrTextField = new TextArea();
-        amrTextField.setPrefColumnCount(80);
-        amrTextField.setPrefRowCount(6);
-        grid.add(amrTextField, 1, 1, 6, 1);
-
-    }
+   
 
     /**
      * @param args the command line arguments
@@ -175,5 +158,6 @@ public class Amr2Fred extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 
 }

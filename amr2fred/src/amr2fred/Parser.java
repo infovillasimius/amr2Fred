@@ -5,9 +5,13 @@
  */
 package amr2fred;
 
+import static amr2fred.Glossary.ARG;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.FRED;
+import static amr2fred.Glossary.NULL;
+import static amr2fred.Glossary.PIVOT;
 import static amr2fred.Glossary.TOP;
+import static amr2fred.Glossary.VN_ROLE;
 import static amr2fred.Glossary.nodeStatus.OK;
 import static amr2fred.Glossary.nodeStatus.REMOVE;
 import static amr2fred.Glossary.wordType.VERB;
@@ -69,14 +73,14 @@ public class Parser {
             }
         }
         root = predicate(root);
-        root= findVnClass(root);
+        root = findVnClass(root);
         return root;
     }
-    
-    public Node check(Node root){
-     
-        for(Iterator<Node> it = root.list.iterator(); it.hasNext();){
-            Node n=it.next();
+
+    public Node check(Node root) {
+
+        for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
+            Node n = it.next();
             if (n.getStatus() != OK) {
                 this.removed.add(n);
                 it.remove();
@@ -84,12 +88,12 @@ public class Parser {
                 n = check(n);
             }
         }
-        
-        if(root.getStatus()!=OK){
-            System.out.println(root.relation+" "+root.var+" "+root.getTreStatus()+" "+root.getStatus());
+
+        if (root.getStatus() != OK) {
+            //System.out.println(root.relation + " " + root.var + " " + root.getTreStatus() + " " + root.getStatus());
             return null;
         }
-        System.out.println(root);
+        //System.out.println(root);
         return root;
     }
 
@@ -243,19 +247,19 @@ public class Parser {
                 root.list.remove(instance);
                 root = modality(root);
                 root.setStatus(OK);
+                
+                
             }
         } else if (lemma.equalsIgnoreCase("obligate")) {
             Node arg2 = root.getChild(":arg2");
             if (arg2 != null) {
-                System.out.println(root.var);
+                //System.out.println(root.var);
                 root.var = arg2.var;
-                System.out.println(root);
                 root.list.add(new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK));
                 root.list.addAll(arg2.list);
                 root.list.remove(arg2);
                 root.list.remove(instance);
                 root = modality(root);
-                System.out.println(root);
                 root.setStatus(OK);
             }
         } else if (lemma.equalsIgnoreCase("possible") || lemma.equalsIgnoreCase("permit")) {
@@ -271,6 +275,8 @@ public class Parser {
             }
 
         }
+        root.setVerb("id:" + instance.var.substring(0, instance.var.length() - 3) + "." + instance.var.substring(instance.var.length() - 2));
+        args(root);
         return root;
     }
 
@@ -289,6 +295,7 @@ public class Parser {
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches("-[0-9]+")) {
             root.setType(VERB);
+
             topic = false;
             root = modality(root);
             if (root.getStatus() == OK) {
@@ -297,6 +304,9 @@ public class Parser {
             //Elaborazione della instance e trasferimento verbo nella root, seguito dal numero di occorrenza
             root.var = FRED + instance.var.substring(0, instance.var.length() - 3) + "_" + occurrence(instance.var.substring(0, instance.var.length() - 3));
             instance.relation = Glossary.RDF_TYPE;
+            root.setVerb("id:" + instance.var.substring(0, instance.var.length() - 3) + "." + instance.var.substring(instance.var.length() - 2));
+            args(root);
+            //System.out.println(root.getVerb());
             instance.var = FRED + instance.var.substring(0, 1).toUpperCase() + instance.var.substring(1, instance.var.length() - 3).toLowerCase();
             if (root.list.size() == 1 && root.relation.equalsIgnoreCase(TOP)) {
                 root.list.add(new Node(Glossary.TOPIC, Glossary.DUL_HAS_QUALITY, OK));
@@ -305,6 +315,9 @@ public class Parser {
             }
             if (!instance.relation.matches(Glossary.ARG)) {
                 instance.setStatus(OK);
+            }
+            if (!root.relation.matches(Glossary.ARG)) {
+                root.setStatus(OK);
             }
 
         } else {
@@ -327,9 +340,7 @@ public class Parser {
                 }
             }
         }
-        if (!root.relation.matches(Glossary.ARG)) {
-            root.setStatus(OK);
-        }
+
         return root;
     }
 
@@ -394,8 +405,8 @@ public class Parser {
                 n.list.remove(n.getInstance());
                 n.setStatus(OK);
             } else if (n.relation.equalsIgnoreCase(":quant") && n.getInstance() == null) {
-                n.relation=Glossary.DUL_HAS_DATA_VALUE;
-                toAdd.add(new Node(convert(Integer.parseInt(n.var)),Glossary.QUANT_HAS_QUANTIFIER,OK));
+                n.relation = Glossary.DUL_HAS_DATA_VALUE;
+                toAdd.add(new Node(convert(Integer.parseInt(n.var)), Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
             }
             /*else if(n.relation.equalsIgnoreCase(":poss")){
@@ -425,9 +436,50 @@ public class Parser {
         if (root == null) {
             return null;
         }
+
+        String lemma = root.getVerb();
+
         if (root.getType() == VERB) {
-            String lemma = root.getChild(Glossary.RDF_TYPE).var.toLowerCase();
-            
+
+            PredMatrix pred = PredMatrix.getPredMatrix();
+            ArrayList<Line> result =pred.find(lemma, Glossary.lineFields.ID_PRED);
+            if (result != null && !result.isEmpty()) {
+                String vnClass = result.get(0).getLine().get(Glossary.lineFields.VN_CLASS_NUMBER.ordinal()).substring(3);
+                String vnSubClass = pred.find(lemma, Glossary.lineFields.ID_PRED).get(0).getLine().get(Glossary.lineFields.VN_SUBCLASS_NUMBER.ordinal()).substring(3);
+                Node n = root.getChild(Glossary.RDF_TYPE);
+
+                if (vnSubClass.equalsIgnoreCase("null") && !vnClass.equalsIgnoreCase("null")) {
+                    n.list.add(new Node(n.var + "_" + vnClass, "owl:equivalentClass", OK));
+                } else if (!vnSubClass.equalsIgnoreCase("null")) {
+                    n.list.add(new Node(n.var + "_" + vnSubClass, "owl:equivalentClass", OK));
+                }
+            }
+
+            //System.out.println(vnClass);
+        }
+
+        if (root.relation.matches(Glossary.ARG)) {
+            PredMatrix pred = PredMatrix.getPredMatrix();
+            //System.out.println(root.relation.substring(4));
+            //System.out.println(lemma);
+            String r = "pb:" + root.relation.substring(4);
+            String role;
+            String frame;
+            ArrayList<Line> result = pred.find(lemma, Glossary.lineFields.ID_PRED, Glossary.lineFields.PB_ARG, r);
+            if (result != null && !result.isEmpty()) {
+                role = result.get(0).getLine().get(Glossary.lineFields.VN_ROLE.ordinal()).substring(3);
+                frame = result.get(0).getLine().get(Glossary.lineFields.FN_FRAME_ELEMENT.ordinal()).substring(3);
+                if ((role.equalsIgnoreCase(PIVOT) || (role.equalsIgnoreCase(NULL))) && !frame.equalsIgnoreCase(NULL)) {
+                    root.relation = VN_ROLE + frame;
+                    //System.out.println(frame);
+                    root.setStatus(OK);
+                } else if (!role.equalsIgnoreCase(NULL)) {
+                    root.relation = VN_ROLE + role;
+                    root.setStatus(OK);
+                    //System.out.println(role);
+                }
+            }
+
         }
 
         for (Node n : root.list) {
@@ -474,10 +526,10 @@ public class Parser {
 
     private Node argOf(Node root) {
         if (root == null || root.list.isEmpty() || root.getArgOf() == null) {
-            
+
             return root;
         }
-        
+
         Node n = root.getArgOf();
         //System.out.println(n +" ok");
         root.list.remove(n);
@@ -487,6 +539,13 @@ public class Parser {
         n.list.add(root);
         return argOf(n);
     }
-    
+
+    private void args(Node root) {
+        for (Node n : root.list) {
+            if (n.relation.matches(ARG) && n.getType() != VERB) {
+                n.setVerb(root.getVerb());
+            }
+        }
+    }
 
 }

@@ -51,7 +51,9 @@ public class Glossary {
     public static final String FEMALE = " she She SHE ";
     public static final String THING = " It it IT ";
     public static final String DEMONSTRATIVES = " that those this these ";
-    
+    public static final String PIVOT="Pivot";
+    public static final String NULL="Null";
+    public static final String VN_ROLE="vn.role:";
     
 
     public enum wordType {
