@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package amr2fred;
 
 import static amr2fred.Glossary.ARG_OF;
@@ -10,27 +6,27 @@ import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.RECURSIVE_ERROR;
 import amr2fred.Glossary.nodeStatus;
 import static amr2fred.Glossary.nodeStatus.AMR;
-import static amr2fred.Glossary.nodeStatus.ERROR;
 import amr2fred.Glossary.wordType;
 import static amr2fred.Glossary.wordType.OTHER;
 import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- *
+ * Contiene le informazioni relative al ramo (relation) ed alla foglia (var)
+ * dei nodi dell'albero amr
  * @author anto
  */
 public class Node {
 
-    public static int liv = 0;
-    String relation;
-    String var;
-    ArrayList<Node> list;
-    private nodeStatus status;
-    private wordType type;
-    static int id;
-    private int nodeId;
-    private String verb;
+    public static int liv = 0;                  //informazione usata per la gestione dell'indentazione nel metodo toString()
+    String relation;                           //valore ramo   
+    String var;                                //valore foglia
+    ArrayList<Node> list;                      //nodi collegati
+    private nodeStatus status;                  //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
+    private wordType type;                     //usato per distinguere la lavorazione da effettuare su ogni nodo 
+    static int id;                             //usato per dare ad ogni nodo un identificativo univoco
+    private int nodeId;                       //memorizza identificativo univoco del nodo
+    private String verb;                      //memorozza la var originale nel caso sia un verbo, per l'uso con la predmatrix
 
     public Node(String var, String relation) {
         this.var = var;
@@ -58,12 +54,13 @@ public class Node {
             return RECURSIVE_ERROR;
         }
         String stringa = "\n" + this.spaces(liv);
-        if (relation != "top") {
+        if (!relation.equalsIgnoreCase(Glossary.TOP)) {
             stringa = stringa + "{" + relation + " -> " + var + " -> ";
 
         } else {
             stringa = "{" + var + " -> ";
         }
+        //System.out.println(relation+" "+status);
         if (!list.isEmpty()) {
             Node.liv++;
 
@@ -156,7 +153,7 @@ public class Node {
         return null;
     }
 
-    public String spaces(int n) {
+    private String spaces(int n) {
 
         String spaces = "";
         for (int i = 0; i < n; i++) {
@@ -197,7 +194,7 @@ public class Node {
             return RECURSIVE_ERROR;
         }
         String stringa = "\n" + this.spaces(liv);
-        if (relation != "top") {
+        if (!relation.equalsIgnoreCase(Glossary.TOP)) {
             stringa = stringa + "{" + relation + " -> " + var + " -> ";
 
         } else {

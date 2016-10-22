@@ -1,12 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package amr2fred;
 
 /**
- *
+ * Classe utilizzata nella traduzione da amr a fred per il calcolo
+ * del numero di occorrenze di una stringa (var). Accoppia ad ogni
+ * stringa il numero di occorrenze registrate
  * @author anto
  */
 public class Couple {

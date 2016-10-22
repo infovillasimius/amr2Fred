@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package amr2fred;
 
 import static amr2fred.Glossary.ARG;
@@ -12,12 +7,14 @@ import static amr2fred.Glossary.NULL;
 import static amr2fred.Glossary.PIVOT;
 import static amr2fred.Glossary.TOP;
 import static amr2fred.Glossary.VN_ROLE;
+import static amr2fred.Glossary.nodeStatus.AMR;
 import static amr2fred.Glossary.nodeStatus.OK;
 import static amr2fred.Glossary.nodeStatus.REMOVE;
 import static amr2fred.Glossary.wordType.VERB;
 import static amr2fred.NumberToWord.convert;
 import java.util.ArrayList;
 import java.util.Iterator;
+import static amr2fred.Glossary.AMR_MOD;
 
 /**
  *
@@ -25,14 +22,14 @@ import java.util.Iterator;
  */
 public class Parser {
 
-    private static Parser parser;
-    private ArrayList<Node> nodes;
-    private ArrayList<Couple> couples;
-    private ArrayList<Node> removed;
-    private ArrayList<Node> toAdd;
-    private Node rootCopy;
-    static int endless;
-    private boolean topic = true;
+    private static Parser parser;               //contiene l'istanza singola del parser
+    private ArrayList<Node> nodes;             //contiene tutti i nodi istanziati e consente di recuperare il nodo relativo a una variabile amr
+    private ArrayList<Couple> couples;         //contiene le coppie formate dalle var trovate e dal numero di occorrenze di ognuna
+    private ArrayList<Node> removed;           //contiene i nodi rimossi
+    private ArrayList<Node> toAdd;             //contiene i nodi da aggiungere ad un nodo alla fine della iterazione di lavorazione della lista (usato per evitare errori di concurrency)
+    private Node rootCopy;                     //contiene una copia dell'albero amr in lavorazione
+    static int endless;                         //contiene il valore numerico delle operazioni di visita dei nodi del grafo amr - interrompe le operazioni in caso di errore di ricorsività
+    private boolean topic = true;              //flag per l'aggiunta del valore topic ad un nodo
 
     private Parser() {
         this.nodes = new ArrayList<>();
@@ -62,6 +59,12 @@ public class Parser {
         return removed;
     }
 
+    /**
+     * Effettua il parsing della stringa amr e restituisce il nodo radice Fred
+     *
+     * @param amr String che contiene il grafo in formato amr
+     * @return Node nodo radice albero Fred
+     */
     public Node parse(String amr) {
         ArrayList<String> amrList = string2Array(amr);
         Node root = getNodes(TOP, amrList);
@@ -70,13 +73,23 @@ public class Parser {
             this.rootCopy = root.getCopy();
             if (endless > ENDLESS) {
                 this.rootCopy = new Node("Error", "Recursive");
+                return root;
             }
         }
         root = predicate(root);
         root = findVnClass(root);
+
         return root;
     }
 
+    /**
+     * Restituisce l'albero ripulito dai nodi che presentano errori di
+     * traduzione
+     *
+     * @param root nodo radice dell'albero che si intende ripulire da tutti i
+     * nodi non ok
+     * @return Node nodo radice albero senza errori
+     */
     public Node check(Node root) {
 
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
@@ -247,8 +260,7 @@ public class Parser {
                 root.list.remove(instance);
                 root = modality(root);
                 root.setStatus(OK);
-                
-                
+
             }
         } else if (lemma.equalsIgnoreCase("obligate")) {
             Node arg2 = root.getChild(":arg2");
@@ -284,7 +296,7 @@ public class Parser {
         //Interpretazione verbi ed eliminazione instance (per essere un verbo deve terminare con -xx)
         Node instance = root.getInstance();
 
-        if (root.getStatus() == OK && root.relation.matches(Glossary.ARG)) {
+        if (root.getStatus() == OK && root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION) && !root.relation.equalsIgnoreCase(TOP)) {
             root.setStatus(Glossary.nodeStatus.AMR);
             return root;
         }
@@ -313,11 +325,16 @@ public class Parser {
             } else {
                 instance.list.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
             }
-            if (!instance.relation.matches(Glossary.ARG)) {
+
+            if (!instance.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
                 instance.setStatus(OK);
+            } else {
+                instance.setStatus(AMR);
             }
-            if (!root.relation.matches(Glossary.ARG)) {
+            if (!root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
                 root.setStatus(OK);
+            } else {
+                root.setStatus(AMR);
             }
 
         } else {
@@ -331,7 +348,7 @@ public class Parser {
                     n.var = nVar;
                     instanceInList.relation = Glossary.RDF_TYPE;
                     instanceInList.var = FRED + firstUpper(instance.var);
-                    if (!instanceInList.relation.matches(Glossary.ARG)) {
+                    if (!instanceInList.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
                         instanceInList.setStatus(OK);
                     }
 
@@ -339,44 +356,59 @@ public class Parser {
                     n.var = nVar;
                 }
             }
+            if (!root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+                root.setStatus(OK);
+            } else {
+                root.setStatus(AMR);
+            }
         }
 
         return root;
     }
 
+    /**
+     * Elaborazione della lista dei nodi collegati al nodo radice
+     *
+     * @param Node root
+     * @return Node root - Il nodo radice la cui lista è stata elaborata
+     */
     private Node listElaboration(Node root) {
         //Elaborazione della lista
 
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
-            if (n.relation.equalsIgnoreCase(":polarity")) {
+
+            if (root.getInstance() != null) {
+                System.out.println(root.getInstance().var);
+            }
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY)) {
                 n.relation = Glossary.BOXING_HAS_THRUTH_VALUE;
                 n.var = Glossary.BOXING_FALSE;
                 n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":mode") && n.var.equalsIgnoreCase("imperative")) {
-                n.var = Glossary.TOPIC;
-                n.relation = Glossary.DUL_HAS_QUALITY;
-                n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":mode") && n.var.equalsIgnoreCase("expressive")) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("imperative")) {
+                //n.var = Glossary.TOPIC;
+                //n.relation = Glossary.DUL_HAS_QUALITY;
+                n.setStatus(REMOVE); // era ok
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("expressive")) {
                 n.var = Glossary.TOPIC;
                 n.relation = Glossary.RDF_TYPE;
                 n.setStatus(OK);
                 root.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":mode") && n.var.equalsIgnoreCase("interrogative")) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("interrogative")) {
                 n.setStatus(REMOVE);
-            } else if (n.relation.equalsIgnoreCase(":prep-against")) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_PREP_AGAINST)) {
                 n.relation = FRED + "against";
                 n.setStatus(OK);
             } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase("amr-unknown")) {
                 n.setStatus(REMOVE);
-            } else if (n.getInstance() != null && Glossary.PERSON.contains(" " + n.getInstance().var + " ")) {
-                n.getInstance().var = "person";
+            } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
+                n.var = "person";
                 this.setEquals(root);
-            } else if (n.getInstance() != null && Glossary.MALE.contains(" " + n.getInstance().var + " ")) {
-                n.getInstance().var = "male";
+            } else if (Glossary.MALE.contains(" " + n.var + " ")) {
+                n.var = "male";
                 this.setEquals(root);
-            } else if (n.getInstance() != null && Glossary.FEMALE.contains(" " + n.getInstance().var + " ")) {
-                n.getInstance().var = "female";
+            } else if (Glossary.FEMALE.contains(" " + n.var + " ")) {
+                n.var = "female";
                 this.setEquals(root);
             } else if (n.getInstance() != null && Glossary.THING.contains(" " + n.getInstance().var + " ")) {
                 n.var = FRED + "neuter_" + occurrence("neuter");
@@ -385,29 +417,32 @@ public class Parser {
                 n.getInstance().relation = Glossary.RDF_TYPE;
                 this.setEquals(root);
                 n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":poss")) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_POSS)) {
                 n.relation = FRED + root.var.replaceAll(FRED, "") + "Of";
-            } else if (n.relation.equalsIgnoreCase(":mod") && n.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null) {
                 if (Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
                     n.relation = Glossary.QUANT_HAS_DETERMINER;
-                } else {
-                    n.relation = Glossary.RDF_TYPE;
                 }
+                /*else {
+                    n.relation = Glossary.RDF_TYPE;
+                }*/
                 n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
-                if (/*root.list.size() == 1*/topic && root.relation.equalsIgnoreCase(TOP)) {
+                if (topic && root.relation.equalsIgnoreCase(TOP)) {
                     toAdd.add(new Node(Glossary.TOPIC, Glossary.DUL_HAS_QUALITY, OK));
                 }
                 n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":domain") && n.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && n.getInstance() != null) {
                 n.relation = Glossary.RDF_TYPE;
                 n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
                 n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(":quant") && n.getInstance() == null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() == null) {
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
                 toAdd.add(new Node(convert(Integer.parseInt(n.var)), Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null) {
+                //TODO
             }
             /*else if(n.relation.equalsIgnoreCase(":poss")){
             n.relation="boxing:hasThruthValue";
@@ -418,6 +453,9 @@ public class Parser {
             } else {
                 this.removed.add(n);
                 it.remove();
+            }
+            if (n.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+                n.setStatus(AMR);
             }
         }
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
@@ -442,16 +480,16 @@ public class Parser {
         if (root.getType() == VERB) {
 
             PredMatrix pred = PredMatrix.getPredMatrix();
-            ArrayList<Line> result =pred.find(lemma, Glossary.lineFields.ID_PRED);
+            ArrayList<Line> result = pred.find(lemma, Glossary.lineFields.ID_PRED);
             if (result != null && !result.isEmpty()) {
                 String vnClass = result.get(0).getLine().get(Glossary.lineFields.VN_CLASS_NUMBER.ordinal()).substring(3);
                 String vnSubClass = pred.find(lemma, Glossary.lineFields.ID_PRED).get(0).getLine().get(Glossary.lineFields.VN_SUBCLASS_NUMBER.ordinal()).substring(3);
                 Node n = root.getChild(Glossary.RDF_TYPE);
 
                 if (vnSubClass.equalsIgnoreCase("null") && !vnClass.equalsIgnoreCase("null")) {
-                    n.list.add(new Node(n.var + "_" + vnClass, "owl:equivalentClass", OK));
+                    n.list.add(new Node(Glossary.VN_DATA + (n.var.replaceAll(FRED, "")) + "_" + vnClass, "owl:equivalentClass", OK));
                 } else if (!vnSubClass.equalsIgnoreCase("null")) {
-                    n.list.add(new Node(n.var + "_" + vnSubClass, "owl:equivalentClass", OK));
+                    n.list.add(new Node(Glossary.VN_DATA + (n.var.replaceAll(FRED, "")) + "_" + vnSubClass, "owl:equivalentClass", OK));
                 }
             }
 
@@ -546,6 +584,21 @@ public class Parser {
                 n.setVerb(root.getVerb());
             }
         }
+    }
+
+    private Node mod(Node root) {
+        if (root == null || root.list.isEmpty() || root.getChild(AMR_MOD) == null) {
+
+            return root;
+        }
+
+        Node n = root.getChild(AMR_MOD);
+        root.list.remove(n);
+        String arg = n.relation;
+        n.relation = root.relation;
+        root.relation = arg.substring(0, arg.length() - 3);
+        n.list.add(root);
+        return mod(n);
     }
 
 }

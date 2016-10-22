@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package amr2fred;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
- *
+ * Classe utilizzata nella gestione delle righe della tabella predmatrix
  * @author anto
  */
 public class Line implements Comparable {
@@ -22,10 +17,14 @@ public class Line implements Comparable {
      */
     public static Glossary.lineFields field = Glossary.lineFields.WN_SENSEFREC;
     public static int inizioCampo = 3;
+    private static final int BEFORE = -1;
+    private static final int EQUAL = 0;
+    private static final int AFTER = 1;
+    private static final String SEPARATOR="\t";
+    
     private final ArrayList<String> line;
-    private final int BEFORE = -1;
-    private final int EQUAL = 0;
-    private final int AFTER = 1;
+    
+    
 
     public Line(String string) {
         if (FIRSTLINE.isEmpty()) {
@@ -61,7 +60,11 @@ public class Line implements Comparable {
         this.line = line(string);
 
     }
-
+    /**
+     * Trasforma in un ArrayList di stringhe una linea del file predmatrix.txt
+     * @param string
+     * @return 
+     */
     private ArrayList<String> line(String string) {
 
         int inizio, fine;
@@ -72,7 +75,7 @@ public class Line implements Comparable {
             inizio = 0;
             while (string.length() > 1) {
 
-                fine = string.indexOf("\t", inizio);
+                fine = string.indexOf(SEPARATOR, inizio);
                 if (fine == -1) {
                     fine = string.length();
                 }
@@ -81,7 +84,7 @@ public class Line implements Comparable {
 
                 string = string.substring(fine);
                 list.add(word);
-                inizio = string.indexOf("\t") + 1;
+                inizio = string.indexOf(SEPARATOR) + 1;
             }
         } catch (java.lang.StringIndexOutOfBoundsException e) {
 
@@ -105,10 +108,10 @@ public class Line implements Comparable {
             l = (Line) o;
             String thisLine = this.line.get(field.ordinal()).substring(inizioCampo);
             String otherLine = l.getLine().get(field.ordinal()).substring(inizioCampo);
-            if (thisLine.equalsIgnoreCase("NULL")) {
+            if (thisLine.equalsIgnoreCase(Glossary.NULL)) {
                 thisLine = "-1";
             }
-            if (otherLine.equalsIgnoreCase("NULL")) {
+            if (otherLine.equalsIgnoreCase(Glossary.NULL)) {
                 otherLine = "-1";
             }
             
