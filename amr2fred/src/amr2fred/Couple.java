@@ -7,21 +7,21 @@ package amr2fred;
  * stringa il numero di occorrenze registrate
  * @author anto
  */
-public class Couple {
-    private int occurence;
+class Couple {
+    private int occurrence;
     private String word;
 
     public Couple(int occurence, String word) {
-        this.occurence = occurence;
+        this.occurrence = occurence;
         this.word = word;
     }
 
     public int getOccurence() {
-        return occurence;
+        return occurrence;
     }
 
     public void setOccurence(int occurence) {
-        this.occurence = occurence;
+        this.occurrence = occurence;
     }
 
     public String getWord() {
@@ -31,6 +31,13 @@ public class Couple {
     public void setWord(String word) {
         this.word = word;
     }
+
+    @Override
+    public String toString() {
+        return "\nWord: "+word+" - occurrence: "+occurrence;
+    }
+    
+    
     
     
 }

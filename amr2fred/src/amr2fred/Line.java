@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 anto
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package amr2fred;
 
 import java.util.ArrayList;
@@ -7,7 +23,7 @@ import java.util.Comparator;
  * Classe utilizzata nella gestione delle righe della tabella predmatrix
  * @author anto
  */
-public class Line implements Comparable {
+class Line implements Comparable {
 
     public static final ArrayList<String> FIRSTLINE = new ArrayList<>();
 
@@ -15,7 +31,7 @@ public class Line implements Comparable {
      * The value is used in the compareTo() to determine what field has to be
      * used in ordering method
      */
-    public static Glossary.lineFields field = Glossary.lineFields.WN_SENSEFREC;
+    public static Glossary.LineFields field = Glossary.LineFields.WN_SENSEFREC;
     public static int inizioCampo = 3;
     private static final int BEFORE = -1;
     private static final int EQUAL = 0;

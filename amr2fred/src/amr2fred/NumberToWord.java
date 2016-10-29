@@ -15,10 +15,9 @@
 package amr2fred;
 
 /**
- *
- * @author anto
+ *  Convert a number into a word 
  */
-public class NumberToWord {
+class NumberToWord {
 
     private static final String[] specialNames = {
         "",
@@ -85,6 +84,11 @@ public class NumberToWord {
         return numNames[number] + " hundred" + current;
     }
 
+    /**
+     * Convert an int number in letters
+     * @param number Int number to convert
+     * @return String with the number in letters
+     */
     public static String convert(int number) {
 
         if (number == 0) {

@@ -1,32 +1,48 @@
-
+/*
+ * Copyright (C) 2016 anto
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package amr2fred;
 
-import static amr2fred.Glossary.ARG_OF;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.RECURSIVE_ERROR;
-import amr2fred.Glossary.nodeStatus;
-import static amr2fred.Glossary.nodeStatus.AMR;
-import amr2fred.Glossary.wordType;
-import static amr2fred.Glossary.wordType.OTHER;
+import amr2fred.Glossary.NodeStatus;
+import static amr2fred.Glossary.NodeStatus.AMR;
+import amr2fred.Glossary.NodeType;
+import static amr2fred.Glossary.NodeType.OTHER;
 import java.util.ArrayList;
 import java.util.Objects;
+import static amr2fred.Glossary.AMR_INVERSE;
 
 /**
- * Contiene le informazioni relative al ramo (relation) ed alla foglia (var)
- * dei nodi dell'albero amr
+ * Contiene le informazioni relative al ramo (relation) ed alla foglia (var) dei
+ * nodi dell'albero amr
+ *
  * @author anto
  */
-public class Node {
+class Node {
 
     public static int liv = 0;                  //informazione usata per la gestione dell'indentazione nel metodo toString()
     String relation;                           //valore ramo   
     String var;                                //valore foglia
     ArrayList<Node> list;                      //nodi collegati
-    private nodeStatus status;                  //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
-    private wordType type;                     //usato per distinguere la lavorazione da effettuare su ogni nodo 
+    private NodeStatus status;                  //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
+    private NodeType type;                     //usato per distinguere la lavorazione da effettuare su ogni nodo 
     static int id;                             //usato per dare ad ogni nodo un identificativo univoco
     private int nodeId;                       //memorizza identificativo univoco del nodo
-    private String verb;                      //memorozza la var originale nel caso sia un verbo, per l'uso con la predmatrix
+    private String verb;                      //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
 
     public Node(String var, String relation) {
         this.var = var;
@@ -38,7 +54,7 @@ public class Node {
         Node.id += 1;
     }
 
-    public Node(String var, String relation, nodeStatus status) {
+    public Node(String var, String relation, NodeStatus status) {
         this.relation = relation;
         this.var = var;
         this.status = status;
@@ -60,7 +76,7 @@ public class Node {
         } else {
             stringa = "{" + var + " -> ";
         }
-        //System.out.println(relation+" "+status);
+        //System.out.println(relation+" "+var+nodeId);
         if (!list.isEmpty()) {
             Node.liv++;
 
@@ -70,7 +86,7 @@ public class Node {
             stringa = stringa + list + '}';
         }
         if (status.ordinal() > 0) {
-            stringa = "\n"+this.spaces(liv)+"<error"+liv+">" + stringa + "</error"+liv+">";
+            stringa = "\n" + this.spaces(liv) + "<error" + liv + ">" + stringa + "</error" + liv + ">";
         }
         return stringa;
     }
@@ -108,6 +124,13 @@ public class Node {
         newNode.nodeId = node.nodeId;
         return newNode;
     }
+    
+    public Node getCopy(String relation) {
+        Node newNode = new Node(this.var, relation, this.status);
+        newNode.list = new ArrayList<>();
+        newNode.nodeId = this.nodeId;
+        return newNode;
+    }
 
     public Node getCopy() {
         if (Parser.endless > ENDLESS) {
@@ -141,15 +164,13 @@ public class Node {
         }
         return null;
     }
-    
-    public Node getArgOf (){
+
+    public Node getInverse() {
         for (Node n : this.list) {
-            if (n.relation.matches(ARG_OF)){
+            if (n.relation.matches(AMR_INVERSE)) {
                 return n;
             }
-            //System.out.println(n.relation+" "+n.relation.matches(ARG_OF));
         }
-        
         return null;
     }
 
@@ -162,11 +183,11 @@ public class Node {
         return spaces;
     }
 
-    public nodeStatus getStatus() {
+    public NodeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(nodeStatus status) {
+    public void setStatus(NodeStatus status) {
         this.status = status;
     }
 
@@ -181,11 +202,11 @@ public class Node {
         return somma;
     }
 
-    public wordType getType() {
+    public NodeType getType() {
         return type;
     }
 
-    public void setType(wordType type) {
+    public void setType(NodeType type) {
         this.type = type;
     }
 
@@ -230,7 +251,25 @@ public class Node {
     public void setVerb(String verb) {
         this.verb = verb;
     }
-    
-    
+
+    /**
+     * Restituisce una lista con i sottonodi di tipo :arg
+     * @return 
+     */
+    public ArrayList<Node> getArgs() {
+        
+        ArrayList<Node> argsList = new ArrayList<>();
+        
+        if (this.type != Glossary.NodeType.VERB) {
+            return argsList;
+        }
+        
+        for (Node n : list) {
+            if (n.relation.matches(Glossary.AMR_ARG)) {
+                argsList.add(n);
+            }
+        }
+        return argsList;
+    }
 
 }

@@ -46,8 +46,8 @@ public class PredMatrixTest {
         PredMatrix expResult = null;
         PredMatrix result = PredMatrix.getPredMatrix();
         System.out.println(Line.FIRSTLINE);
-        System.out.println(result.getMatrix().get(5).getLine());
-        System.out.println(result.find("id:want.01", Glossary.lineFields.ID_PRED).get(0).getLine());
+        
+        System.out.println(result.find("id:want.01", Glossary.LineFields.ID_PRED).get(0).getLine());
     }
     
 }

@@ -1,22 +1,38 @@
+/*
+ * Copyright (C) 2016 anto
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package amr2fred;
 
-import static amr2fred.Glossary.ARG;
 import static amr2fred.Glossary.ENDLESS;
 import static amr2fred.Glossary.FRED;
 import static amr2fred.Glossary.NULL;
 import static amr2fred.Glossary.PIVOT;
 import static amr2fred.Glossary.TOP;
 import static amr2fred.Glossary.VN_ROLE;
-import static amr2fred.Glossary.nodeStatus.AMR;
-import static amr2fred.Glossary.nodeStatus.OK;
-import static amr2fred.Glossary.nodeStatus.REMOVE;
-import static amr2fred.Glossary.wordType.VERB;
-import static amr2fred.NumberToWord.convert;
+import static amr2fred.Glossary.NodeStatus.AMR;
+import static amr2fred.Glossary.NodeStatus.OK;
+import static amr2fred.Glossary.NodeStatus.REMOVE;
+import static amr2fred.Glossary.NodeType.VERB;
 import java.util.ArrayList;
 import java.util.Iterator;
 import static amr2fred.Glossary.AMR_MOD;
+import static amr2fred.Glossary.AMR_ARG;
 
 /**
+ * Contains methods for parsing and translating from AMR to FRED
  *
  * @author anto
  */
@@ -29,7 +45,7 @@ public class Parser {
     private ArrayList<Node> toAdd;             //contiene i nodi da aggiungere ad un nodo alla fine della iterazione di lavorazione della lista (usato per evitare errori di concurrency)
     private Node rootCopy;                     //contiene una copia dell'albero amr in lavorazione
     static int endless;                         //contiene il valore numerico delle operazioni di visita dei nodi del grafo amr - interrompe le operazioni in caso di errore di ricorsività
-    private boolean topic = true;              //flag per l'aggiunta del valore topic ad un nodo
+    private boolean topic;                     //flag per l'aggiunta del valore topic al nodo radice
 
     private Parser() {
         this.nodes = new ArrayList<>();
@@ -38,6 +54,11 @@ public class Parser {
         this.toAdd = new ArrayList<>();
     }
 
+    /**
+     * Return Parser singleton instance
+     *
+     * @return Parser instance
+     */
     public static Parser getInstance() {
         if (parser == null) {
             parser = new Parser();
@@ -48,47 +69,62 @@ public class Parser {
         parser.toAdd = new ArrayList<>();
         parser.rootCopy = null;
         Node.id = 0;
+        parser.topic = true;
         return parser;
     }
 
+    /**
+     * Return the copy of the root node used, before elaboration
+     *
+     * @return Node
+     */
     public Node getRootCopy() {
         return rootCopy;
     }
 
+    /**
+     * Return the list of node removed becouse of errors
+     *
+     * @return ArrayList of Node
+     */
     public ArrayList<Node> getRemoved() {
         return removed;
     }
 
     /**
-     * Effettua il parsing della stringa amr e restituisce il nodo radice Fred
+     * Parse AMR string and returns Fred root node
      *
-     * @param amr String che contiene il grafo in formato amr
-     * @return Node nodo radice albero Fred
+     * @param amr String in amr format
+     * @return Node Fred root node
      */
     public Node parse(String amr) {
-        ArrayList<String> amrList = string2Array(amr);
-        Node root = getNodes(TOP, amrList);
+
+        Node root = getNodes(TOP, string2Array(amr));
+
         if (root != null) {
             endless = 0;
             this.rootCopy = root.getCopy();
+            //verifica errore per ricorsione
             if (endless > ENDLESS) {
                 this.rootCopy = new Node("Error", "Recursive");
                 return root;
             }
+
+            root = fredTranslate(root);
+
+            root = findVnClass(root);
+
+            root = topic(root);
         }
-        root = predicate(root);
-        root = findVnClass(root);
 
         return root;
     }
 
     /**
-     * Restituisce l'albero ripulito dai nodi che presentano errori di
-     * traduzione
+     * Return the tree without the nodes with translate errors
      *
-     * @param root nodo radice dell'albero che si intende ripulire da tutti i
-     * nodi non ok
-     * @return Node nodo radice albero senza errori
+     * @param root Node
+     * @return root Node without errors
      */
     public Node check(Node root) {
 
@@ -101,15 +137,16 @@ public class Parser {
                 n = check(n);
             }
         }
-
         if (root.getStatus() != OK) {
-            //System.out.println(root.relation + " " + root.var + " " + root.getTreStatus() + " " + root.getStatus());
             return null;
         }
-        //System.out.println(root);
         return root;
     }
 
+    /*
+    Restituisce un arraylist contenente i singoli elementi individuati nella stringa
+    in formato amr in input.
+     */
     private ArrayList<String> string2Array(String amr) {
         int inizio, fine;
         String word;
@@ -132,6 +169,10 @@ public class Parser {
         return list;
     }
 
+    /*
+    Normalizza l'input inserendo degli spazi prima e dopo gli elementi,
+    porta tutto in minuscolo ed elimina i doppi spazi
+     */
     private String normalize(String amr) {
         amr = amr.replace("(", " ( ");
         amr = amr.replace(")", " ) ");
@@ -146,6 +187,15 @@ public class Parser {
         return amr.toLowerCase();
     }
 
+    /*
+    Trasforma la lista di stringhe in formato amr in una struttura ad albero
+    (il grafo viene di fatto privato dei cicli con lo stratagemma dell'utilizzo
+    di un oggetto nodo diverso (a livello di oggetto java)
+    quando si hanno rami che puntano allo stesso nodo, ma gli oggetti sono
+    equivalenti secondo il metodo equals in override.
+    Viene effettuato un rudimentale controllo sulle parentesi
+    tonde ancora aperte una volta elaborato il contenuto della lista.
+     */
     private Node getNodes(String relation, ArrayList<String> amrList) {
 
         if (amrList == null) {
@@ -180,7 +230,6 @@ public class Parser {
                                     newList.add(word2);
                                     if (liv2 == 0) {
                                         root.list.add(getNodes(amrList.get(i - 1), newList));
-                                        //System.out.println(root);
                                         i = j;
                                         j = amrList.size();
                                         liv--;
@@ -225,7 +274,12 @@ public class Parser {
         return root;
     }
 
-    private Node predicate(Node root) {
+    /*
+    traduce il nodo da amr a fred
+    viene usato ricorsivamente dai tre metodi che richiama, a seconda delle condizioni
+    che si verificano
+     */
+    private Node fredTranslate(Node root) {
 
         if (root == null) {
             return null;
@@ -237,19 +291,28 @@ public class Parser {
         if (endless > Glossary.ENDLESS) {
             return root;
         }
-        root = this.argOf(root);
+        //verifica inversi
+        root = this.inverseChecker(root);
+
+        //Elaborazione della lista dei nodi contenuti nel nodo attualmente in lavorazione
         root = this.listElaboration(root);
+
+        //elaborazione del nodo figlio denominato instance in amr
         root = this.instanceElaboration(root);
 
         return root;
     }
 
+    /*
+    Controlla ed elabora alcuni casi particolari di verbi che introducono possibilità oppure obbligo
+     */
     private Node modality(Node root) {
-        if (root == null || root.getInstance() == null) {
+        if (root == null || root.getInstance() == null || root.getInstance().var.length() < 4) {
             return root;
         }
         Node instance = root.getInstance();
         String lemma = instance.var.substring(0, instance.var.length() - 3);
+
         if (lemma.equalsIgnoreCase("likely") || lemma.equalsIgnoreCase("recommend")) {
             Node arg1 = root.getChild(":arg1");
             if (arg1 != null) {
@@ -265,7 +328,6 @@ public class Parser {
         } else if (lemma.equalsIgnoreCase("obligate")) {
             Node arg2 = root.getChild(":arg2");
             if (arg2 != null) {
-                //System.out.println(root.var);
                 root.var = arg2.var;
                 root.list.add(new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK));
                 root.list.addAll(arg2.list);
@@ -287,17 +349,19 @@ public class Parser {
             }
 
         }
-        root.setVerb("id:" + instance.var.substring(0, instance.var.length() - 3) + "." + instance.var.substring(instance.var.length() - 2));
-        args(root);
         return root;
     }
 
+    /*
+    Elabora il nodo instance e verifica se il nodo è un verbo oppure un :arg di un verbo
+    chiama ricorsivamente se stessa sulla lista dei nodi figli
+     */
     private Node instanceElaboration(Node root) {
-        //Interpretazione verbi ed eliminazione instance (per essere un verbo deve terminare con -xx)
+        //Interpretazione verbi ed eliminazione instance
         Node instance = root.getInstance();
 
-        if (root.getStatus() == OK && root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION) && !root.relation.equalsIgnoreCase(TOP)) {
-            root.setStatus(Glossary.nodeStatus.AMR);
+        if (root.getStatus() == OK && root.relation.startsWith(Glossary.AMR_RELATION_BEGIN) && !root.relation.equalsIgnoreCase(TOP)) {
+            root.setStatus(Glossary.NodeStatus.AMR);
             return root;
         }
 
@@ -305,33 +369,34 @@ public class Parser {
             return root;
         }
 
-        if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches("-[0-9]+")) {
-            root.setType(VERB);
+        if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches("-[0-9]+$")) {
+            if (this.isVerb(instance.var)) {
+                root.setType(VERB);
+                topic = false;
+                instance.list.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
+            }
 
-            topic = false;
             root = modality(root);
             if (root.getStatus() == OK) {
-                return root;
+
+                instance = root.getInstance();
+                topic = false;
+                root.setType(VERB);
             }
+
             //Elaborazione della instance e trasferimento verbo nella root, seguito dal numero di occorrenza
             root.var = FRED + instance.var.substring(0, instance.var.length() - 3) + "_" + occurrence(instance.var.substring(0, instance.var.length() - 3));
             instance.relation = Glossary.RDF_TYPE;
             root.setVerb("id:" + instance.var.substring(0, instance.var.length() - 3) + "." + instance.var.substring(instance.var.length() - 2));
             args(root);
-            //System.out.println(root.getVerb());
             instance.var = FRED + instance.var.substring(0, 1).toUpperCase() + instance.var.substring(1, instance.var.length() - 3).toLowerCase();
-            if (root.list.size() == 1 && root.relation.equalsIgnoreCase(TOP)) {
-                root.list.add(new Node(Glossary.TOPIC, Glossary.DUL_HAS_QUALITY, OK));
-            } else {
-                instance.list.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
-            }
 
-            if (!instance.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+            if (!instance.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                 instance.setStatus(OK);
             } else {
                 instance.setStatus(AMR);
             }
-            if (!root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+            if (!root.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                 root.setStatus(OK);
             } else {
                 root.setStatus(AMR);
@@ -348,7 +413,7 @@ public class Parser {
                     n.var = nVar;
                     instanceInList.relation = Glossary.RDF_TYPE;
                     instanceInList.var = FRED + firstUpper(instance.var);
-                    if (!instanceInList.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+                    if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                         instanceInList.setStatus(OK);
                     }
 
@@ -356,106 +421,136 @@ public class Parser {
                     n.var = nVar;
                 }
             }
-            if (!root.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
+            if (!root.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
+                /*
+                se la relation di root è stata elaborata e non è più espressa in 
+                AMR il nodo è ok altrimenti deve essere ancora lavorato
+                 */
                 root.setStatus(OK);
             } else {
                 root.setStatus(AMR);
             }
         }
 
+        for (Node n : root.list) {
+
+            // Chiamata ricorsiva
+            n = instanceElaboration(n);
+        }
+
         return root;
     }
 
-    /**
-     * Elaborazione della lista dei nodi collegati al nodo radice
-     *
-     * @param Node root
-     * @return Node root - Il nodo radice la cui lista è stata elaborata
+    /*
+    Elabora la Node list del nodo
      */
     private Node listElaboration(Node root) {
         //Elaborazione della lista
-
+        
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
 
-            if (root.getInstance() != null) {
-                System.out.println(root.getInstance().var);
-            }
-            if (n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY)) {
-                n.relation = Glossary.BOXING_HAS_THRUTH_VALUE;
-                n.var = Glossary.BOXING_FALSE;
-                n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("imperative")) {
-                //n.var = Glossary.TOPIC;
-                //n.relation = Glossary.DUL_HAS_QUALITY;
-                n.setStatus(REMOVE); // era ok
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("expressive")) {
-                n.var = Glossary.TOPIC;
-                n.relation = Glossary.RDF_TYPE;
-                n.setStatus(OK);
-                root.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) && n.var.equalsIgnoreCase("interrogative")) {
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE) //Rimozione casi non supportati da Fred
+                    && (n.var.equalsIgnoreCase("imperative")
+                    || n.var.equalsIgnoreCase("expressive"))
+                    || n.var.equalsIgnoreCase("interrogative")) {
                 n.setStatus(REMOVE);
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_PREP_AGAINST)) {
-                n.relation = FRED + "against";
-                n.setStatus(OK);
+                
             } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase("amr-unknown")) {
                 n.setStatus(REMOVE);
-            } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
+                
+            } else if (Glossary.PERSON.contains(" " + n.var + " ")) {     
+                
+                //casi speciali con pronomi personali e aggettivi dimostrativi
                 n.var = "person";
                 this.setEquals(root);
+                
             } else if (Glossary.MALE.contains(" " + n.var + " ")) {
+                
+                //casi speciali con pronomi personali e aggettivi dimostrativi
                 n.var = "male";
                 this.setEquals(root);
+                
             } else if (Glossary.FEMALE.contains(" " + n.var + " ")) {
+                
+                //casi speciali con pronomi personali e aggettivi dimostrativi
                 n.var = "female";
                 this.setEquals(root);
-            } else if (n.getInstance() != null && Glossary.THING.contains(" " + n.getInstance().var + " ")) {
-                n.var = FRED + "neuter_" + occurrence("neuter");
-                n.getInstance().var = Glossary.OWL_THING;
-                n.getInstance().setStatus(OK);
-                n.getInstance().relation = Glossary.RDF_TYPE;
+                
+            } else if (Glossary.THING.contains(" " + n.var + " ")) {
+                
+                //casi speciali con pronomi personali e aggettivi dimostrativi
+                n.var = "neuter";
+                n.list.add(new Node(Glossary.OWL_THING, Glossary.RDF_TYPE, OK));
                 this.setEquals(root);
                 n.setStatus(OK);
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_POSS)) {
-                n.relation = FRED + root.var.replaceAll(FRED, "") + "Of";
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null) {
-                if (Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
-                    n.relation = Glossary.QUANT_HAS_DETERMINER;
-                }
-                /*else {
-                    n.relation = Glossary.RDF_TYPE;
-                }*/
+                
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_POSS) && root.getInstance() != null) {
+
+                // caso :poss
+                n.relation = FRED + root.getInstance().var.replaceAll(FRED, "") + "Of";
+                
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
+                    && Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
+
+                // caso pronomi o aggettivi dimostrativi
+                n.relation = Glossary.QUANT_HAS_DETERMINER;
                 n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
-                if (topic && root.relation.equalsIgnoreCase(TOP)) {
-                    toAdd.add(new Node(Glossary.TOPIC, Glossary.DUL_HAS_QUALITY, OK));
-                }
                 n.setStatus(OK);
+                
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && n.getInstance() != null) {
+
+                //caso :domain
                 n.relation = Glossary.RDF_TYPE;
                 n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
                 n.setStatus(OK);
+                
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() == null) {
+
+                //caso :quant
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
-                toAdd.add(new Node(convert(Integer.parseInt(n.var)), Glossary.QUANT_HAS_QUANTIFIER, OK));
+                toAdd.add(new Node(Glossary.QUANT+"multiple", Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
+                
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null) {
-                //TODO
-            }
-            /*else if(n.relation.equalsIgnoreCase(":poss")){
-            n.relation="boxing:hasThruthValue";
-            n.var="boxing:false";
-            }*/
-            if (n.getStatus() != REMOVE) {
-                n = predicate(n);
+                
+                //caso :mod
+                n.relation=Glossary.DUL_HAS_QUALITY;
+                n.var=FRED+firstUpper(n.getInstance().var);
+                n.list.remove(n.getInstance());
+                n.setStatus(OK);
+                
             } else {
-                this.removed.add(n);
+
+                /*
+                procedimento per sostituzione mediante Glossary quando non occorre
+                nient'altro che una traduzione di node.relation e node.var
+                */
+                for (int num = 0; num < Glossary.PATTERNS_NUMBER; num++) {
+                    
+                    if (n.relation.equalsIgnoreCase(Glossary.AMR_RELATIONS[num]) && n.var.matches(Glossary.AMR_VARS[num])) {
+
+                        if (Glossary.FRED_RELATIONS[num].length() > 0) {
+                            n.relation = Glossary.FRED_RELATIONS[num];
+                        }
+                        if (Glossary.FRED_VARS[num].length() > 0) {
+                            n.var = Glossary.FRED_VARS[num];
+                        }
+                        n.setStatus(OK);
+                    }
+                }
+            }
+
+            if (n.getStatus() != REMOVE) {
+                n = listElaboration(n);                       //richiama il metodo di traduzione ricorsivamente
+            } else {
+                this.removed.add(n);                        //aggiunge il nodo da rimuovere alla lista dei nodi rimossi
                 it.remove();
             }
-            if (n.relation.startsWith(Glossary.BEGIN_OF_AMR_RELATION)) {
-                n.setStatus(AMR);
+            if (n.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
+                n.setStatus(AMR);                           //verifica che il nodo sia stato effettivamente tradotto
             }
         }
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
@@ -470,54 +565,63 @@ public class Parser {
         return root;
     }
 
+    /*
+    Aggiunge i nodi relativi alla vn-class dei verbi e traduce i rispettivi :argx
+    da amr in Fred
+     */
     private Node findVnClass(Node root) {
+
         if (root == null) {
             return null;
         }
-
         String lemma = root.getVerb();
-
         if (root.getType() == VERB) {
 
             PredMatrix pred = PredMatrix.getPredMatrix();
-            ArrayList<Line> result = pred.find(lemma, Glossary.lineFields.ID_PRED);
+            /*
+            Trova tutte le righe della tabella predmatrix che contengono il lemma cercato
+            il risultato è ordinato per valori decrescenti sul campo che indica la frequenza (24_WN_SENSEFREC)
+             */
+            ArrayList<Line> result = pred.find(lemma, Glossary.LineFields.ID_PRED);
             if (result != null && !result.isEmpty()) {
-                String vnClass = result.get(0).getLine().get(Glossary.lineFields.VN_CLASS_NUMBER.ordinal()).substring(3);
-                String vnSubClass = pred.find(lemma, Glossary.lineFields.ID_PRED).get(0).getLine().get(Glossary.lineFields.VN_SUBCLASS_NUMBER.ordinal()).substring(3);
-                Node n = root.getChild(Glossary.RDF_TYPE);
 
-                if (vnSubClass.equalsIgnoreCase("null") && !vnClass.equalsIgnoreCase("null")) {
-                    n.list.add(new Node(Glossary.VN_DATA + (n.var.replaceAll(FRED, "")) + "_" + vnClass, "owl:equivalentClass", OK));
-                } else if (!vnSubClass.equalsIgnoreCase("null")) {
-                    n.list.add(new Node(Glossary.VN_DATA + (n.var.replaceAll(FRED, "")) + "_" + vnSubClass, "owl:equivalentClass", OK));
+                /*
+                affina la ricerca, partendo dalla prima riga e verificando che il 
+                verbo con maggiore valore di frequenza abbia in tabella tutti 
+                gli argomenti richiesti: in caso contrario, la ricerca viene effettuata
+                sul successivo elemento della lista di partenza.
+                 */
+                result = pred.find(result, root.getArgs());
+                if (result != null && !result.isEmpty()) {
+                    String vnClass = result.get(0).getLine().get(Glossary.LineFields.VN_CLASS_NUMBER.ordinal()).substring(3);
+                    String vnSubClass = result.get(0).getLine().get(Glossary.LineFields.VN_SUBCLASS_NUMBER.ordinal()).substring(3);
+                    Node rdfNode = root.getChild(Glossary.RDF_TYPE);
+
+                    if (vnSubClass.equalsIgnoreCase("null") && !vnClass.equalsIgnoreCase("null")) {
+                        rdfNode.list.add(new Node(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnClass, "owl:equivalentClass", OK));
+                    } else if (!vnSubClass.equalsIgnoreCase("null")) {
+                        rdfNode.list.add(new Node(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnSubClass, "owl:equivalentClass", OK));
+                    }
+
+                    for (Node n : root.getArgs()) {
+                        String r = "pb:" + n.relation.substring(4);
+                        String role;
+                        String frame;
+                        ArrayList<Line> result1 = pred.find(result, r);
+                        if (result1 != null && !result1.isEmpty()) {
+                            role = result1.get(0).getLine().get(Glossary.LineFields.VN_ROLE.ordinal()).substring(3);
+                            frame = result1.get(0).getLine().get(Glossary.LineFields.FN_FRAME_ELEMENT.ordinal()).substring(3);
+                            if ((role.equalsIgnoreCase(PIVOT) || (role.equalsIgnoreCase(NULL))) && !frame.equalsIgnoreCase(NULL)) {
+                                n.relation = VN_ROLE + frame;
+                                n.setStatus(OK);
+                            } else if (!role.equalsIgnoreCase(NULL)) {
+                                n.relation = VN_ROLE + role;
+                                n.setStatus(OK);
+                            }
+                        }
+                    }
                 }
             }
-
-            //System.out.println(vnClass);
-        }
-
-        if (root.relation.matches(Glossary.ARG)) {
-            PredMatrix pred = PredMatrix.getPredMatrix();
-            //System.out.println(root.relation.substring(4));
-            //System.out.println(lemma);
-            String r = "pb:" + root.relation.substring(4);
-            String role;
-            String frame;
-            ArrayList<Line> result = pred.find(lemma, Glossary.lineFields.ID_PRED, Glossary.lineFields.PB_ARG, r);
-            if (result != null && !result.isEmpty()) {
-                role = result.get(0).getLine().get(Glossary.lineFields.VN_ROLE.ordinal()).substring(3);
-                frame = result.get(0).getLine().get(Glossary.lineFields.FN_FRAME_ELEMENT.ordinal()).substring(3);
-                if ((role.equalsIgnoreCase(PIVOT) || (role.equalsIgnoreCase(NULL))) && !frame.equalsIgnoreCase(NULL)) {
-                    root.relation = VN_ROLE + frame;
-                    //System.out.println(frame);
-                    root.setStatus(OK);
-                } else if (!role.equalsIgnoreCase(NULL)) {
-                    root.relation = VN_ROLE + role;
-                    root.setStatus(OK);
-                    //System.out.println(role);
-                }
-            }
-
         }
 
         for (Node n : root.list) {
@@ -526,11 +630,15 @@ public class Parser {
         return root;
     }
 
+    /*
+    Restituisce il numero da associare alla parola data
+    in base al numero di occorrenze avute al momento
+     */
     private int occurrence(String word) {
         int occorrenceNum = 1;
         for (Couple c : this.couples) {
             if (word.equalsIgnoreCase(c.getWord())) {
-                occorrenceNum++;
+                occorrenceNum+=c.getOccurence();
                 c.setOccurence(occorrenceNum);
             }
         }
@@ -540,6 +648,9 @@ public class Parser {
         return occorrenceNum;
     }
 
+    /*
+    Restituisce la lista dei nodi equivalenti a quello dato
+     */
     private ArrayList<Node> getEquals(Node node) {
         ArrayList<Node> equalsList = new ArrayList<>();
         for (Node n : this.nodes) {
@@ -547,58 +658,105 @@ public class Parser {
                 equalsList.add(n);
             }
         }
-
         return equalsList;
     }
 
+    /*
+    Effettua l'aggiornamento della var sui nodi equivalenti a quello dato
+     */
     private void setEquals(Node root) {
         for (Node n : getEquals(root)) {
             n.var = root.var;
         }
     }
 
+    /*
+    Rende una stringa con la prima lettera in maiuscolo e tutte le altre in minuscolo
+     */
     private String firstUpper(String string) {
         string = string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
         return string;
     }
 
-    private Node argOf(Node root) {
-        if (root == null || root.list.isEmpty() || root.getArgOf() == null) {
-
+    /*
+    Effettua il controllo degli inversi (x-of). Richiede al nodo dato se
+    tra i nodi figli c'è un inverso e lo elabora scambiandolo di posto
+    con il nodo dato ed effettuando poi tale controllo ricorsivamente
+     */
+    private Node inverseChecker(Node root) {
+        if (root == null || root.list.isEmpty()) {
             return root;
         }
+        Node scambio;
+        Node n = root.getInverse();
 
-        Node n = root.getArgOf();
-        //System.out.println(n +" ok");
-        root.list.remove(n);
-        String arg = n.relation;
-        n.relation = root.relation;
-        root.relation = arg.substring(0, arg.length() - 3);
-        n.list.add(root);
-        return argOf(n);
+        if (root.getInverse() != null) {
+            if (root.relation.equalsIgnoreCase(TOP)) {
+                root.list.remove(n);
+                String arg = n.relation;
+                n.relation = root.relation;
+                root.relation = arg.substring(0, arg.length() - 3);
+                scambio = root;
+                root = n;
+                n = scambio;
+                root.list.add(n);
+                return inverseChecker(root);
+            } else {
+                
+                Node newNode=root.getCopy(n.relation.substring(0, n.relation.length()-3));
+
+                newNode.list.add(root.getInstance());
+                this.nodes.add(newNode);
+                n.relation=TOP;
+                
+                n.list.add(newNode);       
+            }
+
+        }
+
+        for (Node n1 : root.list) {
+            n1 = inverseChecker(n1);
+        }
+
+        return root; //TODO non elabora correttamente tutti i nodi
     }
 
+    /*
+    Imposta il valore del verbo di riferimento per i nodi figli
+     */
     private void args(Node root) {
         for (Node n : root.list) {
-            if (n.relation.matches(ARG) && n.getType() != VERB) {
+            if (n.relation.matches(AMR_ARG) /*&& n.getType() != VERB*/) {
                 n.setVerb(root.getVerb());
             }
         }
     }
 
-    private Node mod(Node root) {
-        if (root == null || root.list.isEmpty() || root.getChild(AMR_MOD) == null) {
-
-            return root;
+    /*
+    Aggiunge il nodo TOPIC alla root dell'alber se il valore del attributo topic è true
+    Questo avviene se nella frase non ci sono verbi
+     */
+    private Node topic(Node root) {
+        if (topic) {
+            root.list.add(new Node(Glossary.FRED_TOPIC, Glossary.DUL_HAS_QUALITY, OK));
         }
-
-        Node n = root.getChild(AMR_MOD);
-        root.list.remove(n);
-        String arg = n.relation;
-        n.relation = root.relation;
-        root.relation = arg.substring(0, arg.length() - 3);
-        n.list.add(root);
-        return mod(n);
+        return root;
     }
 
+    /*
+    Verifica se la parola in input è un verbo contenuto nella predmatrix
+     */
+    private boolean isVerb(String word) {
+
+        PredMatrix pred = PredMatrix.getPredMatrix();
+        word = word.replace('-', '.');
+        word = "id:" + word;
+        ArrayList<Line> result = pred.find(word, Glossary.LineFields.ID_PRED);
+        if (result != null && !result.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    
 }

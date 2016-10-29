@@ -16,11 +16,6 @@
  */
 package amr2fred;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -33,26 +28,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
+ * Main Class. (Start the GUI)
  *
  * @author anto
  */
 public class Amr2Fred extends Application {
 
-    Stage secondStage = new Stage();
+    /**
+     * Get Predmatrix table singleton instance loaded in memory
+     */
     PredMatrix pred = PredMatrix.getPredMatrix();
-    private int rdfMode=0;
+
+    /**
+     * Jena's writer output mode
+     */
+    private int writerMode = 0;
 
     @Override
     public void start(Stage primaryStage) {
@@ -80,19 +78,24 @@ public class Amr2Fred extends Application {
         Label fredLabel = new Label("Click the button to get AMR to Fred");
         grid.add(fredLabel, 0, 4);
 
-        CheckBox cb = new CheckBox("Remove incorrect nodes & get...");
+        //Controlla se attivare la rimozione degli errori e l'invio dell'output al writer Jena
+        CheckBox cb = new CheckBox("Remove incorrect nodes & get " + Glossary.RDF_MODE[0]);
         grid.add(cb, 4, 3);
-        
-        ChoiceBox chBox = new ChoiceBox(FXCollections.observableArrayList(Glossary.rdfWriteMode.RDF_XML,
-                Glossary.rdfWriteMode.RDF_XML_ABBREV,Glossary.rdfWriteMode.N_TRIPLE,
-                Glossary.rdfWriteMode.TURTLE,Glossary.rdfWriteMode.N3));
-        chBox.getSelectionModel().selectedIndexProperty().addListener(
-                (ObservableValue<? extends Number> ov,Number old_val,Number new_val)->{
-                    this.rdfMode=new_val.intValue();
-                    cb.setText("Remove incorrect nodes & get "+Glossary.rdfMode[new_val.intValue()]);
-                });
+
+        //Controlla il metodo di inserimento dell'elemento object negli statement in Jena
+        CheckBox cb1 = new CheckBox("Statement Objects as Resources");
+        grid.add(cb1, 4, 7);
+
+        //Controlla la scelta del metodo di output del writer Jena. Se variato aggiorna automaticamente il campo writerMode
+        ChoiceBox chBox = new javafx.scene.control.ChoiceBox<>(FXCollections.observableArrayList(Glossary.RdfWriteMode.RDF_XML,
+                Glossary.RdfWriteMode.RDF_XML_ABBREV, Glossary.RdfWriteMode.N_TRIPLES, Glossary.RdfWriteMode.TURTLE));
+        chBox.getSelectionModel().select(0);
+        chBox.getSelectionModel().selectedIndexProperty().addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+            this.writerMode = new_val.intValue();
+            cb.setText("Remove incorrect nodes & get " + Glossary.RDF_MODE[new_val.intValue()]);
+        });
         grid.add(chBox, 4, 4);
-        
+
         Label removedLabel = new Label("AMR tree, Errors & Removed Nodes");
         grid.add(removedLabel, 4, 1);
 
@@ -104,8 +107,6 @@ public class Amr2Fred extends Application {
 
         TextArea removed = new TextArea();
         removed.setEditable(false);
-        //removed.setPrefRowCount(16);
-        removed.setPrefColumnCount(4);
         removed.setText("");
         grid.add(removed, 4, 2);
 
@@ -119,24 +120,47 @@ public class Amr2Fred extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                //cancella il contenuto del riquadro di output
                 fred.setText("");
+
+                /*
+                verifica che il testo in input abbia le caratteristiche minime per essere processato
+                ed avvia il parser, memorizzando in un Node il risultato
+                 */
                 if (amrTextField.getLength() > 3) {
                     String amr = amrTextField.getText();
                     Parser instance = Parser.getInstance();
+                    if (!amr.startsWith("(")) {
+                        amr = "(" + amr + ")";
+                    }
                     Node result = instance.parse(amr);
+
+                    //cancella il contenuto rel riquadro a dx in alto
                     removed.setText("");
 
+                    /*
+                    se il risultato dell'elaborazione del parser non è nullo avvia la visualizzazione dei risultati
+                    a seconda dello stato delle chebox, in particolare se cb è selezionata manderà il risultato dell'elaborazione
+                    del parser al controllo e rimozione degli errori.
+                    Se è selezionata anche cb1 il writer inserirà gli elementi object (terzo elemento delle triple) come resource
+                    e non come literal
+                    Se cb non è selezionata per l'output verrà usato il metodo toString() implementato su Node, che prevede 
+                    un output testuale non standard realizzato ad hoc per evidenziare la struttura dell'albero reso dall'eleborazione
+                     */
                     if (result != null) {
                         if (cb.isSelected()) {
                             result = instance.check(result);
-
                             RdfWriter writer = RdfWriter.getWriter();
-                            writer.setMode(rdfMode);
+                            writer.setMode(writerMode);
+                            writer.setObjectAsResource(cb1.isSelected());
                             fred.setText(writer.writeRdf(result));
                         } else {
                             fred.setText(result.toString());
                         }
 
+                        /*
+                        Quando sono stati rimossi dei nodi dall'albero, sono elencati nel riquadro in alto a destra
+                         */
                         if (!instance.getRemoved().isEmpty()) {
                             String removedNodes = "Removed nodes:\n";
                             for (Node n : instance.getRemoved()) {
@@ -149,6 +173,9 @@ public class Amr2Fred extends Application {
                             removed.setText("AMR tree:\n" + instance.getRootCopy().toString2() + "\n\n" + removed.getText());
                         }
 
+                        /*
+                        Verifica della presenza di errori e generazione di un messagio personalizzato in base al numero degli stessi
+                         */
                         if (result.getTreStatus() == 1) {
                             err.setText("Warning! Something went wrong: one node is not ok!");
                         } else if (result.getTreStatus() > 999999) {
