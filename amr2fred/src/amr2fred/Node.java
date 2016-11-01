@@ -34,13 +34,13 @@ import static amr2fred.Glossary.AMR_INVERSE;
  */
 class Node {
 
-    public static int liv = 0;                  //informazione usata per la gestione dell'indentazione nel metodo toString()
+    static int id;                             //usato per dare ad ogni nodo un identificativo univoco
+    static int liv = 0;                         //informazione usata per la gestione dell'indentazione nel metodo toString()
     String relation;                           //valore ramo   
     String var;                                //valore foglia
     ArrayList<Node> list;                      //nodi collegati
     private NodeStatus status;                  //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
     private NodeType type;                     //usato per distinguere la lavorazione da effettuare su ogni nodo 
-    static int id;                             //usato per dare ad ogni nodo un identificativo univoco
     private int nodeId;                       //memorizza identificativo univoco del nodo
     private String verb;                      //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
 
@@ -124,7 +124,7 @@ class Node {
         newNode.nodeId = node.nodeId;
         return newNode;
     }
-    
+
     public Node getCopy(String relation) {
         Node newNode = new Node(this.var, relation, this.status);
         newNode.list = new ArrayList<>();
@@ -254,16 +254,17 @@ class Node {
 
     /**
      * Restituisce una lista con i sottonodi di tipo :arg
-     * @return 
+     *
+     * @return
      */
     public ArrayList<Node> getArgs() {
-        
+
         ArrayList<Node> argsList = new ArrayList<>();
-        
+
         if (this.type != Glossary.NodeType.VERB) {
             return argsList;
         }
-        
+
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_ARG)) {
                 argsList.add(n);

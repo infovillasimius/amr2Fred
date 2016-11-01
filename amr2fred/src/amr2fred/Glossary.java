@@ -119,6 +119,7 @@ public class Glossary {
      */
     public static final String OWL_NS = org.apache.jena.vocabulary.OWL.getURI();
     public static final String OWL_THING = "owl:Thing";
+    public static final String OWL_EQUIVALENT_CLASS = "owl:equivalentClass";
 
     /**
      * Local name for rdf
@@ -175,6 +176,15 @@ public class Glossary {
     public static final String AMR_PREP_AGAINST = ":prep-against";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
+    public static final String AMR_UNKNOWN="amr-unknown";
+
+    //Stringhe utilizzate durante la traduzione
+    public static final String OF = "of";
+    public static final String FRED_MALE = "male";
+    public static final String FRED_FEMALE = "female";
+    public static final String FRED_NEUTER = "neuter";
+    public static final String FRED_PERSON = "person";
+    public static final String FRED_MULTIPLE = "multiple";
 
     //Stringhe pattern da fare
     public static final String AMR_OP = ":op"; // con root.var=and e n.relation=AMR_OP
@@ -195,6 +205,8 @@ public class Glossary {
     public static final String PB_ARG = "pb-arg";
     public static final String PIVOT = "Pivot";
     public static final String NULL = "Null";
+    public static final String PB="pb:";
+    public static final String ID="id:";
 
     /**
      * Array of Fred elements local names

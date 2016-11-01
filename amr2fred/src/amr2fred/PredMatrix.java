@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Class for in-memory loading of predmatrix table
+ * Class for in-memory load and use of predmatrix table
  *
  * @author anto
  */
@@ -85,9 +85,9 @@ public class PredMatrix {
      * Returns an arraylist of lines matching the requested field with param
      * word, desc sorted by 24_WN_SENSEFREC
      *
-     * @param word
-     * @param field
-     * @return arraylist
+     * @param word value of the searching condition
+     * @param field searching field
+     * @return arraylist of lines matching the conditions
      */
     public ArrayList<Line> find(String word, Glossary.LineFields field) {
         ArrayList<Line> list = new ArrayList<>();
@@ -102,11 +102,11 @@ public class PredMatrix {
      * Returns an arraylist of lines matching the requested fields with param
      * word and param value
      *
-     * @param word
-     * @param field
-     * @param field2
-     * @param value
-     * @return
+     * @param word value of the first searching condition
+     * @param field first searching field
+     * @param field2 second searching field
+     * @param value value of the second searching condition
+     * @return arraylist of lines matching the conditions
      */
     public ArrayList<Line> find(String word, Glossary.LineFields field, Glossary.LineFields field2, String value) {
         ArrayList<Line> list = new ArrayList<>();
@@ -118,50 +118,59 @@ public class PredMatrix {
         return list;
     }
 
-    private static String getPath() {
-        try {
-            String path = PredMatrix.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String decodedPath = URLDecoder.decode(path, "UTF-8");
-            return decodedPath.substring(0, decodedPath.length() - 12);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Amr2Fred.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
-    }
-
+    /**
+     * Returns an arraylist of lines matching the requested fields with all the
+     * implicit roles in the nodes of ArrayList args
+     *
+     * @param list ArrayList of lines
+     * @param args ArrayList of nodes
+     * @return arraylist of lines matching the conditions
+     */
     public ArrayList<Line> find(ArrayList<Line> list, ArrayList<Node> args) {
         ArrayList<Line> result = new ArrayList<>();
         int num = args.size();
         int cfr;
+        //confronta ogni riga della lista fornita con i ruoli impliciti contenuti nella lista di nodi args
         for (Line l : list) {
-
             String vnClass = l.getLine().get(Glossary.LineFields.VN_CLASS_NUMBER.ordinal());
             String vnSubClass = l.getLine().get(Glossary.LineFields.VN_SUBCLASS_NUMBER.ordinal());
             String lemma = "";
-            if (vnSubClass.equalsIgnoreCase("null") && !vnClass.equalsIgnoreCase("null")) {
+            // verifica se la subclass è null e la class non lo è
+            if (vnSubClass.equalsIgnoreCase(Glossary.NULL) && !vnClass.equalsIgnoreCase(Glossary.NULL)) {
                 lemma = vnClass;
-                result = find(list,lemma, Glossary.LineFields.VN_CLASS_NUMBER);
-            } else if (!vnSubClass.equalsIgnoreCase("null")) {
+                //la lista  da confrontare è quella formata dalle righe con la class specificata
+                result = find(list, lemma, Glossary.LineFields.VN_CLASS_NUMBER);
+            } else if (!vnSubClass.equalsIgnoreCase(Glossary.NULL)) {
                 lemma = vnSubClass;
-                result = find(list,lemma, Glossary.LineFields.VN_SUBCLASS_NUMBER);
+                 //la lista  da confrontare è quella formata dalle righe con la subclass specificata
+                result = find(list, lemma, Glossary.LineFields.VN_SUBCLASS_NUMBER);
             }
             cfr = 0;
             for (Node n : args) {
-                String r = "pb:" + n.relation.substring(4);
+                String r = Glossary.PB + n.relation.substring(4);
                 for (Line l1 : result) {
                     if (l1.getLine().get(Glossary.LineFields.PB_ARG.ordinal()).equalsIgnoreCase(r)) {
+                        //se il ruolo del nodo trova corrispondenza la variabile cfr viene incrementata
                         cfr++;
                         break;
                     }
                 }
             }
             if (cfr >= num) {
+                //se tutti i ruoli hanno trovato corrispondenza si restituisce la lista di righe
                 return result;
             }
         }
         return null;
     }
 
+    /**
+     * Returns an arraylist of lines matching the PB_ARG field with param r
+     *
+     * @param list ArrayList of lines
+     * @param r Number of pb: argument
+     * @return arraylist of lines matching the condition
+     */
     public ArrayList<Line> find(ArrayList<Line> list, String r) {
         ArrayList<Line> result = new ArrayList<>();
         for (Line l : list) {
@@ -180,6 +189,17 @@ public class PredMatrix {
             }
         }
         return result;
+    }
+
+    private static String getPath() {
+        try {
+            String path = PredMatrix.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            return decodedPath.substring(0, decodedPath.length() - 12);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Amr2Fred.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
     }
 
 }
