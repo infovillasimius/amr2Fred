@@ -23,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.*;
 
 /**
@@ -34,25 +32,37 @@ import org.apache.jena.rdf.model.*;
  * @author anto
  */
 public class RdfWriter {
+    
+    //Istanza singleton di RdfWriter
+    private static RdfWriter writer;   
+    
+    //Jena model
+    private Model model;                            
+    
+    //Coda per la lettura dell'albero per livelli
+    private LinkedBlockingQueue<Node> list;         
+    
+    //Modo di output
+    private String mode = Glossary.RDF_MODE[Glossary.RdfWriteMode.TURTLE.ordinal()];  
+    
+    //Controllo per inserimento elemento object come stringa o come resource
+    private boolean objectAsResource = false;       
 
-    private static RdfWriter writer;                 //Istanza singleton di RdfWriter
-    private Model model;                            //Jena model
-    private LinkedBlockingQueue<Node> list;         //Coda per la lettura dell'albero per livelli
-    private String mode = "RDF/XML";                //Modo di output
-    private boolean objectAsResource = false;       //Controllo per inserimento elemento object come stringa o come resource
-    private TypeMapper typeMapper;
-
+    
     private RdfWriter() {
 
     }
 
+    /**
+     * Get singleton instance of RdfWriter
+     * @return instance of RdfWriter
+     */
     public static RdfWriter getWriter() {
         if (writer == null) {
             writer = new RdfWriter();
         }
         writer.model = ModelFactory.createDefaultModel();
         writer.list = new LinkedBlockingQueue<>();
-        writer.typeMapper = TypeMapper.getInstance();
         return writer;
     }
 
@@ -61,9 +71,9 @@ public class RdfWriter {
      *
      * @param mode A valid value from Glossary.RDF_MODE
      */
-    public void setMode(int mode) {
-        if (mode >= 0 && mode < Glossary.RDF_MODE_MAX) {
-            this.mode = Glossary.RDF_MODE[mode];
+    public void setMode(Glossary.RdfWriteMode mode) {
+        if (mode.ordinal() >= 0 && mode.ordinal() < Glossary.RDF_MODE_MAX) {
+            this.mode = Glossary.RDF_MODE[mode.ordinal()];
         }
     }
 
@@ -79,7 +89,7 @@ public class RdfWriter {
     }
 
     /**
-     * Traslate nodes from internal format to the chose one
+     * Traslate nodes from internal format to the chosen one
      *
      * @param root Node in internel language
      * @return The tree in the chosen format

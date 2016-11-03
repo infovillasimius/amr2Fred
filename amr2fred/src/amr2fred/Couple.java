@@ -36,8 +36,5 @@ class Couple {
     public String toString() {
         return "\nWord: "+word+" - occurrence: "+occurrence;
     }
-    
-    
-    
-    
+  
 }

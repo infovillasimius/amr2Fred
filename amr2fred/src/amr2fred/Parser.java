@@ -461,7 +461,10 @@ public class Parser {
      */
     private Node listElaboration(Node root) {
         //Elaborazione della lista
-
+        if (root.list.isEmpty()){
+            return root;
+        }
+        
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
             //TODO eliminare magic numbers
@@ -579,6 +582,7 @@ public class Parser {
                 it.remove();
             }
         }
+        
         root.list.addAll(toAdd);
         toAdd.clear();
         return root;

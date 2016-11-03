@@ -152,7 +152,7 @@ public class Amr2Fred extends Application {
                         if (cb.isSelected()) {
                             result = instance.check(result);
                             RdfWriter writer = RdfWriter.getWriter();
-                            writer.setMode(writerMode);
+                            writer.setMode(Glossary.RdfWriteMode.values()[writerMode]);
                             writer.setObjectAsResource(cb1.isSelected());
                             fred.setText(writer.writeRdf(result));
                         } else {
