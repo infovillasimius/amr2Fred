@@ -118,8 +118,9 @@ public class Glossary {
      * Name space for owl
      */
     public static final String OWL_NS = org.apache.jena.vocabulary.OWL.getURI();
-    public static final String OWL_THING = "owl:Thing";
-    public static final String OWL_EQUIVALENT_CLASS = "owl:equivalentClass";
+    public static final String OWL_THING = OWL + "Thing";
+    public static final String OWL_EQUIVALENT_CLASS = OWL + "equivalentClass";
+    public static final String OWL_SAME_AS = OWL + "sameAs";
 
     /**
      * Local name for rdf
@@ -149,7 +150,10 @@ public class Glossary {
      */
     public static final String VN_ROLE = "vn.role:";
     public static final String VN_ROLE_NS = "http://www.ontologydesignpatterns.org/ont/vn/abox/role/vnrole.owl#";
-    public static final String VN_ROLE_LOCATION = VN_ROLE + ":Location";
+    public static final String VN_ROLE_LOCATION = VN_ROLE + "Location";
+    public static final String VN_ROLE_SOURCE = VN_ROLE + "Source";
+    public static final String VN_ROLE_DESTINATION = VN_ROLE + "Destination";
+    public static final String VN_ROLE_BENEFICIARY = "Beneficiary:";
 
     /**
      * Local name for vn.data
@@ -160,6 +164,18 @@ public class Glossary {
     public static final String NN_INTEGER_NS = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
     public static final String NN_INTEGER = "^[0-9]+$";
 
+    public static final String DBR = "dbr:"; //anche "dbpedia:"
+    public static final String DBR_NS = "http://dbpedia.org/resource/";
+
+    public static final String DBO = "dbo:";
+    public static final String DBO_NS = "http://dbpedia.org/ontology/";
+
+    public static final String DBPEDIA = "dbpedia:";
+    public static final String DBPEDIA_NS = "http://dbpedia.org/resource/";
+
+    public static final String SCHEMA_ORG = "schemaorg:";
+    public static final String SCHEMA_ORG_NS = "http://schema.org/";
+
     /**
      * String for AMR elements identification
      */
@@ -168,67 +184,80 @@ public class Glossary {
     //Regex usate dal parser
     public static final String AMR_ARG = ":arg.";
     public static final String AMR_INVERSE = ":+.+-of";
+    public static final String AMR_OP = ":op[0-9]+";
+    public static final String ALL = ".+";
 
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
+    public static final String AMR_MINUS = "-";
     public static final String AMR_MODE = ":mode";
     public static final String AMR_POSS = ":poss";
     public static final String AMR_PREP_AGAINST = ":prep-against";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
-    public static final String AMR_UNKNOWN="amr-unknown";
+    public static final String AMR_UNKNOWN = "amr-unknown";
+    public static final String AMR_MOD = ":mod";
+    public static final String AMR_LOCATION = ":location";
+    public static final String AMR_AND = "and";
+    public static final String AMR_SOURCE = ":source";
+    public static final String AMR_DESTINATION = ":destination";
+    public static final String AMR_DIRECTION = ":direction";
+    public static final String AMR_PATH = ":path";
+    public static final String AMR_MANNER = ":manner";
+    public static final String AMR_WIKI = ":wiki";
+    public static final String AMR_NAME = ":name";
+    public static final String AMR_PURPOSE = ":purpose";
 
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "of";
+    public static final String CITY = "city";
     public static final String FRED_MALE = "male";
     public static final String FRED_FEMALE = "female";
     public static final String FRED_NEUTER = "neuter";
     public static final String FRED_PERSON = "person";
     public static final String FRED_MULTIPLE = "multiple";
 
-    //Stringhe pattern da fare
-    public static final String AMR_OP = ":op"; // con root.var=and e n.relation=AMR_OP
-    public static final String AMR_LOCATION = ":location";
-    public static final String AMR_MOD = ":mod";
+    //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
+
+    public static final String AMR_IMPERATIVE = "imperative";
+    public static final String AMR_EXPRESSIVE = "expressive";
+    public static final String AMR_INTERROGATIVE = "interrogative";
 
     //Stringhe usate per il riconoscimento dal parser
     public static final String PERSON = " I i you You YOU we We WE they They THEY ";
     public static final String MALE = " he He HE ";
     public static final String FEMALE = " she She SHE ";
-    public static final String THING = " It it IT ";
+    public static final String THING = " It it IT that those this these ";
     public static final String DEMONSTRATIVES = " that those this these ";
 
     //Stringhe usate per la gestione del file predmatrix.txt
-    public static final String PB_ROLESET = "pb-roleset";
-    public static final String VN_CLASS = "vn-class";
-    public static final String PB_ARG = "pb-arg";
     public static final String PIVOT = "Pivot";
     public static final String NULL = "Null";
-    public static final String PB="pb:";
-    public static final String ID="id:";
+    public static final String PB = "pb:";
+    public static final String ID = "id:";
 
     /**
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
-        RDF, RDFS, OWL, VN_DATA};
+        RDF, RDFS, OWL, VN_DATA, DBPEDIA};
 
     /**
      * Array of fred elements name space
      */
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
-        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS};
+        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 10;
+    public static final int PREFIX_NUM = 11;
 
     /**
      * Jena's writers output modes
      */
-    public static final String[] RDF_MODE = {"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLES", "TURTLE"};
+    public static final String RDF_MODE[] = {"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLES", "TURTLE"};
 
     /**
      * Number of Jena's writers output modes
@@ -236,16 +265,21 @@ public class Glossary {
     public static final int RDF_MODE_MAX = 4;
 
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_DOMAIN, AMR_POLARITY, AMR_MODE, AMR_POSS,
-        AMR_PREP_AGAINST, AMR_QUANT, AMR_TOPIC, AMR_LOCATION};
+        AMR_PREP_AGAINST, AMR_QUANT, AMR_TOPIC, AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
+        AMR_PATH, AMR_MANNER, AMR_PURPOSE};
 
-    public static final String AMR_VARS[] = {".", "", "-", "", "", ".", "", ".", "."};
+    public static final String AMR_VARS[] = {ALL, "", AMR_MINUS, "", "", ALL, "", ALL, ALL, ALL, ALL, ALL,
+        ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, "", BOXING_HAS_THRUTH_VALUE, "", "",
-        FRED + "against", "", FRED_ABOUT, VN_ROLE_LOCATION};
+        FRED + "against", "", FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
+        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY};
 
-    public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", ""};
+    public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", "", "", "", "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 9;
+    public static final int PATTERNS_NUMBER = 15;
+
+    public static final String QUOTE = "\"";
 
     /**
      * Node types in AMR

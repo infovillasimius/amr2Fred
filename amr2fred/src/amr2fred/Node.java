@@ -27,22 +27,37 @@ import java.util.Objects;
 import static amr2fred.Glossary.AMR_INVERSE;
 
 /**
- * Contiene le informazioni relative al ramo (relation) ed alla foglia (var) dei
- * nodi dell'albero amr
- *
+ * Basic object for the data structure. 
  * @author anto
  */
-class Node {
-
-    static int id;                             //usato per dare ad ogni nodo un identificativo univoco
-    static int liv = 0;                         //informazione usata per la gestione dell'indentazione nel metodo toString()
-    String relation;                           //valore ramo   
-    String var;                                //valore foglia
-    ArrayList<Node> list;                      //nodi collegati
-    private NodeStatus status;                  //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
-    private NodeType type;                     //usato per distinguere la lavorazione da effettuare su ogni nodo 
-    private int nodeId;                       //memorizza identificativo univoco del nodo
-    private String verb;                      //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
+public class Node {
+    
+    //usato per dare ad ogni nodo un identificativo univoco
+    static int id;                             
+    
+    //informazione usata per la gestione dell'indentazione nel metodo toString()
+    static int liv = 0; 
+    
+    //valore ramo
+    String relation;
+    
+    //valore foglia
+    String var; 
+    
+    //nodi collegati
+    ArrayList<Node> list;
+    
+    //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
+    private NodeStatus status;                  
+    
+    //usato per distinguere la lavorazione da effettuare su ogni nodo 
+    private NodeType type; 
+    
+    //memorizza identificativo univoco del nodo
+    private int nodeId; 
+    
+    //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
+    private String verb;                      
 
     public Node(String var, String relation) {
         this.var = var;
@@ -76,7 +91,7 @@ class Node {
         } else {
             stringa = "{" + var + " -> ";
         }
-        //System.out.println(relation+" "+var+nodeId);
+        
         if (!list.isEmpty()) {
             Node.liv++;
 
@@ -118,21 +133,21 @@ class Node {
         return true;
     }
 
-    public Node getCopy(Node node, String relation) {
+    Node getCopy(Node node, String relation) {
         Node newNode = new Node(node.var, relation, node.status);
         newNode.list = node.list;
         newNode.nodeId = node.nodeId;
         return newNode;
     }
 
-    public Node getCopy(String relation) {
+    Node getCopy(String relation) {
         Node newNode = new Node(this.var, relation, this.status);
         newNode.list = new ArrayList<>();
         newNode.nodeId = this.nodeId;
         return newNode;
     }
 
-    public Node getCopy() {
+    Node getCopy() {
         if (Parser.endless > ENDLESS) {
             return null;
         }
@@ -146,9 +161,9 @@ class Node {
         return newNode;
     }
 
-    public Node getInstance() {
+    Node getInstance() {
         for (Node n : this.list) {
-            if (n.relation.equalsIgnoreCase("instance")) {
+            if (n.relation.equalsIgnoreCase(Glossary.INSTANCE)) {
                 return n;
             }
         }
@@ -156,7 +171,7 @@ class Node {
         return null;
     }
 
-    public Node getChild(String relation) {
+    Node getChild(String relation) {
         for (Node n : this.list) {
             if (n.relation.equalsIgnoreCase(relation)) {
                 return n;
@@ -165,7 +180,7 @@ class Node {
         return null;
     }
 
-    public Node getInverse() {
+    Node getInverse() {
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE)) {
                 return n;
@@ -183,15 +198,15 @@ class Node {
         return spaces;
     }
 
-    public NodeStatus getStatus() {
+    NodeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(NodeStatus status) {
+    void setStatus(NodeStatus status) {
         this.status = status;
     }
 
-    public int getTreStatus() {
+    int getTreStatus() {
         if (Parser.endless > ENDLESS) {
             return 1000000;
         }
@@ -202,15 +217,15 @@ class Node {
         return somma;
     }
 
-    public NodeType getType() {
+    NodeType getType() {
         return type;
     }
 
-    public void setType(NodeType type) {
+    void setType(NodeType type) {
         this.type = type;
     }
 
-    public String toString2() {
+    String toString2() {
         if (Parser.endless > ENDLESS) {
             return RECURSIVE_ERROR;
         }
@@ -244,11 +259,11 @@ class Node {
         return string;
     }
 
-    public String getVerb() {
+    String getVerb() {
         return verb;
     }
 
-    public void setVerb(String verb) {
+    void setVerb(String verb) {
         this.verb = verb;
     }
 
@@ -257,7 +272,7 @@ class Node {
      *
      * @return
      */
-    public ArrayList<Node> getArgs() {
+    ArrayList<Node> getArgs() {
 
         ArrayList<Node> argsList = new ArrayList<>();
 
@@ -267,6 +282,24 @@ class Node {
 
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_ARG)) {
+                argsList.add(n);
+            }
+        }
+        return argsList;
+    }
+    
+    
+    /**
+     * Restituisce una lista con i sottonodi di tipo :op
+     *
+     * @return
+     */
+    ArrayList<Node> getOps() {
+
+        ArrayList<Node> argsList = new ArrayList<>();
+
+        for (Node n : list) {
+            if (n.relation.matches(Glossary.AMR_OP)) {
                 argsList.add(n);
             }
         }
