@@ -153,7 +153,8 @@ public class Glossary {
     public static final String VN_ROLE_LOCATION = VN_ROLE + "Location";
     public static final String VN_ROLE_SOURCE = VN_ROLE + "Source";
     public static final String VN_ROLE_DESTINATION = VN_ROLE + "Destination";
-    public static final String VN_ROLE_BENEFICIARY = "Beneficiary:";
+    public static final String VN_ROLE_BENEFICIARY = VN_ROLE + "Beneficiary";
+    public static final String VN_ROLE_TIME = VN_ROLE + "Time";
 
     /**
      * Local name for vn.data
@@ -208,6 +209,28 @@ public class Glossary {
     public static final String AMR_NAME = ":name";
     public static final String AMR_PURPOSE = ":purpose";
 
+    public static final String AMR_ACCOMPANIER = ":accompanier";
+    public static final String AMR_AGE = ":age";
+    public static final String AMR_BENEFICIARY = ":beneficiary";
+    public static final String AMR_COMPARED_TO = ":compared-to";
+    public static final String AMR_CONCESSION = ":concession";
+    public static final String AMR_CONDITION = ":condition";
+    public static final String AMR_CONSIST_OF = ":consist-of";
+    public static final String AMR_DEGREE = ":degree";
+    public static final String AMR_DURATION = ":duration";
+    public static final String AMR_EXAMPLE = ":example";
+    public static final String AMR_EXTENT = ":extent";
+    public static final String AMR_FREQUENCY = ":frequency";
+    public static final String AMR_INSTRUMENT = ":instrument";
+    public static final String AMR_MEDIUM = ":medium";
+    public static final String AMR_ORD = ":ord";
+    public static final String AMR_PART = ":part";
+    public static final String AMR_SCALE = ":scale";
+    public static final String AMR_SUB_EVENT = ":subevent";
+    public static final String AMR_TIME = ":time";
+    public static final String AMR_UNIT = ":unit";
+    public static final String AMR_VALUE = ":value";
+
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "of";
     public static final String CITY = "city";
@@ -241,18 +264,18 @@ public class Glossary {
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
-        RDF, RDFS, OWL, VN_DATA, DBPEDIA};
+        RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG};
 
     /**
      * Array of fred elements name space
      */
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
-        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS};
+        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS, SCHEMA_ORG_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 11;
+    public static final int PREFIX_NUM = 12;
 
     /**
      * Jena's writers output modes
@@ -266,18 +289,19 @@ public class Glossary {
 
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_DOMAIN, AMR_POLARITY, AMR_MODE, AMR_POSS,
         AMR_PREP_AGAINST, AMR_QUANT, AMR_TOPIC, AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
-        AMR_PATH, AMR_MANNER, AMR_PURPOSE};
+        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME};
 
     public static final String AMR_VARS[] = {ALL, "", AMR_MINUS, "", "", ALL, "", ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, "", BOXING_HAS_THRUTH_VALUE, "", "",
         FRED + "against", "", FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
-        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY};
+        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED + "with", VN_ROLE_BENEFICIARY, VN_ROLE_TIME};
 
-    public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", "", "", "", "", "", "", ""};
+    public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", "", "", "", "", "", "", "",
+        "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 15;
+    public static final int PATTERNS_NUMBER = 18;
 
     public static final String QUOTE = "\"";
 

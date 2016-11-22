@@ -511,14 +511,14 @@ public class Parser {
                     for (Node n1 : l) {
                         name += "_" + n1.var;
                     }
-                    name = name.substring(1);
+                    name = FRED+name.substring(1);
                     root.var = name;
                     if (root.getInstance() != null) {
-                        root.getInstance().var = firstUpper(root.getInstance().var);
+                        root.getInstance().var = FRED+firstUpper(root.getInstance().var);
                         root.getInstance().setStatus(OK);
                         root.getInstance().relation = Glossary.RDF_TYPE;
                     }
-                    System.out.println(name);
+                    //System.out.println(name);
                 }
                 n.setStatus(REMOVE);
 
