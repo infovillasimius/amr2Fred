@@ -478,8 +478,8 @@ public class Parser {
                 topic = false;
             }
 
-            // caso "and" seguito da :op
-            if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_AND)) {
+            // casi "and" ed "or" seguito da :op
+            if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND) || n.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
                 for (Node n1 : n.getOps()) {
                     n1.relation = n.relation;
                     this.toAdd.add(n1);
@@ -511,18 +511,36 @@ public class Parser {
                     for (Node n1 : l) {
                         name += "_" + n1.var;
                     }
-                    name = FRED+name.substring(1);
+                    name = FRED + name.substring(1);
                     root.var = name;
                     if (root.getInstance() != null) {
-                        root.getInstance().var = FRED+firstUpper(root.getInstance().var);
+                        root.getInstance().var = FRED + firstUpper(root.getInstance().var);
                         root.getInstance().setStatus(OK);
                         root.getInstance().relation = Glossary.RDF_TYPE;
+                        root.setStatus(OK);
                     }
                     //System.out.println(name);
                 }
                 n.setStatus(REMOVE);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI)) {
+            } 
+            
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI) && root.getInstance() != null) {
+
+                //caso :wiki + schemaorg su nodo wiki
+                //TODO da implementare verifica sul sito dell'esistenza della parola
+                n.list.add(new Node(Glossary.SCHEMA_ORG + firstUpper(root.getInstance().var), Glossary.RDF_TYPE, OK));
+
+            } else if (n.getInstance() != null && n.getChild(Glossary.AMR_WIKI) != null) {
+
+                //caso :wiki + schemaorg su nodo root
+                //TODO da implementare verifica sul sito dell'esistenza della parola
+                n.getChild(Glossary.AMR_WIKI).list
+                        .add(new Node(Glossary.SCHEMA_ORG + firstUpper(n.getInstance().var), Glossary.RDF_TYPE, OK));
+                
+            }
+
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI)) {
 
                 //caso :wiki
                 if (!n.var.equalsIgnoreCase(Glossary.AMR_MINUS)) {
@@ -531,14 +549,6 @@ public class Parser {
                     n.setStatus(OK);
                 } else {
                     n.setStatus(REMOVE);
-                }
-
-            } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.CITY) && n.getChild(Glossary.AMR_WIKI) != null) {
-
-                n.getChild(Glossary.AMR_WIKI).list
-                        .add(new Node(Glossary.SCHEMA_ORG + firstUpper(Glossary.CITY), Glossary.RDF_TYPE, OK));
-                if (n.getChild(Glossary.AMR_NAME) != null) {
-
                 }
 
             } else if (Glossary.MALE.contains(" " + n.var + " ")) {
@@ -598,7 +608,19 @@ public class Parser {
                 n.list.remove(n.getInstance());
                 n.setStatus(OK);
 
-            }  {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance()!=null){
+                String age=n.var;
+                n.relation=TOP;
+                n.var="a";
+                n.list.add(new Node("age-01",Glossary.INSTANCE));
+                Node n1=root.getCopy(":arg1");
+                this.nodes.add(n1);
+                n.list.add(n1);
+                n.list.add(new Node(age,":arg2"));
+                n=listElaboration(n);
+            }
+            
+            {
                 //System.out.println(n.relation+ " "+n.var);
                 /*
                 procedimento per sostituzione mediante Glossary quando non occorre

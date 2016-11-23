@@ -155,6 +155,7 @@ public class Glossary {
     public static final String VN_ROLE_DESTINATION = VN_ROLE + "Destination";
     public static final String VN_ROLE_BENEFICIARY = VN_ROLE + "Beneficiary";
     public static final String VN_ROLE_TIME = VN_ROLE + "Time";
+    public static final String VN_ROLE_INSTRUMENT = VN_ROLE + "Instrument";
 
     /**
      * Local name for vn.data
@@ -199,7 +200,6 @@ public class Glossary {
     public static final String AMR_UNKNOWN = "amr-unknown";
     public static final String AMR_MOD = ":mod";
     public static final String AMR_LOCATION = ":location";
-    public static final String AMR_AND = "and";
     public static final String AMR_SOURCE = ":source";
     public static final String AMR_DESTINATION = ":destination";
     public static final String AMR_DIRECTION = ":direction";
@@ -253,6 +253,8 @@ public class Glossary {
     public static final String FEMALE = " she She SHE ";
     public static final String THING = " It it IT that those this these ";
     public static final String DEMONSTRATIVES = " that those this these ";
+    public static final String AND = "and";
+    public static final String OR ="or";
 
     //Stringhe usate per la gestione del file predmatrix.txt
     public static final String PIVOT = "Pivot";
@@ -289,21 +291,23 @@ public class Glossary {
 
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_DOMAIN, AMR_POLARITY, AMR_MODE, AMR_POSS,
         AMR_PREP_AGAINST, AMR_QUANT, AMR_TOPIC, AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
-        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME};
+        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT};
 
     public static final String AMR_VARS[] = {ALL, "", AMR_MINUS, "", "", ALL, "", ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, "", BOXING_HAS_THRUTH_VALUE, "", "",
         FRED + "against", "", FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
-        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED + "with", VN_ROLE_BENEFICIARY, VN_ROLE_TIME};
+        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED + "with", VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
+        VN_ROLE_INSTRUMENT};
 
     public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", "", "", "", "", "", "", "",
-        "", "", ""};
+        "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 18;
+    public static final int PATTERNS_NUMBER = 19;
 
     public static final String QUOTE = "\"";
+    
 
     /**
      * Node types in AMR
