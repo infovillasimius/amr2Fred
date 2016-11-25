@@ -402,7 +402,7 @@ public class Parser {
 
         if (instance != null) {
 
-            if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches("-[0-9]+$")) {
+            if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)) {
                 if (this.isVerb(instance.var)) {
                     root.setType(VERB);
                     topic = false;
@@ -471,6 +471,8 @@ public class Parser {
             return root;
         }
 
+        root = this.rootElaboration(root);
+
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
 
@@ -523,8 +525,8 @@ public class Parser {
                 }
                 n.setStatus(REMOVE);
 
-            } 
-            
+            }
+
             if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI) && root.getInstance() != null) {
 
                 //caso :wiki + schemaorg su nodo wiki
@@ -537,7 +539,7 @@ public class Parser {
                 //TODO da implementare verifica sul sito dell'esistenza della parola
                 n.getChild(Glossary.AMR_WIKI).list
                         .add(new Node(Glossary.SCHEMA_ORG + firstUpper(n.getInstance().var), Glossary.RDF_TYPE, OK));
-                
+
             }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI)) {
@@ -600,7 +602,8 @@ public class Parser {
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null 
+                    && !isVerb(n.getInstance().var)) {
 
                 //caso :mod
                 n.relation = Glossary.DUL_HAS_QUALITY;
@@ -608,18 +611,26 @@ public class Parser {
                 n.list.remove(n.getInstance());
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance()!=null){
-                String age=n.var;
-                n.relation=TOP;
-                n.var="a";
-                n.list.add(new Node("age-01",Glossary.INSTANCE));
-                Node n1=root.getCopy(":arg1");
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null) {
+
+                //caso :age
+                String age = n.var;
+                n.relation = TOP;
+                n.var = "a";
+                n.list.add(new Node("age-01", Glossary.INSTANCE));
+                Node n1 = root.getCopy(":arg1");
                 this.nodes.add(n1);
                 n.list.add(n1);
-                n.list.add(new Node(age,":arg2"));
-                n=listElaboration(n);
+                n.list.add(new Node(age, ":arg2"));
+                n = listElaboration(n);
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
+                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null) {
+
+                //caso :degree e :time con instance
+                n.var = n.getInstance().var;
+                n.list.remove(n.getInstance());
             }
-            
+
             {
                 //System.out.println(n.relation+ " "+n.var);
                 /*
@@ -868,6 +879,9 @@ public class Parser {
         return result != null && !result.isEmpty();
     }
 
+    /*
+    Effettua le elaborazioni necessarie per l'eliminazioni delle istanze dei nodi non verbo
+     */
     private Node otherInstanceElaboration(Node root) {
         Node instance = root.getInstance();
         if (instance == null) {
@@ -889,6 +903,83 @@ public class Parser {
                 n.var = nVar;
             }
         }
+        return root;
+    }
+
+    /*
+    Effettua le elaborazioni necessarie sul nodo root prima dell'elaborazione della lista dei figli
+     */
+    private Node rootElaboration(Node root) {
+        //System.out.println(root.relation + " " + root.var);
+
+        Node instance = root.getInstance();
+
+        if (instance == null) {
+            return root;
+        }
+        {
+            Node arg = root.getChild(Glossary.AMR_MOD);
+            
+            if (arg != null && arg.getChild(Glossary.AMR_DEGREE) != null 
+                    && arg.getChild(Glossary.AMR_COMPARED_TO) != null && arg.getInstance()!=null) {
+
+                instance.var = arg.getInstance().var + firstUpper(instance.var);
+                arg.list.remove(arg.getInstance());
+                root.list.remove(arg);
+                root.list.addAll(arg.list);          
+            }
+        }
+
+        if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)
+                && !isVerb(instance.var) && root.getArgs().size() == 1) {
+
+            topic = false;
+            Node arg = root.getArgs().get(0);
+            root.list.remove(arg);
+
+            if (root.getChild(Glossary.AMR_DEGREE) != null && root.getChild(Glossary.AMR_DEGREE).getInstance() != null) {
+                System.out.println(root.getChild(Glossary.AMR_DEGREE).getInstance().var);
+                instance.var = root.getChild(Glossary.AMR_DEGREE).getInstance().var + firstUpper(instance.var);
+                root.list.remove(root.getChild(Glossary.AMR_DEGREE));
+
+            }
+
+            String parentVar = instance.var.substring(0, instance.var.length() - 3);
+            if (arg.getInstance() != null) {
+                instance.var = arg.getInstance().var;
+                arg.list.remove(arg.getInstance());
+            }
+            arg.relation = Glossary.DUL_HAS_QUALITY;
+            arg.var = parentVar;
+            root.list.addAll(arg.list);
+            arg.list.clear();
+            root.list.add(arg);
+            arg.setStatus(OK);
+
+        } else if (root.getChild(Glossary.AMR_DOMAIN) != null && root.getChild(Glossary.AMR_COMPARED_TO) != null
+                && root.getChild(Glossary.AMR_DEGREE) != null) {
+
+            topic = false;
+            Node arg = root.getChild(Glossary.AMR_DOMAIN);
+            root.list.remove(arg);
+
+            if (root.getChild(Glossary.AMR_DEGREE) != null && root.getChild(Glossary.AMR_DEGREE).getInstance() != null) {
+                System.out.println(root.getChild(Glossary.AMR_DEGREE).getInstance().var);
+                instance.var = root.getChild(Glossary.AMR_DEGREE).getInstance().var + firstUpper(instance.var);
+                root.list.remove(root.getChild(Glossary.AMR_DEGREE));
+
+            }
+
+            String parentVar = instance.var;
+            if (arg.getInstance() != null) {
+                instance.var = arg.getInstance().var;
+                arg.list.remove(arg.getInstance());
+            }
+            arg.relation = Glossary.DUL_HAS_QUALITY;
+            root.getChild(Glossary.AMR_COMPARED_TO).relation = parentVar;
+            root.list.addAll(arg.list);
+        }
+
         return root;
     }
 

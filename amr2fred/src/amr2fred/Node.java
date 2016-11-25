@@ -276,9 +276,9 @@ public class Node {
 
         ArrayList<Node> argsList = new ArrayList<>();
 
-        if (this.type != Glossary.NodeType.VERB) {
-            return argsList;
-        }
+        /*if (this.type != Glossary.NodeType.VERB) {
+        return argsList;
+        }*/
 
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_ARG)) {
