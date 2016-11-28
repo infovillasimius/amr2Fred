@@ -488,16 +488,6 @@ public class Parser {
                 }
                 n.setStatus(REMOVE);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE)
-                    //Rimozione casi non supportati da Fred
-                    && (n.var.equalsIgnoreCase(Glossary.AMR_IMPERATIVE)
-                    || n.var.equalsIgnoreCase(Glossary.AMR_EXPRESSIVE))
-                    || n.var.equalsIgnoreCase(Glossary.AMR_INTERROGATIVE)) {
-                n.setStatus(REMOVE);
-
-            } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_UNKNOWN)) {
-                n.setStatus(REMOVE);
-
             } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
 
                 //casi speciali con pronomi personali e aggettivi dimostrativi
@@ -552,6 +542,16 @@ public class Parser {
                 } else {
                     n.setStatus(REMOVE);
                 }
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MODE)
+                    //Rimozione casi non supportati da Fred
+                    && (n.var.equalsIgnoreCase(Glossary.AMR_IMPERATIVE)
+                    || n.var.equalsIgnoreCase(Glossary.AMR_EXPRESSIVE))
+                    || n.var.equalsIgnoreCase(Glossary.AMR_INTERROGATIVE)) {
+                n.setStatus(REMOVE);
+
+            } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_UNKNOWN)) {
+                n.setStatus(REMOVE);
 
             } else if (Glossary.MALE.contains(" " + n.var + " ")) {
 
@@ -631,7 +631,7 @@ public class Parser {
                 n.list.remove(n.getInstance());
             }
 
-            {
+            if(n.getStatus()!=REMOVE){
                 //System.out.println(n.relation+ " "+n.var);
                 /*
                 procedimento per sostituzione mediante Glossary quando non occorre
