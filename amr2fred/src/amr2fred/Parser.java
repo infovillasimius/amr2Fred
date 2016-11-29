@@ -623,8 +623,10 @@ public class Parser {
                 n.list.add(n1);
                 n.list.add(new Node(age, ":arg2"));
                 n = listElaboration(n);
+                
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
-                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null) {
+                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null 
+                    && !isVerb(n.getInstance().var)) {
 
                 //caso :degree e :time con instance
                 n.var = n.getInstance().var;
