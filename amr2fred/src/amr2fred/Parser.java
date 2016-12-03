@@ -28,7 +28,6 @@ import static amr2fred.Glossary.NodeStatus.REMOVE;
 import static amr2fred.Glossary.NodeType.VERB;
 import java.util.ArrayList;
 import java.util.Iterator;
-import static amr2fred.Glossary.AMR_MOD;
 import static amr2fred.Glossary.AMR_ARG;
 
 /**
@@ -467,14 +466,18 @@ public class Parser {
      */
     private Node listElaboration(Node root) {
 
-        root = modality(root);
-
         //Elaborazione della lista
         if (root.list.isEmpty()) {
             return root;
         }
 
+        root = modality(root);
+
         root = this.rootElaboration(root);
+
+        if (root.list.isEmpty()) {
+            return root;
+        }
 
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
@@ -482,15 +485,15 @@ public class Parser {
             if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
                 topic = false;
             }
-
-            // casi "and" ed "or" seguito da :op
+            
+            // casi "and" ed "or" seguito da :op in lista
             if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND) || n.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
-                for (Node n1 : n.getOps()) {
-                    n1.relation = n.relation;
-                    this.toAdd.add(n1);
-                }
-                n.setStatus(REMOVE);
-
+            for (Node n1 : n.getOps()) {
+            n1.relation = n.relation;
+            this.toAdd.add(n1);
+            }
+            n.setStatus(REMOVE);
+            
             } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
 
                 //casi speciali con pronomi personali e aggettivi dimostrativi
@@ -514,7 +517,7 @@ public class Parser {
                         root.getInstance().relation = Glossary.RDF_TYPE;
                         root.setStatus(OK);
                     }
-                    //System.out.println(name);
+
                 }
                 n.setStatus(REMOVE);
 
@@ -582,6 +585,7 @@ public class Parser {
 
                 // caso :poss
                 n.relation = FRED + root.getInstance().var.replaceAll(FRED, "") + Glossary.OF;
+                n.setStatus(OK);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_MOD) || n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN))
                     && n.getInstance() != null && Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
@@ -934,6 +938,28 @@ public class Parser {
         if (instance == null) {
             return root;
         }
+
+        if (root.relation.equalsIgnoreCase(TOP) && root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND) 
+                || root.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
+
+            // casi "and" e "or" seguiti da :opx
+            ArrayList<Node> ops = root.getOps();
+            Node oldRoot = root;
+            Node ops1 = ops.get(0);
+            oldRoot.list.remove(ops1);
+            root = ops1;
+            root.relation = oldRoot.relation;
+            ops.remove(ops1);
+
+            for (Node n1 : ops) {
+                n1.relation = root.relation;
+                root.list.add(n1);
+            }
+            //instance = root.getInstance();
+            return root;
+
+        }
+
         {
             Node arg = root.getChild(Glossary.AMR_MOD);
 
@@ -995,6 +1021,7 @@ public class Parser {
             arg.relation = Glossary.DUL_HAS_QUALITY;
             root.getChild(Glossary.AMR_COMPARED_TO).relation = parentVar;
             root.list.addAll(arg.list);
+
         }
 
         return root;
