@@ -156,6 +156,7 @@ public class Glossary {
     public static final String VN_ROLE_BENEFICIARY = VN_ROLE + "Beneficiary";
     public static final String VN_ROLE_TIME = VN_ROLE + "Time";
     public static final String VN_ROLE_INSTRUMENT = VN_ROLE + "Instrument";
+    public static final String VN_ROLE_CAUSE = VN_ROLE + "Cause";
 
     /**
      * Local name for vn.data
@@ -195,7 +196,8 @@ public class Glossary {
     public static final String AMR_MINUS = "-";
     public static final String AMR_MODE = ":mode";
     public static final String AMR_POSS = ":poss";
-    public static final String AMR_PREP_AGAINST = ":prep-against";
+    public static final String AMR_ARG1 = ":arg1";
+    public static final String AMR_ARG2 = ":arg2";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
     public static final String AMR_UNKNOWN = "amr-unknown";
@@ -213,6 +215,7 @@ public class Glossary {
     public static final String AMR_ACCOMPANIER = ":accompanier";
     public static final String AMR_AGE = ":age";
     public static final String AMR_BENEFICIARY = ":beneficiary";
+    public static final String AMR_CAUSE = ":cause";
     public static final String AMR_COMPARED_TO = ":compared-to";
     public static final String AMR_CONCESSION = ":concession";
     public static final String AMR_CONDITION = ":condition";
@@ -232,6 +235,8 @@ public class Glossary {
     public static final String AMR_UNIT = ":unit";
     public static final String AMR_VALUE = ":value";
 
+    public static final String AMR_PREP_AGAINST = ":prep-against";
+
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "Of";
     public static final String CITY = "city";
@@ -240,6 +245,8 @@ public class Glossary {
     public static final String FRED_NEUTER = "neuter";
     public static final String FRED_PERSON = "person";
     public static final String FRED_MULTIPLE = "multiple";
+    public static final String FRED_FOR = FRED + "for";
+    public static final String FRED_WITH = FRED + "with";
 
     //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
@@ -292,20 +299,21 @@ public class Glossary {
 
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_DOMAIN, AMR_POLARITY, AMR_MODE, AMR_POSS,
         AMR_PREP_AGAINST, AMR_QUANT, AMR_TOPIC, AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
-        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT, AMR_DEGREE};
+        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT,
+        AMR_DEGREE, AMR_DURATION, AMR_CAUSE};
 
     public static final String AMR_VARS[] = {ALL, "", AMR_MINUS, "", "", ALL, "", ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, "", BOXING_HAS_THRUTH_VALUE, "", "",
         FRED + "against", "", FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
-        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED + "with", VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
-        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY};
+        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
+        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE};
 
     public static final String FRED_VARS[] = {"", "", BOXING_FALSE, "", "", "", "", "", "", "", "", "", "", "", "",
-        "", "", "", "", ""};
+        "", "", "", "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 20;
+    public static final int PATTERNS_NUMBER = 22;
 
     public static final String QUOTE = "\"";
 

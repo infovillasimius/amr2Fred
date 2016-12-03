@@ -348,7 +348,7 @@ public class Parser {
         String lemma = instance.var.substring(0, instance.var.length() - 3);
 
         if (lemma.equalsIgnoreCase("likely") || lemma.equalsIgnoreCase("recommend")) {
-            Node arg1 = root.getChild(":arg1");
+            Node arg1 = root.getChild(Glossary.AMR_ARG1);
             if (arg1 != null) {
                 root.var = arg1.var;
                 root.list.add(new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK));
@@ -360,7 +360,7 @@ public class Parser {
 
             }
         } else if (lemma.equalsIgnoreCase("obligate")) {
-            Node arg2 = root.getChild(":arg2");
+            Node arg2 = root.getChild(Glossary.AMR_ARG2);
             if (arg2 != null) {
                 root.var = arg2.var;
                 root.list.add(new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK));
@@ -371,7 +371,7 @@ public class Parser {
                 root.setStatus(OK);
             }
         } else if (lemma.equalsIgnoreCase("possible") || lemma.equalsIgnoreCase("permit")) {
-            Node arg1 = root.getChild(":arg1");
+            Node arg1 = root.getChild(Glossary.AMR_ARG1);
             if (arg1 != null) {
                 root.var = arg1.var;
                 root.list.add(new Node(Glossary.BOXING_POSSIBLE, Glossary.BOXING_HAS_MODALITY, OK));
@@ -466,6 +466,9 @@ public class Parser {
     Elabora la Node list del nodo
      */
     private Node listElaboration(Node root) {
+
+        root = modality(root);
+
         //Elaborazione della lista
         if (root.list.isEmpty()) {
             return root;
@@ -517,7 +520,8 @@ public class Parser {
 
             }
 
-            if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI) && root.getInstance() != null) {
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI) && root.getInstance() != null
+                    && n.getChild(Glossary.RDF_TYPE) == null) {
 
                 //caso :wiki + schemaorg su nodo wiki
                 //TODO da implementare verifica sul sito dell'esistenza della parola
@@ -527,9 +531,10 @@ public class Parser {
 
                 //caso :wiki + schemaorg su nodo root
                 //TODO da implementare verifica sul sito dell'esistenza della parola
-                n.getChild(Glossary.AMR_WIKI).list
-                        .add(new Node(Glossary.SCHEMA_ORG + firstUpper(n.getInstance().var), Glossary.RDF_TYPE, OK));
-
+                if (n.getChild(Glossary.AMR_WIKI).getChild(Glossary.RDF_TYPE) == null) {
+                    n.getChild(Glossary.AMR_WIKI).list
+                            .add(new Node(Glossary.SCHEMA_ORG + firstUpper(n.getInstance().var), Glossary.RDF_TYPE, OK));
+                }
             }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI)) {
@@ -602,7 +607,7 @@ public class Parser {
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null 
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
 
                 //caso :mod
@@ -623,18 +628,29 @@ public class Parser {
                 n.list.add(n1);
                 n.list.add(new Node(age, ":arg2"));
                 n = listElaboration(n);
-                
+
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
-                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null 
+                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
 
-                //caso :degree e :time con instance
+                //casi :degree :time con instance
                 n.var = n.getInstance().var;
                 n.list.remove(n.getInstance());
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null
+                    && !isVerb(n.getInstance().var)) {
+                //caso :manner con forma verbale
+                if (n.getInstance().var.substring(n.getInstance().var.length() - 3).matches(Glossary.AMR_VERB) && n.relation.equalsIgnoreCase(Glossary.AMR_MANNER)) {
+                    n.var = firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
+                    n.list.remove(n.getInstance());
+                } else {
+                    //caso :manner non verbale
+                    n.relation = Glossary.VN_ROLE_LOCATION;
+                }
             }
 
-            if(n.getStatus()!=REMOVE){
-                //System.out.println(n.relation+ " "+n.var);
+            if (n.getStatus() != REMOVE) {
+
                 /*
                 procedimento per sostituzione mediante Glossary quando non occorre
                 nient'altro che una traduzione di node.relation e node.var
@@ -644,10 +660,9 @@ public class Parser {
                     if (n.relation.equalsIgnoreCase(Glossary.AMR_RELATIONS[num])
                             && n.var.matches(Glossary.AMR_VARS[num])) {
 
-                        //System.out.println(Glossary.FRED_RELATIONS[num]);
                         if (Glossary.FRED_RELATIONS[num].length() > 0) {
                             n.relation = Glossary.FRED_RELATIONS[num];
-                            //System.out.println(Glossary.AMR_RELATIONS[num]+" =? "+n.relation);
+
                         }
                         if (Glossary.FRED_VARS[num].length() > 0) {
                             n.var = Glossary.FRED_VARS[num];
@@ -921,14 +936,14 @@ public class Parser {
         }
         {
             Node arg = root.getChild(Glossary.AMR_MOD);
-            
-            if (arg != null && arg.getChild(Glossary.AMR_DEGREE) != null 
-                    && arg.getChild(Glossary.AMR_COMPARED_TO) != null && arg.getInstance()!=null) {
+
+            if (arg != null && arg.getChild(Glossary.AMR_DEGREE) != null
+                    && arg.getChild(Glossary.AMR_COMPARED_TO) != null && arg.getInstance() != null) {
 
                 instance.var = arg.getInstance().var + firstUpper(instance.var);
                 arg.list.remove(arg.getInstance());
                 root.list.remove(arg);
-                root.list.addAll(arg.list);          
+                root.list.addAll(arg.list);
             }
         }
 
