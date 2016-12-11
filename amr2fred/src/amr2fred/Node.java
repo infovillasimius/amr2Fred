@@ -182,7 +182,8 @@ public class Node {
 
     Node getInverse() {
         for (Node n : this.list) {
-            if (n.relation.matches(AMR_INVERSE)) {
+            if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)) {
                 return n;
             }
         }
