@@ -283,7 +283,7 @@ public class Parser {
                         flag = false;
                         for (Node find : this.nodes) {
                             if (find.var.equalsIgnoreCase(amrList.get(i + 1))) {
-                                Node newNode = find.getCopy(find, word);
+                                Node newNode = find.getCopy(/*find,*/word);
                                 root.list.add(newNode);
                                 nodes.add(newNode);
                                 flag = true;
@@ -398,9 +398,9 @@ public class Parser {
             root.setStatus(Glossary.NodeStatus.AMR);
             return root;
         }
-        
-        if (root.getStatus()!=OK && !root.relation.startsWith(Glossary.AMR_RELATION_BEGIN)
-                && !root.relation.equalsIgnoreCase(TOP)){
+
+        if (root.getStatus() != OK && !root.relation.startsWith(Glossary.AMR_RELATION_BEGIN)
+                && !root.relation.equalsIgnoreCase(TOP)) {
             root.setStatus(OK);
         }
 
@@ -861,8 +861,36 @@ public class Parser {
         }
         Node scambio;
         Node n = root.getInverse();
+        ArrayList<Node> inversi = root.getInverses();
 
-        if (root.getInverse() != null) {
+        if (n != null && inversi.size() > 1) {
+
+            for (Node inv : inversi) {
+                
+                if (inv.list.isEmpty()) {
+                    Node newNode = root.getCopy(inv.relation.substring(0, inv.relation.length() - 3));
+                    this.nodes.add(newNode);
+                    getOriginal(inv).list.add(newNode);
+                    inv.setStatus(REMOVE);
+                } else if (inversi.get(0)!=inv){
+
+                    Node newNode = root.getCopy(inv.relation.substring(0, inv.relation.length() - 3));
+                    //newNode.list.add(root.getInstance());
+                    this.nodes.add(newNode);
+                    inv.relation = TOP;
+
+                    inv.list.add(newNode);
+                }
+            }
+            root = inverseChecker(root);
+        }
+
+        if (n != null && inversi.size() == 1) {
+
+            if (n.getInstance() == null) {
+                System.out.println(n.var);
+            }
+
             if (root.relation.equalsIgnoreCase(TOP)) {
 
                 root.list.remove(n);
@@ -874,6 +902,7 @@ public class Parser {
                 n = scambio;
                 root.list.add(n);
                 return inverseChecker(root);
+
             } else if (root.getArgs().size() <= 1 && root.getChild(":arg1-of") != null
                     && root.getChild(":arg1-of").getInstance() != null
                     && root.getChild(":arg1-of").getInstance().var.matches(Glossary.AMR_VERB2)
@@ -938,14 +967,14 @@ public class Parser {
         ArrayList<Line> result = pred.find(word, Glossary.LineFields.ID_PRED);
         return result != null && !result.isEmpty();
     }
-    
-    private boolean isVerb(String word, ArrayList<Node> list){
+
+    private boolean isVerb(String word, ArrayList<Node> list) {
         PredMatrix pred = PredMatrix.getPredMatrix();
         word = Glossary.ID + word.replace('-', '.');
         ArrayList<Line> result = pred.find(word, Glossary.LineFields.ID_PRED);
-        result=pred.find(result, list); 
+        result = pred.find(result, list);
         return result != null && !result.isEmpty();
-        
+
     }
 
     /*
@@ -1074,20 +1103,35 @@ public class Parser {
         }
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)
-                && !isVerb(instance.var,root.getArgs())) {
-            if(root.getChild(":arg0")!=null && root.getChild(":arg1")!=null){
-                root.getChild(":arg0").relation=Glossary.BOXER_AGENT;
-                root.getChild(":arg1").relation=Glossary.BOXER_PATIENT;
-                topic=false;
+                && !isVerb(instance.var, root.getArgs())) {
+            if (root.getChild(":arg0") != null && root.getChild(":arg1") != null) {
+                root.getChild(":arg0").relation = Glossary.BOXER_AGENT;
+                root.getChild(":arg1").relation = Glossary.BOXER_PATIENT;
+                topic = false;
             }
-            if(root.getChild(":arg1")!=null && root.getChild(":arg2")!=null){
-                root.getChild(":arg1").relation=Glossary.VN_ROLE_EXPERIENCER;
-                root.getChild(":arg2").relation=Glossary.VN_ROLE_CAUSE;
-                topic=false;
+            if (root.getChild(":arg1") != null && root.getChild(":arg2") != null) {
+                root.getChild(":arg1").relation = Glossary.VN_ROLE_EXPERIENCER;
+                root.getChild(":arg2").relation = Glossary.VN_ROLE_CAUSE;
+                topic = false;
             }
         }
 
         return root;
+    }
+
+    /**
+     * Restituisce il nodo originale tra gli equivalenti
+     *
+     * @param copy
+     * @return
+     */
+    private Node getOriginal(Node copy) {
+        for (Node n : nodes) {
+            if (copy.equals(n) && n.getInstance() != null) {
+                return n;
+            }
+        }
+        return null;
     }
 
 }

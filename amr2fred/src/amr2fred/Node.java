@@ -25,6 +25,7 @@ import static amr2fred.Glossary.NodeType.OTHER;
 import java.util.ArrayList;
 import java.util.Objects;
 import static amr2fred.Glossary.AMR_INVERSE;
+import static amr2fred.Glossary.NodeStatus.REMOVE;
 
 /**
  * Basic object for the data structure. 
@@ -188,6 +189,17 @@ public class Node {
             }
         }
         return null;
+    }
+    
+    ArrayList<Node> getInverses(){
+        ArrayList<Node> nodes=new ArrayList<>();
+        for (Node n : this.list) {
+            if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) && n.status!=REMOVE) {
+                nodes.add(n);
+            }
+        }
+        return nodes;
     }
 
     private String spaces(int n) {

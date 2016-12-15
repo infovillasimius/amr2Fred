@@ -16,8 +16,6 @@
  */
 package amr2fred;
 
-import static amr2fred.Glossary.FRED;
-import static amr2fred.Glossary.NodeStatus.OK;
 import static amr2fred.Line.lineComparator;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
