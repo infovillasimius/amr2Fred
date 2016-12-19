@@ -319,4 +319,18 @@ public class Node {
         return argsList;
     }
 
+    public int getNodeId() {
+        return nodeId;
+    }
+    
+    public void substitute(Node node){
+        this.var=node.var;
+        this.relation=node.relation;
+        this.nodeId=node.nodeId;
+        this.list=node.list;
+        this.status=node.status;
+        this.type=node.type;
+        this.verb=node.verb;     
+    }
+
 }

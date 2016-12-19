@@ -29,6 +29,9 @@ import static amr2fred.Glossary.NodeType.VERB;
 import java.util.ArrayList;
 import java.util.Iterator;
 import static amr2fred.Glossary.AMR_ARG;
+import static amr2fred.Glossary.AMR_ARG0;
+import static amr2fred.Glossary.AMR_ARG1;
+import static amr2fred.Glossary.AMR_ARG2;
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -471,15 +474,10 @@ public class Parser {
      */
     private Node listElaboration(Node root) {
 
-        //Elaborazione della lista
-        if (root.list.isEmpty()) {
-            return root;
-        }
-
         root = modality(root);
 
-        root = this.rootElaboration(root);
-
+        root = rootElaboration(root);
+        
         if (root.list.isEmpty()) {
             return root;
         }
@@ -508,10 +506,10 @@ public class Parser {
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
 
                 //caso :name
-                ArrayList<Node> l = n.getOps();
-                if (!l.isEmpty()) {
+                ArrayList<Node> ops = n.getOps();
+                if (!ops.isEmpty()) {
                     String name = "";
-                    for (Node n1 : l) {
+                    for (Node n1 : ops) {
                         name += "_" + n1.var;
                     }
                     name = FRED + name.substring(1);
@@ -521,6 +519,7 @@ public class Parser {
                         root.getInstance().setStatus(OK);
                         root.getInstance().relation = Glossary.RDF_TYPE;
                         root.setStatus(OK);
+                        setEquals(root);
                     }
 
                 }
@@ -651,10 +650,10 @@ public class Parser {
                 n.relation = TOP;
                 n.var = "a";
                 n.list.add(new Node("age-01", Glossary.INSTANCE));
-                Node n1 = root.getCopy(":arg1");
+                Node n1 = root.getCopy(AMR_ARG1);
                 this.nodes.add(n1);
                 n.list.add(n1);
-                n.list.add(new Node(age, ":arg2"));
+                n.list.add(new Node(age, AMR_ARG2));
                 n = listElaboration(n);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
@@ -677,6 +676,15 @@ public class Parser {
                 }
             } else if (n.relation.startsWith(Glossary.AMR_PREP)) {
                 n.relation = n.relation.replace(Glossary.AMR_PREP, FRED);
+            } else if(n.getInstance()!=null && n.getInstance().var.equalsIgnoreCase(Glossary.TEMPORAL_QUANTITY) &&
+                    n.getChild(Glossary.AMR_UNIT)!=null){
+                System.out.println(n);
+                Node unit=n.getChild(Glossary.AMR_UNIT);
+                n.list.remove(unit);
+                n.list.remove(n.getInstance());
+                unit.list.addAll(n.list);
+                unit.relation=n.relation;
+                n.substitute(unit);
             }
 
             if (n.getStatus() != REMOVE) {
@@ -866,13 +874,13 @@ public class Parser {
         if (n != null && inversi.size() > 1) {
 
             for (Node inv : inversi) {
-                
+
                 if (inv.list.isEmpty()) {
                     Node newNode = root.getCopy(inv.relation.substring(0, inv.relation.length() - 3));
                     this.nodes.add(newNode);
                     getOriginal(inv).list.add(newNode);
                     inv.setStatus(REMOVE);
-                } else if (inversi.get(0)!=inv){
+                } else if (inversi.get(0) != inv) {
 
                     Node newNode = root.getCopy(inv.relation.substring(0, inv.relation.length() - 3));
                     //newNode.list.add(root.getInstance());
@@ -919,10 +927,9 @@ public class Parser {
 
                 Node newNode = root.getCopy(n.relation.substring(0, n.relation.length() - 3));
 
-                newNode.list.add(root.getInstance());
+                //newNode.list.add(root.getInstance());
                 this.nodes.add(newNode);
                 n.relation = TOP;
-
                 n.list.add(newNode);
             }
 
@@ -1016,6 +1023,77 @@ public class Parser {
             return root;
         }
 
+        if (instance.var.equalsIgnoreCase(Glossary.HAVE_ORG_ROLE) || instance.var.equalsIgnoreCase(Glossary.HAVE_REL_ROLE)) {
+            
+            
+            /*
+            casi in cui il verbo è have-org-role-91 o have rel-role-91
+            
+            TODO Prevedere i casi :arg3 = role of entity B (often left unspecified) 
+            e :arg4 = relationship basis (contract, case; rarely used) per HAVE_REL_ROLE 
+            */
+
+            String role;
+            Node newRoot, arg1, arg2, arg2Instance;
+
+            newRoot = root.getChild(AMR_ARG0);
+            arg1 = root.getChild(AMR_ARG1);
+            arg2 = root.getChild(AMR_ARG2);
+            arg2Instance = null;
+            role = "";
+            
+            
+            
+            if (arg2 != null && arg2.getInstance() != null) {
+                arg2Instance = arg2.getInstance();
+                role = arg2Instance.var;
+                root.list.remove(arg2);
+            } else if (arg2 != null) {
+                Node orig = getOriginal(arg2);
+                if (orig != null) {
+                    arg2Instance = orig.getInstance();
+                }
+                if (arg2Instance != null) {
+                    role = arg2Instance.var;
+                    root.list.remove(arg2);
+                } else if(orig!=null) {
+                    role = orig.var;
+                } else {
+                    role = arg2.var;
+                }
+                
+            }
+            
+            if (arg1 != null) {
+                root.list.remove(arg1);
+            }
+
+            if (newRoot != null) {
+
+                newRoot.relation = root.relation;
+                root.list.remove(newRoot);
+                if (arg2Instance != null) {
+                    arg2.list.remove(arg2Instance);
+                    arg2Instance.relation = Glossary.RDF_TYPE;
+                    arg2Instance.var = FRED + firstUpper(arg2Instance.var);
+                    arg2Instance.list.addAll(arg2.list);
+                    newRoot.list.add(arg2Instance);
+                }
+                if (arg1 != null) {
+                    newRoot.list.add(arg1);
+                    arg1.relation = FRED + role + Glossary.OF;
+                }
+                topic = false;
+                root.list.remove(instance);
+                newRoot.list.addAll(root.list);
+                newRoot.setStatus(OK);
+            }
+            
+            
+            root.substitute(newRoot);
+            return root; 
+        } 
+
         if (root.relation.equalsIgnoreCase(TOP) && root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND)
                 || root.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
 
@@ -1104,14 +1182,14 @@ public class Parser {
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)
                 && !isVerb(instance.var, root.getArgs())) {
-            if (root.getChild(":arg0") != null && root.getChild(":arg1") != null) {
-                root.getChild(":arg0").relation = Glossary.BOXER_AGENT;
-                root.getChild(":arg1").relation = Glossary.BOXER_PATIENT;
+            if (root.getChild(AMR_ARG0) != null && root.getChild(AMR_ARG1) != null) {
+                root.getChild(AMR_ARG0).relation = Glossary.BOXER_AGENT;
+                root.getChild(AMR_ARG1).relation = Glossary.BOXER_PATIENT;
                 topic = false;
             }
-            if (root.getChild(":arg1") != null && root.getChild(":arg2") != null) {
-                root.getChild(":arg1").relation = Glossary.VN_ROLE_EXPERIENCER;
-                root.getChild(":arg2").relation = Glossary.VN_ROLE_CAUSE;
+            if (root.getChild(AMR_ARG1) != null && root.getChild(AMR_ARG2) != null) {
+                root.getChild(AMR_ARG1).relation = Glossary.VN_ROLE_EXPERIENCER;
+                root.getChild(AMR_ARG2).relation = Glossary.VN_ROLE_CAUSE;
                 topic = false;
             }
         }

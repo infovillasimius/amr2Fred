@@ -203,6 +203,7 @@ public class Glossary {
     public static final String AMR_POSS = ":poss";
     public static final String AMR_ARG1 = ":arg1";
     public static final String AMR_ARG2 = ":arg2";
+    public static final String AMR_ARG0 = ":arg0";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
     public static final String AMR_UNKNOWN = "amr-unknown";
@@ -289,6 +290,7 @@ public class Glossary {
     public static final String FRED_FOR = FRED + "for";
     public static final String FRED_WITH = FRED + "with";
     public static final String FRED_LIKE = FRED + "like";
+    public static final String FRED_ALTHOUGH = FRED + "although";
 
     //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
@@ -342,20 +344,20 @@ public class Glossary {
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_POLARITY, AMR_TOPIC,
         AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
         AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT,
-        AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE};
+        AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE, AMR_MEDIUM, AMR_CONCESSION};
 
     public static final String AMR_VARS[] = {ALL, AMR_MINUS, ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_THRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
-        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE};
+        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", ""};
+        "", "", "", "", "", "", "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 18;
+    public static final int PATTERNS_NUMBER = 20;
 
     public static final String QUOTE = "\"";
 
@@ -520,35 +522,47 @@ public class Glossary {
         "wide", "wide-eyed", "wiggly", "wild", "willing", "windy", "wiry", "wise",
         "wistful", "witty", "woebegone", "womanly", "wonderful", "wooden", "woozy",
         "workable", "worried", "worthless", "wrathful", "wretched", "wrong", "wry"};
-    
-        public static final String PREPOSITION[]={"à-la", "aboard", "about", "above", 
-            "according-to", "across", "after", "against", "ahead-of", "along", "along-with", 
-            "alongside", "amid", "amidst-", "among-", "amongst", "anti", "apart-from", 
-            "around-", "as", "as-for", "as-per", "as-to", "as-well-as", "aside-from", 
-            "astride", "at", "atop", "away-from", "bar", "barring", "because-of", 
-            "before", "behind", "below", "beneath", "beside", "besides", "between", 
-            "beyond", "but", "but-for", "by", "by-means-of", "circa", "close-to", 
-            "concerning", "considering", "contrary-to", "counting", "cum", "depending-on", 
-            "despite", "down", "due-to", "during", "except", "except-for", "excepting", 
-            "excluding", "following", "for", "forward-of", "from", "further-to", "given", 
-            "gone", "in", "in-addition-to", "in-between", "in-case-of", "in-the-face-of", 
-            "in-favor-of", "in-front-of", "in-lieu-of", "in-spite-of", "in-view-of", 
-            "including", "inside", "instead-of", "into", "irrespective-of", "less", 
-            "like", "minus", "near", "near-to", "next-to", "notwithstanding", "of", 
-            "off", "on", "on-account-of", "on-behalf-of", "on-board", "on-to", "on-top-of", 
-            "onto", "opposite", "opposite-to", "other-than", "out-of", "outside", 
-            "outside-of", "over", "owing-to", "past", "pending", "per", "preparatory-to", 
-            "prior-to", "plus", "pro", "re", "regarding", "regardless-of", "respecting", 
-            "round", "save", "save-for", "saving", "since", "than", "thanks-to", "through", 
-            "throughout", "till", "to", "together-with", "touching", "toward", "towards", 
-            "under", "underneath", "unlike", "until", "up", "up-against", "up-to", 
-            "up-until", "upon", "versus", "via", "vis-a-vis", "with", "with-reference-to", 
-            "with-regard-to", "within", "without", "worth"};
-        
-        public static final String CONJUNCTION[]={"and", "or", "but", "nor", "so", "for", 
-            "yet", "after", "although", "as-", "as-if", "as-long", "as-because", "before-", 
-            "even-if-", "even-though", "once", "since", "so-that", "though", "till", 
-            "unless", "until", "what", "when", "whenever", "wherever", "whether", "while"};
+
+    public static final String PREPOSITION[] = {"à-la", "aboard", "about", "above",
+        "according-to", "across", "after", "against", "ahead-of", "along", "along-with",
+        "alongside", "amid", "amidst-", "among-", "amongst", "anti", "apart-from",
+        "around-", "as", "as-for", "as-per", "as-to", "as-well-as", "aside-from",
+        "astride", "at", "atop", "away-from", "bar", "barring", "because-of",
+        "before", "behind", "below", "beneath", "beside", "besides", "between",
+        "beyond", "but", "but-for", "by", "by-means-of", "circa", "close-to",
+        "concerning", "considering", "contrary-to", "counting", "cum", "depending-on",
+        "despite", "down", "due-to", "during", "except", "except-for", "excepting",
+        "excluding", "following", "for", "forward-of", "from", "further-to", "given",
+        "gone", "in", "in-addition-to", "in-between", "in-case-of", "in-the-face-of",
+        "in-favor-of", "in-front-of", "in-lieu-of", "in-spite-of", "in-view-of",
+        "including", "inside", "instead-of", "into", "irrespective-of", "less",
+        "like", "minus", "near", "near-to", "next-to", "notwithstanding", "of",
+        "off", "on", "on-account-of", "on-behalf-of", "on-board", "on-to", "on-top-of",
+        "onto", "opposite", "opposite-to", "other-than", "out-of", "outside",
+        "outside-of", "over", "owing-to", "past", "pending", "per", "preparatory-to",
+        "prior-to", "plus", "pro", "re", "regarding", "regardless-of", "respecting",
+        "round", "save", "save-for", "saving", "since", "than", "thanks-to", "through",
+        "throughout", "till", "to", "together-with", "touching", "toward", "towards",
+        "under", "underneath", "unlike", "until", "up", "up-against", "up-to",
+        "up-until", "upon", "versus", "via", "vis-a-vis", "with", "with-reference-to",
+        "with-regard-to", "within", "without", "worth"};
+
+    public static final String CONJUNCTION[] = {"and", "or", "but", "nor", "so", "for",
+        "yet", "after", "although", "as-", "as-if", "as-long", "as-because", "before-",
+        "even-if-", "even-though", "once", "since", "so-that", "though", "till",
+        "unless", "until", "what", "when", "whenever", "wherever", "whether", "while"};
+
+    /**
+     * Special verb for roles in organizations
+     */
+    public static final String HAVE_ORG_ROLE = "have-org-role-91";
+
+    /**
+     * Special verb for relations between persons
+     */
+    public static final String HAVE_REL_ROLE = "have-rel-role-91";
+
+    public static final String TEMPORAL_QUANTITY = "temporal-quantity";
 
     /**
      * Node types in AMR
