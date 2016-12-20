@@ -184,7 +184,9 @@ public class Node {
     Node getInverse() {
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)) {
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) 
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)) {
                 return n;
             }
         }
@@ -195,7 +197,10 @@ public class Node {
         ArrayList<Node> nodes=new ArrayList<>();
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) && n.status!=REMOVE) {
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF) 
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                    && n.status!=REMOVE) {
                 nodes.add(n);
             }
         }

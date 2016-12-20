@@ -201,6 +201,9 @@ public class Parser {
     porta tutto in minuscolo ed elimina i doppi spazi
      */
     private String normalize(String amr) {
+        
+        amr=patch(amr);
+        
         amr = amr.replace("(", " ( ");
         amr = amr.replace(")", " ) ");
         amr = amr.replace("/", " / ");
@@ -477,7 +480,7 @@ public class Parser {
         root = modality(root);
 
         root = rootElaboration(root);
-        
+
         if (root.list.isEmpty()) {
             return root;
         }
@@ -627,9 +630,10 @@ public class Parser {
                 }
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() == null) {
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
+                    || n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY)) && n.getInstance() == null) {
 
-                //caso :quant
+                //casi :quant  e :frequency
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
@@ -676,15 +680,12 @@ public class Parser {
                 }
             } else if (n.relation.startsWith(Glossary.AMR_PREP)) {
                 n.relation = n.relation.replace(Glossary.AMR_PREP, FRED);
-            } else if(n.getInstance()!=null && n.getInstance().var.equalsIgnoreCase(Glossary.TEMPORAL_QUANTITY) &&
-                    n.getChild(Glossary.AMR_UNIT)!=null){
-                System.out.println(n);
-                Node unit=n.getChild(Glossary.AMR_UNIT);
-                n.list.remove(unit);
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
+                    || n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)) && root.getInstance() != null) {
+                n.relation = root.getInstance().var + Glossary.OF;
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_EXTENT) && n.getInstance()!=null){
+                n.var=FRED+firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
-                unit.list.addAll(n.list);
-                unit.relation=n.relation;
-                n.substitute(unit);
             }
 
             if (n.getStatus() != REMOVE) {
@@ -709,10 +710,10 @@ public class Parser {
                     }
                 }
             }
-
+            
             if (n.getStatus() != REMOVE) {
                 //richiama il metodo di traduzione ricorsivamente
-                n = listElaboration(n);
+                //n = listElaboration(n);
             } else {
                 //aggiunge il nodo da rimuovere alla lista dei nodi rimossi
                 this.removed.add(n);
@@ -737,6 +738,14 @@ public class Parser {
             toAdd.clear();
             root = listElaboration(root);
         }
+
+        for (Node n : root.list) {
+
+            //richiama il metodo di traduzione ricorsivamente
+            n = listElaboration(n);
+
+        }
+
         return root;
     }
 
@@ -1024,15 +1033,13 @@ public class Parser {
         }
 
         if (instance.var.equalsIgnoreCase(Glossary.HAVE_ORG_ROLE) || instance.var.equalsIgnoreCase(Glossary.HAVE_REL_ROLE)) {
-            
-            
+
             /*
             casi in cui il verbo è have-org-role-91 o have rel-role-91
             
             TODO Prevedere i casi :arg3 = role of entity B (often left unspecified) 
             e :arg4 = relationship basis (contract, case; rarely used) per HAVE_REL_ROLE 
-            */
-
+             */
             String role;
             Node newRoot, arg1, arg2, arg2Instance;
 
@@ -1041,9 +1048,7 @@ public class Parser {
             arg2 = root.getChild(AMR_ARG2);
             arg2Instance = null;
             role = "";
-            
-            
-            
+
             if (arg2 != null && arg2.getInstance() != null) {
                 arg2Instance = arg2.getInstance();
                 role = arg2Instance.var;
@@ -1056,14 +1061,14 @@ public class Parser {
                 if (arg2Instance != null) {
                     role = arg2Instance.var;
                     root.list.remove(arg2);
-                } else if(orig!=null) {
+                } else if (orig != null) {
                     role = orig.var;
                 } else {
                     role = arg2.var;
                 }
-                
+
             }
-            
+
             if (arg1 != null) {
                 root.list.remove(arg1);
             }
@@ -1088,11 +1093,10 @@ public class Parser {
                 newRoot.list.addAll(root.list);
                 newRoot.setStatus(OK);
             }
-            
-            
+
             root.substitute(newRoot);
-            return root; 
-        } 
+            return root;
+        }
 
         if (root.relation.equalsIgnoreCase(TOP) && root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND)
                 || root.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
@@ -1193,6 +1197,17 @@ public class Parser {
                 topic = false;
             }
         }
+        
+        if (root.getInstance() != null && root.getInstance().var.matches(Glossary.AMR_QUANTITY)
+                    && root.getChild(Glossary.AMR_UNIT) != null) {
+                System.out.println(root);
+                Node unit = root.getChild(Glossary.AMR_UNIT);
+                root.list.remove(unit);
+                root.list.remove(root.getInstance());
+                unit.list.addAll(root.list);
+                unit.relation = root.relation;
+                root.substitute(unit);
+            }
 
         return root;
     }
@@ -1210,6 +1225,27 @@ public class Parser {
             }
         }
         return null;
+    }
+    
+    /**
+     * Elimina le parentesi tonde contenute tra virgolette
+     * @param amr
+     * @return 
+     */
+    private String patch(String amr){
+    
+        boolean flag=false;
+        String newString="";
+        for(int i=0 ;i<amr.length();i++){
+            if(amr.charAt(i)=='"'){
+                flag=flag^true;
+            }
+            if(!(amr.charAt(i)=='(' && flag) && !(amr.charAt(i)==')' && flag)){
+                
+                newString+=amr.charAt(i);
+            }
+        }
+        return newString;
     }
 
 }

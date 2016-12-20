@@ -235,8 +235,10 @@ public class Glossary {
     public static final String AMR_MEDIUM = ":medium";
     public static final String AMR_ORD = ":ord";
     public static final String AMR_PART = ":part";
+    public static final String AMR_PART_OF = ":part-of";
     public static final String AMR_SCALE = ":scale";
     public static final String AMR_SUB_EVENT = ":subevent";
+    public static final String AMR_SUB_EVENT_OF = ":subevent-of";
     public static final String AMR_TIME = ":time";
     public static final String AMR_UNIT = ":unit";
     public static final String AMR_VALUE = ":value";
@@ -291,6 +293,7 @@ public class Glossary {
     public static final String FRED_WITH = FRED + "with";
     public static final String FRED_LIKE = FRED + "like";
     public static final String FRED_ALTHOUGH = FRED + "although";
+    public static final String FRED_IN = FRED + "in";
 
     //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
@@ -307,6 +310,7 @@ public class Glossary {
     public static final String DEMONSTRATIVES = " that those this these ";
     public static final String AND = "and";
     public static final String OR = "or";
+    public static final String IN = "in";
 
     //Stringhe usate per la gestione del file predmatrix.txt
     public static final String PIVOT = "Pivot";
@@ -344,20 +348,21 @@ public class Glossary {
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_POLARITY, AMR_TOPIC,
         AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
         AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT,
-        AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE, AMR_MEDIUM, AMR_CONCESSION};
+        AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE, AMR_MEDIUM, AMR_CONCESSION, AMR_SUB_EVENT_OF, AMR_EXTENT};
 
     public static final String AMR_VARS[] = {ALL, AMR_MINUS, ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_THRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
-        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH};
+        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
+        FRED_IN,DUL_HAS_QUALITY};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", ""};
+        "", "", "", "", "", "", "", "", "", "", "",""};
 
-    public static final int PATTERNS_NUMBER = 20;
+    public static final int PATTERNS_NUMBER = 22;
 
     public static final String QUOTE = "\"";
 
@@ -551,6 +556,15 @@ public class Glossary {
         "yet", "after", "although", "as-", "as-if", "as-long", "as-because", "before-",
         "even-if-", "even-though", "once", "since", "so-that", "though", "till",
         "unless", "until", "what", "when", "whenever", "wherever", "whether", "while"};
+    
+    public static final String QUANTITY_TYPES[]={"monetary-quantity", "distance-quantity", 
+        "area-quantity", "volume-quantity", "temporal-quantity", "frequency-quantity", 
+        "speed-quantity", "acceleration-quantity", "mass-quantity", "force-quantity", 
+        "pressure-quantity", "energy-quantity", "power-quantity", "voltage-quantity", 
+        "charge-quantity", "potential-quantity", "resistance-quantity", "inductance-quantity",
+        "magnetic-field-quantity", "magnetic-flux-quantity", "radiation-quantity", 
+        "concentration-quantity", "temperature-quantity", "score-quantity", 
+        "fuel-consumption-quantity", "seismic-quantity"};
 
     /**
      * Special verb for roles in organizations
@@ -562,7 +576,7 @@ public class Glossary {
      */
     public static final String HAVE_REL_ROLE = "have-rel-role-91";
 
-    public static final String TEMPORAL_QUANTITY = "temporal-quantity";
+    public static final String AMR_QUANTITY = ".+-quantity$";
 
     /**
      * Node types in AMR
