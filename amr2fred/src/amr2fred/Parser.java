@@ -201,9 +201,9 @@ public class Parser {
     porta tutto in minuscolo ed elimina i doppi spazi
      */
     private String normalize(String amr) {
-        
-        amr=patch(amr);
-        
+
+        amr = patch(amr);
+
         amr = amr.replace("(", " ( ");
         amr = amr.replace(")", " ) ");
         amr = amr.replace("/", " / ");
@@ -481,6 +481,8 @@ public class Parser {
 
         root = rootElaboration(root);
 
+        root = dateEntity(root);
+
         if (root.list.isEmpty()) {
             return root;
         }
@@ -493,10 +495,20 @@ public class Parser {
             }
 
             // casi "and" ed "or" seguito da :op in lista
-            if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND) || n.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
-                for (Node n1 : n.getOps()) {
+            if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND)
+                    || n.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
+
+                n.list.remove(n.getInstance());
+                ArrayList<Node> ops = n.getOps();
+                for (Node n1 : ops) {
+                    n.list.remove(n1);
+                }
+
+                for (Node n1 : ops) {
                     n1.relation = n.relation;
+                    n1.list.addAll(n.list);
                     this.toAdd.add(n1);
+
                 }
                 n.setStatus(REMOVE);
 
@@ -683,8 +695,8 @@ public class Parser {
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     || n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)) && root.getInstance() != null) {
                 n.relation = root.getInstance().var + Glossary.OF;
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_EXTENT) && n.getInstance()!=null){
-                n.var=FRED+firstUpper(n.getInstance().var);
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_EXTENT) && n.getInstance() != null) {
+                n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
             }
 
@@ -710,7 +722,7 @@ public class Parser {
                     }
                 }
             }
-            
+
             if (n.getStatus() != REMOVE) {
                 //richiama il metodo di traduzione ricorsivamente
                 //n = listElaboration(n);
@@ -1103,15 +1115,20 @@ public class Parser {
 
             // casi "and" e "or" seguiti da :opx
             ArrayList<Node> ops = root.getOps();
-            Node oldRoot = root;
-            Node ops1 = ops.get(0);
-            oldRoot.list.remove(ops1);
-            root = ops1;
-            root.relation = oldRoot.relation;
-            ops.remove(ops1);
+            for (Node n1 : ops) {
+                root.list.remove(n1);
+            }
+            root.list.remove(root.getInstance());
+            ArrayList<Node> rootList = root.list;
+            String rel = root.relation;
+            root.substitute(ops.get(0));
+            root.relation = rel;
+            root.list.addAll(rootList);
+            ops.remove(ops.get(0));
 
             for (Node n1 : ops) {
-                n1.relation = root.relation;
+                n1.relation = rel;
+                n1.list.addAll(rootList);
                 root.list.add(n1);
             }
 
@@ -1197,17 +1214,17 @@ public class Parser {
                 topic = false;
             }
         }
-        
+
         if (root.getInstance() != null && root.getInstance().var.matches(Glossary.AMR_QUANTITY)
-                    && root.getChild(Glossary.AMR_UNIT) != null) {
-                System.out.println(root);
-                Node unit = root.getChild(Glossary.AMR_UNIT);
-                root.list.remove(unit);
-                root.list.remove(root.getInstance());
-                unit.list.addAll(root.list);
-                unit.relation = root.relation;
-                root.substitute(unit);
-            }
+                && root.getChild(Glossary.AMR_UNIT) != null) {
+            System.out.println(root);
+            Node unit = root.getChild(Glossary.AMR_UNIT);
+            root.list.remove(unit);
+            root.list.remove(root.getInstance());
+            unit.list.addAll(root.list);
+            unit.relation = root.relation;
+            root.substitute(unit);
+        }
 
         return root;
     }
@@ -1226,26 +1243,108 @@ public class Parser {
         }
         return null;
     }
-    
+
     /**
      * Elimina le parentesi tonde contenute tra virgolette
+     *
      * @param amr
-     * @return 
+     * @return
      */
-    private String patch(String amr){
-    
-        boolean flag=false;
-        String newString="";
-        for(int i=0 ;i<amr.length();i++){
-            if(amr.charAt(i)=='"'){
-                flag=flag^true;
+    private String patch(String amr) {
+
+        boolean flag = false;
+        String newString = "";
+        for (int i = 0; i < amr.length(); i++) {
+            if (amr.charAt(i) == '"') {
+                flag = flag ^ true;
             }
-            if(!(amr.charAt(i)=='(' && flag) && !(amr.charAt(i)==')' && flag)){
-                
-                newString+=amr.charAt(i);
+            if (!(amr.charAt(i) == '(' && flag) && !(amr.charAt(i) == ')' && flag)) {
+
+                newString += amr.charAt(i);
             }
         }
         return newString;
+    }
+
+    private Node dateEntity(Node root) {
+
+        if (root.list.isEmpty() || (root.getInstance() != null
+                && !root.getInstance().var.equalsIgnoreCase(Glossary.AMR_DATE_ENTITY))) {
+            return root;
+        }
+        Node instance = root.getInstance();
+        root.list.remove(instance);
+
+        Node weekDay = root.getChild(Glossary.AMR_DATE_WEEKDAY);
+        
+        if (weekDay != null) {
+            root.list.remove(weekDay);
+            root.var = FRED + firstUpper(weekDay.getInstance().var);
+            root.setStatus(OK);
+        }
+
+        String newVar = "";
+
+        if (root.getChild(Glossary.AMR_DATE_YEAR) != null
+                || root.getChild(Glossary.AMR_DATE_MONTH) != null
+                || root.getChild(Glossary.AMR_DATE_DAY) != null) {
+
+            Node year = root.getChild(Glossary.AMR_DATE_YEAR);
+            Node month = root.getChild(Glossary.AMR_DATE_MONTH);
+            Node day = root.getChild(Glossary.AMR_DATE_DAY);
+
+            if (year != null) {
+                
+                while (year.var.length()<4){
+                    year.var="0"+year.var;
+                }
+                
+                newVar += year.var + "-";
+            } else {
+                newVar += "0001-";
+            }
+
+            if (month != null) {
+                while (month.var.length()<2){
+                    month.var="0"+month.var;
+                }
+                newVar += month.var + "-";
+            } else {
+                newVar += "01-";
+            }
+
+            if (day != null) {
+                while (day.var.length()<2){
+                    day.var="0"+day.var;
+                }
+                newVar += day.var;
+            } else {
+                newVar += "01";
+            }
+
+            if (root.relation.equalsIgnoreCase(TOP) || weekDay != null) {
+                
+                topic=false;
+                root.list.clear();
+                
+                if (weekDay != null) {
+                    root.var = FRED + firstUpper(weekDay.getInstance().var);
+                    root.setStatus(OK);
+                } else {
+                    instance.var = "date";
+                    root.list.add(instance);
+                }
+                Node date = new Node(newVar, Glossary.FRED_AT, OK);
+                
+                root.list.add(date);
+            } else {
+                root.var = newVar;
+                root.list.clear();
+                root.setStatus(OK);
+            }
+        }
+
+        return root;
     }
 
 }

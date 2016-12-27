@@ -171,6 +171,9 @@ public class Glossary {
     public static final String NN_INTEGER_NS = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
     public static final String NN_INTEGER = "^[0-9]+$";
 
+    public static final String DATE_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#date";
+    public static final String DATE_SCHEMA = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";
+
     public static final String DBR = "dbr:"; //anche "dbpedia:"
     public static final String DBR_NS = "http://dbpedia.org/resource/";
 
@@ -294,6 +297,7 @@ public class Glossary {
     public static final String FRED_LIKE = FRED + "like";
     public static final String FRED_ALTHOUGH = FRED + "although";
     public static final String FRED_IN = FRED + "in";
+    public static final String FRED_AT = FRED + "at";
 
     //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
@@ -357,10 +361,10 @@ public class Glossary {
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
         VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
-        FRED_IN,DUL_HAS_QUALITY};
+        FRED_IN, DUL_HAS_QUALITY};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", "", "",""};
+        "", "", "", "", "", "", "", "", "", "", "", ""};
 
     public static final int PATTERNS_NUMBER = 22;
 
@@ -556,14 +560,14 @@ public class Glossary {
         "yet", "after", "although", "as-", "as-if", "as-long", "as-because", "before-",
         "even-if-", "even-though", "once", "since", "so-that", "though", "till",
         "unless", "until", "what", "when", "whenever", "wherever", "whether", "while"};
-    
-    public static final String QUANTITY_TYPES[]={"monetary-quantity", "distance-quantity", 
-        "area-quantity", "volume-quantity", "temporal-quantity", "frequency-quantity", 
-        "speed-quantity", "acceleration-quantity", "mass-quantity", "force-quantity", 
-        "pressure-quantity", "energy-quantity", "power-quantity", "voltage-quantity", 
+
+    public static final String QUANTITY_TYPES[] = {"monetary-quantity", "distance-quantity",
+        "area-quantity", "volume-quantity", "temporal-quantity", "frequency-quantity",
+        "speed-quantity", "acceleration-quantity", "mass-quantity", "force-quantity",
+        "pressure-quantity", "energy-quantity", "power-quantity", "voltage-quantity",
         "charge-quantity", "potential-quantity", "resistance-quantity", "inductance-quantity",
-        "magnetic-field-quantity", "magnetic-flux-quantity", "radiation-quantity", 
-        "concentration-quantity", "temperature-quantity", "score-quantity", 
+        "magnetic-field-quantity", "magnetic-flux-quantity", "radiation-quantity",
+        "concentration-quantity", "temperature-quantity", "score-quantity",
         "fuel-consumption-quantity", "seismic-quantity"};
 
     /**
@@ -577,6 +581,20 @@ public class Glossary {
     public static final String HAVE_REL_ROLE = "have-rel-role-91";
 
     public static final String AMR_QUANTITY = ".+-quantity$";
+    public static final String AMR_DATE_ENTITY = "date-entity";
+    public static final String AMR_DATE_CALENDAR = ":calendar";
+    public static final String AMR_DATE_CENTURY = ":century";
+    public static final String AMR_DATE_DAY = ":day";
+    public static final String AMR_DATE_DAY_PERIOD = ":dayperiod";
+    public static final String AMR_DATE_DECADE = ":decade";
+    public static final String AMR_DATE_ERA = ":era";
+    public static final String AMR_DATE_MONTH = ":month";
+    public static final String AMR_DATE_QUARTER = ":quarter";
+    public static final String AMR_DATE_SEASON = ":season";
+    public static final String AMR_DATE_TIMEZONE = ":timezone";
+    public static final String AMR_DATE_WEEKDAY = ":weekday";
+    public static final String AMR_DATE_YEAR = ":year";
+    public static final String AMR_DATE_YEAR2 = ":year2 ";
 
     /**
      * Node types in AMR

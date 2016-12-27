@@ -32,29 +32,29 @@ import org.apache.jena.rdf.model.*;
  * @author anto
  */
 public class RdfWriter {
-    
-    //Istanza singleton di RdfWriter
-    private static RdfWriter writer;   
-    
-    //Jena model
-    private Model model;                            
-    
-    //Coda per la lettura dell'albero per livelli
-    private LinkedBlockingQueue<Node> list;         
-    
-    //Modo di output
-    private String mode = Glossary.RDF_MODE[Glossary.RdfWriteMode.TURTLE.ordinal()];  
-    
-    //Controllo per inserimento elemento object come stringa o come resource
-    private boolean objectAsResource = false;       
 
-    
+    //Istanza singleton di RdfWriter
+    private static RdfWriter writer;
+
+    //Jena model
+    private Model model;
+
+    //Coda per la lettura dell'albero per livelli
+    private LinkedBlockingQueue<Node> list;
+
+    //Modo di output
+    private String mode = Glossary.RDF_MODE[Glossary.RdfWriteMode.TURTLE.ordinal()];
+
+    //Controllo per inserimento elemento object come stringa o come resource
+    private boolean objectAsResource = false;
+
     private RdfWriter() {
 
     }
 
     /**
      * Get singleton instance of RdfWriter
+     *
      * @return instance of RdfWriter
      */
     public static RdfWriter getWriter() {
@@ -134,6 +134,9 @@ public class RdfWriter {
                         if (n1.var.matches(Glossary.NN_INTEGER)) {
                             Literal o = model.createTypedLiteral(Integer.parseInt(n1.var), Glossary.NN_INTEGER_NS);
                             model.add(model.createStatement(r, p, o));
+                        } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
+                            Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
+                            model.add(model.createStatement(r, p, o));
                         } else {
                             Resource o = model.createResource(getUri(n1.var));
                             model.add(model.createStatement(r, p, o));
@@ -142,10 +145,13 @@ public class RdfWriter {
 
                         Literal o = model.createTypedLiteral(Integer.parseInt(n1.var), Glossary.NN_INTEGER_NS);
                         model.add(model.createStatement(r, p, o));
+                    } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
+                        Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
+                        model.add(model.createStatement(r, p, o));
                     } else {
                         String o = getUri(n1.var);
                         model.add(model.createStatement(r, p, o));
-                    } 
+                    }
                 }
             }
         }
