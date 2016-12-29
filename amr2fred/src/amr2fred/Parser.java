@@ -645,8 +645,28 @@ public class Parser {
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
                     || n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY)) && n.getInstance() == null) {
 
-                //casi :quant  e :frequency
+                //casi :quant  e :frequency con valore numerico
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
+                toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                n.setStatus(OK);
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null) {
+
+                //caso :quant  con instance non nulla
+                ArrayList<Node> ops = n.getOps();
+
+                if (ops != null) {
+                    for (Node n1 : ops) {
+                        n.list.remove(n1);
+                        n1.relation = Glossary.DUL_HAS_DATA_VALUE;
+                        toAdd.add(n1);
+                        n1.setStatus(OK);
+                    }
+                }
+
+                n.relation = Glossary.DUL_HAS_QUALITY;
+                n.var = n.getInstance().var;
+                n.list.remove(n.getInstance());
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
@@ -1276,7 +1296,7 @@ public class Parser {
         root.list.remove(instance);
 
         Node weekDay = root.getChild(Glossary.AMR_DATE_WEEKDAY);
-        
+
         if (weekDay != null) {
             root.list.remove(weekDay);
             root.var = FRED + firstUpper(weekDay.getInstance().var);
@@ -1294,19 +1314,19 @@ public class Parser {
             Node day = root.getChild(Glossary.AMR_DATE_DAY);
 
             if (year != null) {
-                
-                while (year.var.length()<4){
-                    year.var="0"+year.var;
+
+                while (year.var.length() < 4) {
+                    year.var = "0" + year.var;
                 }
-                
+
                 newVar += year.var + "-";
             } else {
                 newVar += "0001-";
             }
 
             if (month != null) {
-                while (month.var.length()<2){
-                    month.var="0"+month.var;
+                while (month.var.length() < 2) {
+                    month.var = "0" + month.var;
                 }
                 newVar += month.var + "-";
             } else {
@@ -1314,8 +1334,8 @@ public class Parser {
             }
 
             if (day != null) {
-                while (day.var.length()<2){
-                    day.var="0"+day.var;
+                while (day.var.length() < 2) {
+                    day.var = "0" + day.var;
                 }
                 newVar += day.var;
             } else {
@@ -1323,10 +1343,10 @@ public class Parser {
             }
 
             if (root.relation.equalsIgnoreCase(TOP) || weekDay != null) {
-                
-                topic=false;
+
+                topic = false;
                 root.list.clear();
-                
+
                 if (weekDay != null) {
                     root.var = FRED + firstUpper(weekDay.getInstance().var);
                     root.setStatus(OK);
@@ -1335,7 +1355,7 @@ public class Parser {
                     root.list.add(instance);
                 }
                 Node date = new Node(newVar, Glossary.FRED_AT, OK);
-                
+
                 root.list.add(date);
             } else {
                 root.var = newVar;
