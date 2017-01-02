@@ -207,6 +207,7 @@ public class Glossary {
     public static final String AMR_ARG1 = ":arg1";
     public static final String AMR_ARG2 = ":arg2";
     public static final String AMR_ARG0 = ":arg0";
+    public static final String AMR_OP1 = ":op1";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
     public static final String AMR_UNKNOWN = "amr-unknown";
@@ -298,13 +299,13 @@ public class Glossary {
     public static final String FRED_ALTHOUGH = FRED + "although";
     public static final String FRED_IN = FRED + "in";
     public static final String FRED_AT = FRED + "at";
+    public static final String FRED_ON = FRED + "on";
 
-    //Stringhe pattern con qualcosa da fare    
     public static final String AMR_DOMAIN = ":domain";
-
     public static final String AMR_IMPERATIVE = "imperative";
     public static final String AMR_EXPRESSIVE = "expressive";
     public static final String AMR_INTERROGATIVE = "interrogative";
+    public static final String AMR_RELATIVE_POSITION = "relative-position";
 
     //Stringhe usate per il riconoscimento dal parser
     public static final String PERSON = " I i you You YOU we We WE they They THEY ";
@@ -532,6 +533,29 @@ public class Glossary {
         "wistful", "witty", "woebegone", "womanly", "wonderful", "wooden", "woozy",
         "workable", "worried", "worthless", "wrathful", "wretched", "wrong", "wry"};
 
+    public static final String MANNER_ADVERBS[] = {"accidentally", "angrily", "anxiously",
+        "awkwardly", "badly", "beautifully", "blindly", "boldly", "bravely", "brightly",
+        "busily", "calmly", "carefully", "carelessly", "cautiously", "cheerfully",
+        "clearly", "closely", "correctly", "courageously", "cruelly", "daringly",
+        "deliberately", "doubtfully", "eagerly", "easily", "elegantly", "enormously",
+        "enthusiastically", "equally", "eventually", "exactly", "faithfully", "fast",
+        "fatally", "fiercely", "fondly", "foolishly", "fortunately", "frankly",
+        "frantically", "generously", "gently", "gladly", "gracefully", "greedily",
+        "happily", "hard", "hastily", "healthily", "honestly", "hungrily", "hurriedly",
+        "inadequately", "ingeniously", "innocently", "inquisitively", "irritably",
+        "joyously", "justly", "kindly", "lazily", "loosely", "loudly", "madly",
+        "mortally", "mysteriously", "neatly", "nervously", "noisily", "obediently",
+        "openly", "painfully", "patiently", "perfectly", "politely", "poorly",
+        "powerfully", "promptly", "punctually", "quickly", "quietly", "rapidly",
+        "rarely", "really", "recklessly", "regularly", "reluctantly", "repeatedly",
+        "rightfully", "roughly", "rudely", "sadly", "safely", "selfishly", "sensibly",
+        "seriously", "sharply", "shyly", "silently", "sleepily", "slowly", "smoothly",
+        "so", "softly", "solemnly", "speedily", "stealthily", "sternly", "straight",
+        "stupidly", "successfully", "suddenly", "suspiciously", "swiftly", "tenderly",
+        "tensely", "thoughtfully", "tightly", "truthfully", "unexpectedly", "victoriously",
+        "violently", "vivaciously", "warmly", "weakly", "wearily", "well", "wildly",
+        "wisely"};
+
     public static final String PREPOSITION[] = {"à-la", "aboard", "about", "above",
         "according-to", "across", "after", "against", "ahead-of", "along", "along-with",
         "alongside", "amid", "amidst-", "among-", "amongst", "anti", "apart-from",
@@ -554,7 +578,7 @@ public class Glossary {
         "throughout", "till", "to", "together-with", "touching", "toward", "towards",
         "under", "underneath", "unlike", "until", "up", "up-against", "up-to",
         "up-until", "upon", "versus", "via", "vis-a-vis", "with", "with-reference-to",
-        "with-regard-to", "within", "without", "worth"};
+        "with-regard-to", "within", "without", "worth", "exact"};
 
     public static final String CONJUNCTION[] = {"and", "or", "but", "nor", "so", "for",
         "yet", "after", "although", "as-", "as-if", "as-long", "as-because", "before-",
@@ -581,6 +605,12 @@ public class Glossary {
     public static final String HAVE_REL_ROLE = "have-rel-role-91";
 
     public static final String AMR_QUANTITY = ".+-quantity$";
+    public static final String QUANTITY = "-quantity";
+    public static final String SUM_OF = "sum-of";
+    public static final String SUM = "sum";
+    public static final String PRODUCT_OF="product-of";
+    public static final String PRODUCT="product";
+
     public static final String AMR_DATE_ENTITY = "date-entity";
     public static final String AMR_DATE_CALENDAR = ":calendar";
     public static final String AMR_DATE_CENTURY = ":century";
@@ -595,6 +625,8 @@ public class Glossary {
     public static final String AMR_DATE_WEEKDAY = ":weekday";
     public static final String AMR_DATE_YEAR = ":year";
     public static final String AMR_DATE_YEAR2 = ":year2 ";
+
+    public static final String PREP_SUBSTITUTION = ":x->y";
 
     /**
      * Node types in AMR

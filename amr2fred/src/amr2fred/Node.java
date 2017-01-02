@@ -332,7 +332,8 @@ public class Node {
         this.var=node.var;
         this.relation=node.relation;
         this.nodeId=node.nodeId;
-        this.list=node.list;
+        this.list= new ArrayList<>();
+        this.list.addAll(node.list);
         this.status=node.status;
         this.type=node.type;
         this.verb=node.verb;     

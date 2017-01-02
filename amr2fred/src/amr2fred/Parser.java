@@ -483,12 +483,21 @@ public class Parser {
 
         root = dateEntity(root);
 
+        root = prepControl(root);
+
         if (root.list.isEmpty()) {
             return root;
         }
 
         for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
             Node n = it.next();
+
+            n = prepControl(n);
+
+            if (n.relation.equals(Glossary.PREP_SUBSTITUTION)) {
+                n.setStatus(REMOVE);
+                toAdd.addAll(n.list);
+            }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
                 topic = false;
@@ -650,9 +659,10 @@ public class Parser {
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null
+                    && !n.getInstance().var.matches(Glossary.AMR_QUANTITY)) {
 
-                //caso :quant  con instance non nulla
+                //caso :quant  con instance non nulla - valore non numerico
                 ArrayList<Node> ops = n.getOps();
 
                 if (ops != null) {
@@ -703,10 +713,16 @@ public class Parser {
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
                 //caso :manner con forma verbale
-                if (n.getInstance().var.substring(n.getInstance().var.length() - 3).matches(Glossary.AMR_VERB) && n.relation.equalsIgnoreCase(Glossary.AMR_MANNER)) {
-                    n.var = firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
+                if (n.getInstance().var.matches(Glossary.AMR_VERB2) || !mannerAdverb(n.getInstance().var).isEmpty()) {
+
+                    if (!mannerAdverb(n.getInstance().var).isEmpty()) {
+                        n.var = firstUpper(mannerAdverb(n.getInstance().var));
+                    } else {
+                        n.var = firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
+                    }
                     n.list.remove(n.getInstance());
                 } else {
+
                     //caso :manner non verbale
                     n.relation = Glossary.VN_ROLE_LOCATION;
                 }
@@ -936,10 +952,9 @@ public class Parser {
 
         if (n != null && inversi.size() == 1) {
 
-            if (n.getInstance() == null) {
-                System.out.println(n.var);
-            }
-
+            /* if (n.getInstance() == null) {
+            System.out.println(n.var);
+            }*/
             if (root.relation.equalsIgnoreCase(TOP)) {
 
                 root.list.remove(n);
@@ -1062,6 +1077,36 @@ public class Parser {
 
         if (instance == null) {
             return root;
+        }
+
+        if (instance.var.equalsIgnoreCase(Glossary.SUM_OF) || instance.var.equalsIgnoreCase(Glossary.PRODUCT_OF)) {
+            if (instance.var.equalsIgnoreCase(Glossary.SUM_OF)) {
+                instance.var = Glossary.SUM;
+                for(Node op:root.getOps()){
+                    op.relation=FRED+Glossary.SUM+Glossary.OF;
+                }
+            } else {
+                instance.var = Glossary.PRODUCT;
+                for(Node op:root.getOps()){
+                    op.relation=FRED+Glossary.PRODUCT+Glossary.OF;
+                }
+            }
+
+        }
+
+        if (instance.var.equalsIgnoreCase(Glossary.AMR_RELATIVE_POSITION)) {
+
+            // caso relative-position
+            if (root.getChild(Glossary.AMR_DIRECTION) != null && root.getChild(Glossary.AMR_OP1) != null
+                    && root.getChild(Glossary.AMR_QUANT) != null && root.getChild(Glossary.AMR_QUANT).getInstance() != null) {
+                Node op1 = getOriginal(root.getChild(Glossary.AMR_OP1));
+                root.list.remove(op1);
+                Node direction = getOriginal(root.getChild(Glossary.AMR_DIRECTION));
+                op1.relation = direction.getInstance().var + Glossary.OF;
+                direction.list.add(op1);
+                Node quant = root.getChild(Glossary.AMR_QUANT);
+                root.getInstance().var = quant.getInstance().var.replace(Glossary.QUANTITY, "");
+            }
         }
 
         if (instance.var.equalsIgnoreCase(Glossary.HAVE_ORG_ROLE) || instance.var.equalsIgnoreCase(Glossary.HAVE_REL_ROLE)) {
@@ -1204,7 +1249,7 @@ public class Parser {
             root.list.remove(arg);
 
             if (root.getChild(Glossary.AMR_DEGREE) != null && root.getChild(Glossary.AMR_DEGREE).getInstance() != null) {
-                System.out.println(root.getChild(Glossary.AMR_DEGREE).getInstance().var);
+                //System.out.println(root.getChild(Glossary.AMR_DEGREE).getInstance().var);
                 instance.var = root.getChild(Glossary.AMR_DEGREE).getInstance().var + firstUpper(instance.var);
                 root.list.remove(root.getChild(Glossary.AMR_DEGREE));
 
@@ -1235,15 +1280,47 @@ public class Parser {
             }
         }
 
-        if (root.getInstance() != null && root.getInstance().var.matches(Glossary.AMR_QUANTITY)
-                && root.getChild(Glossary.AMR_UNIT) != null) {
-            System.out.println(root);
+        if (instance.var.matches(Glossary.AMR_QUANTITY) && root.getChild(Glossary.AMR_UNIT) != null) {
+
             Node unit = root.getChild(Glossary.AMR_UNIT);
             root.list.remove(unit);
             root.list.remove(root.getInstance());
             unit.list.addAll(root.list);
             unit.relation = root.relation;
             root.substitute(unit);
+        }
+
+        if (root.getChild(Glossary.AMR_QUANT) != null) {
+
+            Node quant = root.getChild(Glossary.AMR_QUANT);
+
+            Node newNode = new Node("", "");
+
+            if (quant.getInstance() != null && quant.getInstance().var.matches(Glossary.AMR_QUANTITY)
+                    && quant.getChild(Glossary.AMR_UNIT) != null) {
+                Node unit = quant.getChild(Glossary.AMR_UNIT);
+                quant.list.remove(unit);
+                quant.list.remove(quant.getInstance());
+                unit.list.addAll(quant.list);
+                unit.relation = quant.relation;
+                quant.substitute(unit);
+                root.list.remove(quant);
+                newNode.substitute(root);
+                nodes.add(newNode);
+                newNode.relation = FRED + unit.getInstance().var + Glossary.OF;
+                quant.list.add(newNode);
+                quant.relation = root.relation;
+                root.substitute(quant);
+
+            }
+
+        }
+
+        if (root.getChild(Glossary.AMR_SCALE) != null && root.getChild(Glossary.AMR_SCALE).getInstance() != null) {
+            Node scale = root.getChild(Glossary.AMR_SCALE);
+            scale.relation = Glossary.FRED_ON;
+            scale.var = firstUpper(scale.getInstance().var) + "_scale";
+            scale.list.remove(scale.getInstance());
         }
 
         return root;
@@ -1361,6 +1438,62 @@ public class Parser {
                 root.var = newVar;
                 root.list.clear();
                 root.setStatus(OK);
+            }
+        }
+
+        return root;
+    }
+
+    private String mannerAdverb(String var) {
+        for (String adv : Glossary.MANNER_ADVERBS) {
+            if (adv.matches("^" + var + ".*")) {
+                return adv;
+            }
+        }
+        return "";
+    }
+
+    private Node prepControl(Node root) {
+        if (root.list.isEmpty() || root.getInstance() == null || root.getOps().isEmpty()) {
+            return root;
+        }
+
+        String var = root.getInstance().var;
+        Node quality = new Node(var, Glossary.DUL_HAS_QUALITY, OK);
+
+        Node manner = root.getChild(Glossary.AMR_MANNER);
+        if (manner != null) {
+            manner = root.getChild(Glossary.AMR_MANNER).getInstance();
+        }
+
+        Boolean go = false;
+
+        for (String prep : Glossary.PREPOSITION) {
+            if (var.equalsIgnoreCase(prep)) {
+                go = true;
+                break;
+            }
+        }
+        if (go) {
+            for (Node n : root.getOps()) {
+                n.relation = root.relation;
+
+            }
+            if (manner != null && !mannerAdverb(manner.var).isEmpty()) {
+                quality.var = FRED + mannerAdverb(manner.var) + firstUpper(quality.var);
+                root.list.remove(root.getChild(Glossary.AMR_MANNER));
+            } else {
+                quality.var = FRED + firstUpper(quality.var);
+            }
+            root.list.add(quality);
+            root.list.remove(root.getInstance());
+            if (!root.relation.equalsIgnoreCase(TOP)) {
+                root.relation = Glossary.PREP_SUBSTITUTION;
+            } else {
+                Node first = root.list.get(0);
+                root.list.remove(first);
+                first.list.addAll(root.list);
+                root.substitute(first);
             }
         }
 
