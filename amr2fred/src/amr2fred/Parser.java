@@ -1079,16 +1079,69 @@ public class Parser {
             return root;
         }
 
+        if (root.getChild(Glossary.AMR_CONCESSION) != null || root.getChild(Glossary.AMR_CONDITION) != null) {
+            Node concession = root.getChild(Glossary.AMR_CONCESSION);
+            Node condition = root.getChild(Glossary.AMR_CONDITION);
+            Node swap = new Node("", "");
+            //swap.substitute(root);
+
+            if (concession != null && concession.getInstance() != null && concession.getInstance().var.equalsIgnoreCase(Glossary.EVEN_IF)
+                    && concession.getChild(Glossary.AMR_OP1) != null) {
+
+                root.list.remove(concession);
+                Node op1 = concession.getChild(Glossary.AMR_OP1);
+                Node modality = new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK);
+                Node quality = new Node(Glossary.FRED_EVEN, Glossary.DUL_HAS_QUALITY, OK);
+                root.list.add(modality);
+                op1.list.add(modality);
+                swap.substitute(root);
+                root.substitute(op1);
+                root.relation = swap.relation;
+                swap.relation = Glossary.FRED_ENTAILS;
+                swap.list.add(quality);
+                root.list.add(swap);
+            }
+            
+            if (concession != null && concession.getInstance() != null && concession.getInstance().var.equalsIgnoreCase(Glossary.EVEN_WHEN)
+                    && concession.getChild(Glossary.AMR_OP1) != null) {
+
+                root.list.remove(concession);
+                Node op1 = concession.getChild(Glossary.AMR_OP1);
+                
+                Node quality = new Node(Glossary.FRED_EVEN, Glossary.DUL_HAS_QUALITY, OK);
+                op1.relation=Glossary.FRED_WHEN;
+                
+                root.list.add(quality);
+                root.list.add(op1);
+            }
+            
+            
+
+            if (condition != null && condition.getInstance() != null) {
+                root.list.remove(condition);
+                Node modality = new Node(Glossary.BOXING_NECESSARY, Glossary.BOXING_HAS_MODALITY, OK);
+                root.list.add(modality);
+                condition.list.add(modality);
+                swap.substitute(root);
+                root.substitute(condition);
+                root.relation = swap.relation;
+                swap.relation = Glossary.FRED_ENTAILS;
+                root.list.add(swap);
+                
+            }
+
+        }
+
         if (instance.var.equalsIgnoreCase(Glossary.SUM_OF) || instance.var.equalsIgnoreCase(Glossary.PRODUCT_OF)) {
             if (instance.var.equalsIgnoreCase(Glossary.SUM_OF)) {
                 instance.var = Glossary.SUM;
-                for(Node op:root.getOps()){
-                    op.relation=FRED+Glossary.SUM+Glossary.OF;
+                for (Node op : root.getOps()) {
+                    op.relation = FRED + Glossary.SUM + Glossary.OF;
                 }
             } else {
                 instance.var = Glossary.PRODUCT;
-                for(Node op:root.getOps()){
-                    op.relation=FRED+Glossary.PRODUCT+Glossary.OF;
+                for (Node op : root.getOps()) {
+                    op.relation = FRED + Glossary.PRODUCT + Glossary.OF;
                 }
             }
 

@@ -300,6 +300,9 @@ public class Glossary {
     public static final String FRED_IN = FRED + "in";
     public static final String FRED_AT = FRED + "at";
     public static final String FRED_ON = FRED + "on";
+    public static final String FRED_ENTAILS = FRED + "entails";
+    public static final String FRED_EVEN = FRED + "Even";
+    public static final String FRED_WHEN = FRED + "when";
 
     public static final String AMR_DOMAIN = ":domain";
     public static final String AMR_IMPERATIVE = "imperative";
@@ -608,8 +611,10 @@ public class Glossary {
     public static final String QUANTITY = "-quantity";
     public static final String SUM_OF = "sum-of";
     public static final String SUM = "sum";
-    public static final String PRODUCT_OF="product-of";
-    public static final String PRODUCT="product";
+    public static final String PRODUCT_OF = "product-of";
+    public static final String PRODUCT = "product";
+    public static final String EVEN_IF = "even-if";
+    public static final String EVEN_WHEN = "even-when";
 
     public static final String AMR_DATE_ENTITY = "date-entity";
     public static final String AMR_DATE_CALENDAR = ":calendar";
