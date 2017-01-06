@@ -170,6 +170,7 @@ public class Glossary {
 
     public static final String NN_INTEGER_NS = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
     public static final String NN_INTEGER = "^[0-9]+$";
+    public static final String NN_INTEGER2 = "^[0-9]+[.]*[0-9]*$";
 
     public static final String DATE_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#date";
     public static final String DATE_SCHEMA = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";

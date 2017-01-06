@@ -131,8 +131,8 @@ public class RdfWriter {
 
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
                     if (this.objectAsResource) {
-                        if (n1.var.matches(Glossary.NN_INTEGER)) {
-                            Literal o = model.createTypedLiteral(Integer.parseInt(n1.var), Glossary.NN_INTEGER_NS);
+                        if (n1.var.matches(Glossary.NN_INTEGER2)) {
+                            Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
                             model.add(model.createStatement(r, p, o));
                         } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
                             Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
@@ -141,9 +141,9 @@ public class RdfWriter {
                             Resource o = model.createResource(getUri(n1.var));
                             model.add(model.createStatement(r, p, o));
                         }
-                    } else if (n1.var.matches(Glossary.NN_INTEGER)) {
+                    } else if (n1.var.matches(Glossary.NN_INTEGER2)) {
 
-                        Literal o = model.createTypedLiteral(Integer.parseInt(n1.var), Glossary.NN_INTEGER_NS);
+                        Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
                         model.add(model.createStatement(r, p, o));
                     } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);

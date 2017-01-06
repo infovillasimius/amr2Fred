@@ -656,7 +656,10 @@ public class Parser {
 
                 //casi :quant  e :frequency con valore numerico
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
-                toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                if((n.var.matches(Glossary.NN_INTEGER) && Integer.parseInt(n.var)!=1) || !n.var.matches(Glossary.NN_INTEGER)){
+                    toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                }
+                
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null
