@@ -66,9 +66,10 @@ public class Glossary {
      */
     public static final String DUL_NS = "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#";
 
-    public static final String DUL_EVENT = "dul:Event";
-    public static final String DUL_HAS_QUALITY = "dul:hasQuality";
-    public static final String DUL_HAS_DATA_VALUE = "dul:hasDataValue";
+    public static final String DUL_EVENT = DUL + "Event";
+    public static final String DUL_HAS_QUALITY = DUL + "hasQuality";
+    public static final String DUL_HAS_DATA_VALUE = DUL + "hasDataValue";
+    public static final String DUL_ASSOCIATED_WITH = DUL + "associatedWith";
 
     /**
      * Local name for boxer
@@ -161,6 +162,28 @@ public class Glossary {
     public static final String VN_ROLE_INSTRUMENT = VN_ROLE + "Instrument";
     public static final String VN_ROLE_CAUSE = VN_ROLE + "Cause";
     public static final String VN_ROLE_EXPERIENCER = VN_ROLE + "Expreriencer";
+    public static final String VN_ROLE_THEME = VN_ROLE + "Theme";
+
+    public static final String REIFI_BENEFIT = "benefit-01";
+    public static final String REIFI_HAVE_CONCESSION = "have-concession-91";
+    public static final String REIFI_HAVE_CONDITION = "have-condition-91";
+    public static final String REIFI_BE_DESTINED_FOR = "be-destined-for-91";
+    public static final String REIFI_EXEMPLIFY = "exemplify-01";
+    public static final String REIFI_HAVE_EXTENT = "have-extent-91";
+    public static final String REIFI_HAVE_FREQUENCY = "have-frequency-91";
+    public static final String REIFI_HAVE_INSTRUMENT = "have-instrument-91";
+    public static final String REIFI_BE_LOCATED_AT = "be-located-at-91";
+    public static final String REIFI_HAVE_MANNER = "have-manner-91";
+    public static final String REIFI_HAVE_MOD = "have-mod-91";
+    public static final String REIFI_HAVE_NAME = "have-name-91";
+    public static final String REIFI_HAVE_PART = "have-part-91";
+    public static final String REIFI_HAVE_POLARITY = "have-polarity-91";
+    public static final String REIFI_HAVE_PURPOSE = "have-purpose-91";
+    public static final String REIFI_HAVE_QUANT = "have-quant-91";
+    public static final String REIFI_BE_FROM = "be-from-91";
+    public static final String REIFI_HAVE_SUBEVENT = "have-subevent-91";
+    public static final String REIFI_INCLUDE = "include-91";
+    public static final String REIFI_BE_TEMPORALLY_AT = "be-temporally-at-91";
 
     /**
      * Local name for vn.data
@@ -241,9 +264,12 @@ public class Glossary {
     public static final String AMR_ORD = ":ord";
     public static final String AMR_PART = ":part";
     public static final String AMR_PART_OF = ":part-of";
+    public static final String AMR_RANGE = ":range";
     public static final String AMR_SCALE = ":scale";
     public static final String AMR_SUB_EVENT = ":subevent";
     public static final String AMR_SUB_EVENT_OF = ":subevent-of";
+    public static final String AMR_SUBSET = ":subset";
+    public static final String AMR_SUBSET_OF = ":subset-of";
     public static final String AMR_TIME = ":time";
     public static final String AMR_UNIT = ":unit";
     public static final String AMR_VALUE = ":value";
@@ -300,10 +326,12 @@ public class Glossary {
     public static final String FRED_ALTHOUGH = FRED + "although";
     public static final String FRED_IN = FRED + "in";
     public static final String FRED_AT = FRED + "at";
+    public static final String FRED_OF = FRED + "of";
     public static final String FRED_ON = FRED + "on";
     public static final String FRED_ENTAILS = FRED + "entails";
     public static final String FRED_EVEN = FRED + "Even";
     public static final String FRED_WHEN = FRED + "when";
+    public static final String FRED_INCLUDE = FRED + "include";
 
     public static final String AMR_DOMAIN = ":domain";
     public static final String AMR_IMPERATIVE = "imperative";
@@ -356,22 +384,23 @@ public class Glossary {
 
     public static final String AMR_RELATIONS[] = {AMR_MOD, AMR_POLARITY, AMR_TOPIC,
         AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
-        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY, AMR_TIME, AMR_INSTRUMENT,
-        AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE, AMR_MEDIUM, AMR_CONCESSION, AMR_SUB_EVENT_OF, AMR_EXTENT};
+        AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY,
+        AMR_TIME, AMR_INSTRUMENT, AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE,
+        AMR_MEDIUM, AMR_CONCESSION, AMR_SUB_EVENT_OF, AMR_EXTENT, AMR_RANGE, AMR_SUBSET, AMR_SUBSET_OF};
 
     public static final String AMR_VARS[] = {ALL, AMR_MINUS, ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_THRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
         VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
-        FRED_IN, DUL_HAS_QUALITY};
+        FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", "", "", ""};
+        "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 22;
+    public static final int PATTERNS_NUMBER = 25;
 
     public static final String QUOTE = "\"";
 
@@ -630,7 +659,7 @@ public class Glossary {
     public static final String AMR_DATE_TIMEZONE = ":timezone";
     public static final String AMR_DATE_WEEKDAY = ":weekday";
     public static final String AMR_DATE_YEAR = ":year";
-    public static final String AMR_DATE_YEAR2 = ":year2 ";
+    public static final String AMR_DATE_YEAR2 = ":year2";
 
     public static final String PREP_SUBSTITUTION = ":x->y";
 

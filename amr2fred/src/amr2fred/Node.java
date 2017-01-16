@@ -101,7 +101,7 @@ public class Node {
         } else {
             stringa = stringa + list + '}';
         }
-        if (status.ordinal() > 0) {
+        if (status.ordinal() > 0 && !relation.equalsIgnoreCase(Glossary.TOP)) {
             stringa = "\n" + this.spaces(liv) + "<error" + liv + ">" + stringa + "</error" + liv + ">";
         }
         return stringa;
@@ -186,7 +186,8 @@ public class Node {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) 
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)) {
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)) {
                 return n;
             }
         }
@@ -200,6 +201,7 @@ public class Node {
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF) 
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
                     && n.status!=REMOVE) {
                 nodes.add(n);
             }

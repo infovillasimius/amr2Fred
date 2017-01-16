@@ -46,7 +46,7 @@ public class Amr2Fred extends Application {
      * Get Predmatrix table singleton instance loaded in memory
      */
     PredMatrix pred = PredMatrix.getPredMatrix();
-    RdfWriter rdfWriter= RdfWriter.getWriter();
+    RdfWriter rdfWriter = RdfWriter.getWriter();
 
     /**
      * Jena's writer output mode
@@ -131,6 +131,9 @@ public class Amr2Fred extends Application {
                 if (amrTextField.getLength() > 3) {
                     String amr = amrTextField.getText();
                     Parser instance = Parser.getInstance();
+                    while (amr.startsWith(" ")) {
+                        amr = amr.substring(1);
+                    }
                     if (!amr.startsWith("(")) {
                         amr = "(" + amr + ")";
                     }
