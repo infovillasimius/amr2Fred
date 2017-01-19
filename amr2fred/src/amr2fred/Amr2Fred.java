@@ -53,6 +53,8 @@ public class Amr2Fred extends Application {
      */
     private int writerMode = 0;
 
+    private int check = 0;
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("amr2fred");
@@ -82,6 +84,8 @@ public class Amr2Fred extends Application {
         //Controlla se attivare la rimozione degli errori e l'invio dell'output al writer Jena
         CheckBox cb = new CheckBox("Remove incorrect nodes & get " + Glossary.RDF_MODE[0]);
         grid.add(cb, 4, 3);
+        cb.setSelected(true);
+        cb.setOpacity(0);
 
         //Controlla il metodo di inserimento dell'elemento object negli statement in Jena
         CheckBox cb1 = new CheckBox("Statement Objects as Resources");
@@ -152,6 +156,19 @@ public class Amr2Fred extends Application {
                     un output testuale non standard realizzato ad hoc per evidenziare la struttura dell'albero reso dall'eleborazione
                      */
                     if (result != null) {
+
+                        if (result.getTreStatus() > 0) {
+                            cb.setOpacity(100);
+                            if (check == 0) {
+                                cb.setSelected(false);
+                                check=1;
+                            }
+                        } else {
+                            cb.setOpacity(0);
+                            cb.setSelected(true);
+                            check=0;
+                        }
+
                         if (cb.isSelected()) {
                             result = instance.check(result);
                             RdfWriter writer = RdfWriter.getWriter();

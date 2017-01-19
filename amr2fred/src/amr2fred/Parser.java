@@ -1440,7 +1440,7 @@ public class Parser {
 
             }
         }
-
+        
         return root;
     }
 
@@ -1501,16 +1501,6 @@ public class Parser {
             era.list.remove(era.getInstance());
         }
 
-        Node dayperiod = root.getChild(Glossary.AMR_DATE_DAY_PERIOD);
-
-        if (dayperiod != null) {
-            root.var = firstUpper(dayperiod.getInstance().var);
-            root.list.remove(dayperiod);
-            dayperiod.list.remove(dayperiod.getInstance());
-            root.list.addAll(dayperiod.list);
-            top = false;
-        }
-
         Node decade = root.getChild(Glossary.AMR_DATE_DECADE);
         Node century = root.getChild(Glossary.AMR_DATE_CENTURY);
 
@@ -1549,11 +1539,22 @@ public class Parser {
         }
 
         Node weekDay = root.getChild(Glossary.AMR_DATE_WEEKDAY);
+        Node dayperiod = root.getChild(Glossary.AMR_DATE_DAY_PERIOD);
 
         if (weekDay != null) {
             root.list.remove(weekDay);
             root.var = FRED + firstUpper(weekDay.getInstance().var);
             root.setStatus(OK);
+        }
+
+        if (dayperiod != null && weekDay == null) {
+            root.var = firstUpper(dayperiod.getInstance().var);
+            root.list.remove(dayperiod);
+            dayperiod.list.remove(dayperiod.getInstance());
+            root.list.addAll(dayperiod.list);
+            top = false;
+        } else if (dayperiod != null){
+            
         }
 
         Node quarter = root.getChild(Glossary.AMR_DATE_QUARTER);
@@ -1726,7 +1727,7 @@ public class Parser {
         }
 
         String var = instance.var;
-
+        
         if (var.equalsIgnoreCase(Glossary.REIFI_BENEFIT)
                 || var.equalsIgnoreCase(Glossary.REIFI_EXEMPLIFY)) {
 
