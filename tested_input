@@ -106,3 +106,4 @@ They feared him even when he was behind bars. -> (f / fear-01 :ARG0 (t / they) :
 The boy will sing if he is given money. -> (s / sing-01 :ARG0 (b / boy) :condition (g / give-01 :ARG1 (m / money) :ARG2 b))
 Unless the boy is given money, he will sing. -> (s / sing-01 :ARG0 (b / boy) :polarity - :condition (g / give-01 :ARG1 (m / money) :ARG2 b))
 I see either a boy, a girl or a dog -> (s / see-01 :arg0 (I / I) :arg1 (a / either :op1 (b / boy) :op2 (g / girl) :op3 (d / dog)))
+
