@@ -184,7 +184,7 @@ public class Glossary {
     public static final String REIFI_HAVE_SUBEVENT = "have-subevent-91";
     public static final String REIFI_INCLUDE = "include-91";
     public static final String REIFI_BE_TEMPORALLY_AT = "be-temporally-at-91";
-    
+
     public static final String RATE_ENTITY = "rate-entity-91";
 
     /**
@@ -388,21 +388,22 @@ public class Glossary {
         AMR_LOCATION, AMR_SOURCE, AMR_DESTINATION, AMR_DIRECTION,
         AMR_PATH, AMR_MANNER, AMR_PURPOSE, AMR_ACCOMPANIER, AMR_BENEFICIARY,
         AMR_TIME, AMR_INSTRUMENT, AMR_DEGREE, AMR_DURATION, AMR_CAUSE, AMR_EXAMPLE,
-        AMR_MEDIUM, AMR_CONCESSION, AMR_SUB_EVENT_OF, AMR_EXTENT, AMR_RANGE, AMR_SUBSET, AMR_SUBSET_OF, AMR_FREQUENCY};
+        AMR_MEDIUM, AMR_CONCESSION, AMR_SUB_EVENT_OF, AMR_EXTENT, AMR_RANGE,
+        AMR_SUBSET, AMR_SUBSET_OF, AMR_FREQUENCY, AMR_PART};
 
     public static final String AMR_VARS[] = {ALL, AMR_MINUS, ALL, ALL, ALL, ALL, ALL,
-        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
+        ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL, ALL};
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_THRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
         VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
-        FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF, DUL_ASSOCIATED_WITH};
+        FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF, DUL_ASSOCIATED_WITH, FRED_WITH};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
 
-    public static final int PATTERNS_NUMBER = 26;
+    public static final int PATTERNS_NUMBER = 27;
 
     public static final String QUOTE = "\"";
 

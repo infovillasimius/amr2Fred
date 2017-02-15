@@ -1384,7 +1384,7 @@ public class Parser {
         }
 
         if (instance.var.matches(Glossary.AMR_QUANTITY) && root.getChild(Glossary.AMR_UNIT) != null) {
-
+            //caso X-quantity + :unit
             Node unit = root.getChild(Glossary.AMR_UNIT);
             root.list.remove(unit);
             root.list.remove(root.getInstance());
@@ -1420,6 +1420,7 @@ public class Parser {
         }
 
         if (root.getChild(Glossary.AMR_SCALE) != null && root.getChild(Glossary.AMR_SCALE).getInstance() != null) {
+            //caso :scale
             Node scale = root.getChild(Glossary.AMR_SCALE);
             scale.relation = Glossary.FRED_ON;
             scale.var = firstUpper(scale.getInstance().var) + "_scale";
@@ -1427,6 +1428,7 @@ public class Parser {
         }
 
         if (root.getChild(Glossary.AMR_ORD) != null) {
+            //caso :ord
             Node ord = root.getChild(Glossary.AMR_ORD);
             root.list.remove(ord);
             ord.list.remove(ord.getInstance());

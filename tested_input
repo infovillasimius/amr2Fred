@@ -106,4 +106,4 @@ They feared him even when he was behind bars. -> (f / fear-01 :ARG0 (t / they) :
 The boy will sing if he is given money. -> (s / sing-01 :ARG0 (b / boy) :condition (g / give-01 :ARG1 (m / money) :ARG2 b))
 Unless the boy is given money, he will sing. -> (s / sing-01 :ARG0 (b / boy) :polarity - :condition (g / give-01 :ARG1 (m / money) :ARG2 b))
 I see either a boy, a girl or a dog -> (s / see-01 :arg0 (I / I) :arg1 (a / either :op1 (b / boy) :op2 (g / girl) :op3 (d / dog)))
-
+Sos-1 has been shown to be part of a signaling complex with Grb2, which mediates the activation of Ra -> (s / show-01 :ARG1 (h / have-part-91 :ARG1 (m / macro-molecular-complex :ARG0-of (s2 / signal-07) :part (p2 / protein :name (n2 / name :op1 "Grb2") :ARG0-of (m2 / mediate-01 :ARG1 (a / activate-01 :ARG1 (e / enzyme :name (n3 / name :op1 "Ras")) :condition (s3 / stimulate-01 :ARG1 (e2 / enzyme :name (n4 / name :op1 "RTK"))))))) :ARG2 (p / protein :name (n / name :op1 "Sos-1"))))
