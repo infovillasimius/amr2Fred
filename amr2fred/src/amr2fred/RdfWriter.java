@@ -24,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.rdf.model.*;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  * Translate Fred elements from the internal format to one from ["RDF/XML",
@@ -59,6 +60,7 @@ public class RdfWriter {
      */
     public static RdfWriter getWriter() {
         if (writer == null) {
+            BasicConfigurator.configure();
             writer = new RdfWriter();
         }
         writer.model = ModelFactory.createDefaultModel();
