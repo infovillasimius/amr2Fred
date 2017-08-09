@@ -37,14 +37,18 @@ public class StaticHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange he) throws IOException {
 
+        //Decodifica url passato al server e lo rende come stringa
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), "UTF-8");
+        
+        //ottiene l'header per la risposta (modificabile)
         Headers responseHeaders = he.getResponseHeaders();
 
         File f = null;
         FileHandler ext = new FileHandler();
 
         request = request.substring(1);
-
+              
+        //analizza stringa di richiesta
         switch (request) {
             case "":
                 ext.getFile(INDEX);
@@ -98,19 +102,23 @@ public class StaticHandler implements HttpHandler {
                 ext.getFile(LOADING);
                 f = new File(PAGESDIR + LOADING);
                 break;
+            
+            //qualsiasi richiesta al server non ricompresa nelle precedenti ottiene come risposta il logo di UniCA
             default:
                 ext.getFile(LOGO);
                 f = new File(PAGESDIR + LOGO);
 
         }
 
+        //recupera l'estensione del file da inviare per settare correttamente il mime type nell'header
         String est = f.getName().substring(f.getName().lastIndexOf('.') + 1);
 
         int x = Arrays.asList(MIME).indexOf(est);
         if (x > -1 && x < 7) {
             responseHeaders.set("content-type", MIME_TYPE[x]);
         }
-
+        
+        //invia il file
         he.sendResponseHeaders(200, f.length());
         try (OutputStream os = he.getResponseBody()) {
             Files.copy(f.toPath(), os);

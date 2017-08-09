@@ -20,6 +20,7 @@ import java.io.File;
 import org.apache.log4j.BasicConfigurator;
 
 /**
+ * Used by Amr2FredWebDemo to get AMR translated into RDF (text or graphic)
  * @author anto
  */
 public class Amr2fredWeb {

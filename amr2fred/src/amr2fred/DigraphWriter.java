@@ -30,11 +30,16 @@ import java.util.logging.Logger;
 import static webDemo.Glossary.*;
 
 /**
- *
+ * Returns graphic representation of translated root
  * @author anto
  */
 public class DigraphWriter {
 
+    /**
+     * Returns root Node translated into .dot graphic language
+     * @param root Node 
+     * @return String
+     */
     static public String nodeToDigraph(Node root) {
 
         String digraph = Glossary.DIGRAPH_INI;
@@ -58,6 +63,11 @@ public class DigraphWriter {
         return digraph;
     }
 
+    /**
+     * Returns an image file (png) of the translated root node
+     * @param root translated root node
+     * @return image file (png)
+     */
     static public File toPng(Node root) {
 
         File tmpOut = null;
@@ -82,6 +92,11 @@ public class DigraphWriter {
         return tmpOut;
     }
 
+    /**
+     * Return a String containing a SVG image of translated root node 
+     * @param root translated root node
+     * @return String containing a SVG image
+     */
     static public String toSvgString(Node root) {
 
         StringBuffer output = new StringBuffer();
@@ -105,7 +120,7 @@ public class DigraphWriter {
         } catch (IOException ex) {
             Logger.getLogger(DigraphWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //System.out.println(tmpOut.getAbsolutePath());
+       
         return output.toString();
     }
 }

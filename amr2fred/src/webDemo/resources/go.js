@@ -1,6 +1,5 @@
-$(document).ready(function () {
-
-    var l = $('.page').width();
+$(document).ready(function () {  
+    
     var fred;
     checkFred();
     riempi();
@@ -27,7 +26,7 @@ $(document).ready(function () {
             urlo += "&?objAsRes";
         }
 
-
+        
         var urlControl = urlo;
         var output = $('select#outMode option:selected').attr('value');
         var amr = $('#amr').val();
@@ -109,7 +108,9 @@ $(document).ready(function () {
 
 
         });
-
+        /**
+         * if fred checkbox is selected get FRED response
+         */
         if (fred) {
             $('#fredresult').show();    
             $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img id=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
@@ -126,10 +127,17 @@ $(document).ready(function () {
         }
     });
 
+    /**
+     * output mode on change action 
+     */
     $('#outMode').change(function (event) {
         chekRes();
     });
 
+    /**
+     * checkbox for select if the objects are resources or strings is shown only in textual modes 
+     * @returns {undefined}
+     */
     function chekRes(){
         var output = $('select#outMode option:selected').attr('value');
         if (output > 0) {
@@ -140,7 +148,9 @@ $(document).ready(function () {
     }
 
 
-
+    /**
+     * Example on change action
+     */
     $("#lista").change(function (event) {
         assegna();
         $('#fredresult').html("");
@@ -149,6 +159,9 @@ $(document).ready(function () {
         $('#fredresult').hide();
     });
 
+    /**
+     * Example on click action 
+     */
     $("#lista").click(function (event) {
         assegna();
         $('#fredresult').html("");
@@ -157,6 +170,10 @@ $(document).ready(function () {
         $('#fredresult').hide();
     });
 
+    /**
+     * Write the selected example to amr and text textareas
+     * @returns {undefined}
+     */
     function assegna() {
         var id = $('select#lista option:selected').attr('value');
         var t = $('select#lista option:selected').attr('title');
@@ -165,16 +182,22 @@ $(document).ready(function () {
             $('#text').val(t);
         }
     }
-
+    
+    /**
+     * load list of examples
+     * @returns {undefined}
+     */
     function riempi() {
-
         var client = new HttpClient();
         client.get("lista.txt", function (response) {
-
             $("#lista").html(response);
         });
     }
 
+    /**
+     * check fred checkbox showing and hiding result divs
+     * @returns {undefined}
+     */
     function checkFred() {
         if ($('#fred')[0].checked === true) {
             fred = true;
@@ -196,7 +219,7 @@ $(document).ready(function () {
 
 });
 
-
+/** Get results from server **/
 var HttpClient = function () {
     this.get = function (aUrl, aCallback) {
         var anHttpRequest = new XMLHttpRequest();

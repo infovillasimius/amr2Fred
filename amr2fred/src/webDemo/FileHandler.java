@@ -26,7 +26,7 @@ import static webDemo.Glossary.*;
 import webDemo.resources.Loader;
 
 /**
- *
+ * Extract requested file from the jar
  * @author Antonello
  */
 public class FileHandler {
@@ -47,6 +47,7 @@ public class FileHandler {
 
         if (!file.exists()) {
             try {
+                //Usa la classe fake Loader per trovare i file voluti contenuti nella stessa cartella
                 InputStream link = (Loader.class.getResourceAsStream(nomefile));
                 Files.copy(link, file.getAbsoluteFile().toPath());
                 file.setWritable(true, false);

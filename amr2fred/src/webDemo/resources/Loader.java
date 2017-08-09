@@ -17,7 +17,7 @@
 package webDemo.resources;
 
 /**
- *
+ * Used to get desired files
  * @author anto
  */
 public class Loader {

@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import static webDemo.Glossary.*;
 
 /**
- *
+ * Handler for amr2fred REST service 
  * @author anto
  */
 public class Handler implements HttpHandler {
@@ -54,6 +54,7 @@ public class Handler implements HttpHandler {
 
         String par = request;
         
+        //controllo per object as resources
         if (!par.contains(RES_OBJ)) {
             cb1 = false;
         } else {
@@ -61,13 +62,15 @@ public class Handler implements HttpHandler {
             cb1 = true;
         }
         
+        //controllo per promode
         if (par.contains(PROMODE)) {
             par = par.replace(PROMODE, "");
             proMode = false;
         } else {
             proMode = true;
         }
-
+        
+        //controllo per modo output
         if (par.contains(MODE + RDF_XML)) {
             par = par.replace(MODE + RDF_XML, "");
             writerMode = (Glossary.RdfWriteMode.RDF_XML.ordinal());
@@ -90,7 +93,8 @@ public class Handler implements HttpHandler {
         } else {
             proMode = (true);
         }
-
+        
+        //controllo per elimia errori dalla struttura dati
         if (par.contains(RID_ERR)) {
             par = par.replace(RID_ERR, "");
             cb = (true);
@@ -117,7 +121,7 @@ public class Handler implements HttpHandler {
         
         Headers responseHeaders = he.getResponseHeaders();
         
-        
+        //settaggio del mime_type
         if (!png || tmp == null) {
             String response = amr;
             if(svg){

@@ -29,7 +29,9 @@ import org.apache.commons.io.FileUtils;
 import static webDemo.Glossary.*;
 
 /**
- *
+ * Run the Web Server
+ * input par [IP address] [TCP Port]
+ * if no par is provided default is localhost
  * @author anto
  */
 public class Amr2FredWebDemo {

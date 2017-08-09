@@ -33,12 +33,18 @@ import java.util.logging.Logger;
 import static webDemo.Glossary.*;
 
 /**
- *
+ * Handler for FRED access requests
  * @author anto
  */
 public class FredHandler implements HttpHandler {
 
-    public File getFred(String text, String mode) {
+    /**
+     * 
+     * @param text the text to send to FRED
+     * @param mode output type
+     * @return 
+     */
+    private File getFred(String text, String mode) {
 
         File tmp = null;
 
@@ -49,6 +55,7 @@ public class FredHandler implements HttpHandler {
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
             conn.setDoOutput(false);
             conn.setRequestMethod("GET");
+            //determina l'output di FRED
             conn.setRequestProperty("accept", mode);
             InputStream in = conn.getInputStream();
             tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
@@ -76,7 +83,8 @@ public class FredHandler implements HttpHandler {
         //System.out.println(request);
         
         String par = request;
-
+        
+        //sono stati previsti esclusivamente i modi corrispondenti a quelli utilizzati da amr2fred
         if (par.contains(MODE + IMG)) {
             par = par.replace(MODE + IMG, "");
             mode = FRED_IMAGE;
@@ -101,7 +109,8 @@ public class FredHandler implements HttpHandler {
 
             tmp = getFred(text, mode);
         }
-
+        
+        //se qualcosa va storto serve il logo UniCa altrimenti invia quanto ottenuto da FRED
         if (tmp == null || !tmp.isFile()) {
             ext.getFile(LOGO);
             tmp = new File(PAGESDIR + LOGO);
