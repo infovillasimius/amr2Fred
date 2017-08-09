@@ -174,7 +174,7 @@ public class Amr2Fred extends Application {
                             RdfWriter writer = RdfWriter.getWriter();
                             writer.setMode(Glossary.RdfWriteMode.values()[writerMode]);
                             writer.setObjectAsResource(cb1.isSelected());
-                            fred.setText(writer.writeRdf(result));
+                            fred.setText(writer.writeRdf(result,cb1.isSelected()));
                         } else {
                             fred.setText(result.toString());
                         }

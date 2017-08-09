@@ -683,7 +683,7 @@ public class Parser {
                 }
 
                 n.relation = Glossary.DUL_HAS_QUALITY;
-                n.var = n.getInstance().var;
+                n.var = FRED+firstUpper(n.getInstance().var.replaceAll(FRED, ""));
                 n.list.remove(n.getInstance());
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
@@ -715,7 +715,7 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
 
                 //casi :degree :time con instance
-                n.var = n.getInstance().var;
+                n.var = FRED+n.getInstance().var;
                 n.list.remove(n.getInstance());
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null
@@ -724,9 +724,9 @@ public class Parser {
                 if (n.getInstance().var.matches(Glossary.AMR_VERB2) || !mannerAdverb(n.getInstance().var).isEmpty()) {
 
                     if (!mannerAdverb(n.getInstance().var).isEmpty()) {
-                        n.var = firstUpper(mannerAdverb(n.getInstance().var));
+                        n.var = FRED + firstUpper(mannerAdverb(n.getInstance().var));
                     } else {
-                        n.var = firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
+                        n.var = FRED + firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
                     }
                     n.list.remove(n.getInstance());
                 } else {
@@ -782,14 +782,12 @@ public class Parser {
                 ops.get(0).list.add(newN);
             }
 
-            if (n.getStatus() != REMOVE) {
-                //richiama il metodo di traduzione ricorsivamente
-                //n = listElaboration(n);
-            } else {
+            if (n.getStatus() == REMOVE) {
                 //aggiunge il nodo da rimuovere alla lista dei nodi rimossi
                 this.removed.add(n);
                 it.remove();
-            }
+            } 
+            
             //verifica che il nodo sia stato effettivamente tradotto
             if (n.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                 n.setStatus(AMR);
@@ -1337,7 +1335,7 @@ public class Parser {
                 arg.list.remove(arg.getInstance());
             }
             arg.relation = Glossary.DUL_HAS_QUALITY;
-            arg.var = parentVar;
+            arg.var = FRED+firstUpper(parentVar.replaceAll(FRED, ""));
             root.list.addAll(arg.list);
             arg.list.clear();
             root.list.add(arg);
@@ -1679,7 +1677,7 @@ public class Parser {
         }
 
         String var = root.getInstance().var;
-        Node quality = new Node(var, Glossary.DUL_HAS_QUALITY, OK);
+        Node quality = new Node(FRED+firstUpper(var.replaceAll(FRED, "")), Glossary.DUL_HAS_QUALITY, OK);
 
         Node manner = root.getChild(Glossary.AMR_MANNER);
         if (manner != null) {

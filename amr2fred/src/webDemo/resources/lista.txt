@@ -1,0 +1,109 @@
+<option value='(w / want-01 :ARG0 (b / boy) :ARG1 (b2 / believe-01 :ARG0 (g / girl) :ARG1 b))' title='The boy desires the girl to believe him'>The boy desires the girl to believe him</option>
+<option value='(b / boy :ARG0-of (w / want-01 :ARG1 (b2 / believe-01 :ARG1 (g / girl))) :ARG0-of b2)' title='The boy who wants to believe the girl'>The boy who wants to believe the girl</option>
+<option value='(a / adjust-01 :ARG0 (b / girl) :ARG1 (m / machine))' title='The girl adjusted the machine.'>The girl adjusted the machine</option>
+<option value='(k / kill-01 :time (y / yesterday))' title='The killing happened yesterday'>The killing happened yesterday</option>
+<option value='(a / and :op1 (b / boy) :op2 (g / girl))' title='The boy and the girl'>The boy and the girl</option>
+<option value='(b / boat :poss (h / he))' title='His boat'>His boat</option>
+<option value='(o / obligate-01 :ARG2 (g / go-02 :ARG0 (b / boy) :polarity -))' title='The boy must not go'>The boy must not go</option>
+<option value='(p / permit-01 :ARG1 (g / go-02 :ARG0 (b / boy)) :polarity -)' title='The boy may not go'>The boy may not go</option>
+<option value='(w / white-03 :ARG1 (m / marble))' title='The marble is white'>The marble is white</option>
+<option value='(s / see-01 :ARG0 (b / boy) :ARG1 (w / white-03 :ARG1 (m / marble)))' title='The boy sees that the marble is white'>The boy sees that the marble is white</option>
+<option value='(s / see-01 :ARG0 (b / boy) :ARG1 (m / marble :ARG1-of (w / white-03)))' title='The boy sees the white marble.'>The boy sees the white marble.</option>
+<option value='(s / see-01 :ARG0 (b / boy) :ARG1 (g / girl :ARG0-of (w / want-01 :ARG1 b)))' title='The boy saw the girl who wanted him'>The boy saw the girl who wanted him</option>
+<option value='(w / want-01 :ARG0 (g / girl :ARG1-of (s / see-01 :ARG0 (b / boy))) :ARG1 b)' title='The boy is wanted by the girl he saw.'>The boy is wanted by the girl he saw</option>
+<option value='(c / change-01 :ARG1 (d / document :instrument-of (r / regulate-01)))' title='The regulatory documents were changed'>The regulatory documents were changed</option>
+<option value='(w / want-01 :ARG0 (b / boy) :ARG1 (b2 / believe-01 :ARG0 b))' title='The boy wants to believe'>The boy wants to believe</option>
+<option value='(b / believe-01 :ARG0 (b / boy))' title='The boy believes'>The boy believes</option>
+<option value='(d / describe-01 :ARG0 (h / he) :ARG1 (m / mission) :ARG2 (f / failure))' title='He described the mission as a failure'>He described the mission as a failure</option>
+<option value='(c / comeback-00 :ARG0 (b / band))' title='The band experienced a comeback'>The band experienced a comeback</option>
+<option value='(p / possible-01 :ARG1 (g / go-02 :ARG0 (b / boy)))' title='The boy can go'>The boy can go</option>
+<option value='(o / obligate-01 :ARG2 (g / go-02 :ARG0 (b / boy)))' title='The boy must go'>The boy must go</option>
+<option value='(o / permit-01 :ARG1 (g / go-02 :ARG0 (b / boy)))' title='The boy may go'>The boy may go</option>
+<option value='(p / possible-01 :ARG1 (r / rain-01))' title='It may rain'>It may rain</option>
+<option value='(r / recommend-01 :ARG1 (g / go-02 :ARG0 (b / boy)))' title='The boy should go'>The boy should go</option>
+<option value='(l / likely-01 :ARG1 (g / go-02 :ARG0 (b / boy)))' title='The boy is likely to go'>The boy is likely to go</option>
+<option value='(p / prefer-01 :ARG0 (b / boy) :ARG1 (g / go-02 :ARG0 b))' title='The boy prefers to go'>The boy prefers to go</option>
+<option value='(u / use-01 :ARG0 (i / i) :ARG1 (w / work-01 :ARG0 i))' title='I am used to working'>I am used to working</option>
+<option value='(g / go-02 :ARG0 (b / boy) :polarity -)' title="The boy doesn't go.">The boy doesn't go</option>
+<option value='(p / possible-01 :ARG1  (g / go-02 :ARG0 (b / boy)) :polarity -)' title="The boy can't go">The boy can't go</option>
+<option value='(p / possible-01 :ARG1 (g / go-02 :ARG0 (b / boy) :polarity -))' title='It is possible for the boy not to go'>It is possible for the boy not to go</option>
+<option value='(p / obligate-01 :ARG2 (g / go-02 :ARG0 (b / boy)) :polarity -)' title='The boy must not go'>The boy must not go</option>
+<option value='(t / think-01 :ARG0 (b / boy) :ARG1 (w / win-01 :ARG0 (t2 / team :poss b) :polarity -))' title='The boy thinks his team won't win'>The boy thinks his team won't win</option>
+<option value='(h / have-01 :polarity - :ARG0 (i / i) :ARG1 (m / money))' title='I have no money'>I have no money</option>
+<option value='(a / appropriate-02 :polarity - :ARG1 (d / dress))' title='The dress is inappropriate'>The dress is inappropriate</option>
+<option value='(d / dress :ARG1-of (a / appropriate-02 :polarity -))' title='The inappropriate dress'>The inappropriate dress</option>
+<option value='(f / find-01 :ARG0 (g / girl) :ARG1 (a / amr-unknown))' title='What did the girl find?'>What did the girl find?</option>
+<option value='(k / know-01 :ARG0 (i / i) :ARG1 (p / person :ARG1-of (s / see-01 :ARG0 (y / you))))' title='I know who you saw'>I know who you saw</option>
+<option value='(f / find-01 :ARG0 (g / girl) :ARG1 (b / boy) :mode interrogative)' title='Did the girl find the boy?'>Did the girl find the boy?</option>
+<option value='(g / go-02 :mode imperative :ARG0 (y / you))' title='Go!'>Go!</option>
+<option value='(y/yippee :mode expressive)' title='Yippee!'>Yippee!</option>
+<option value='(a / account :mod (m / market :mod (m2 / money)))' title='Money-market account'>Money-market account</option>
+<option value='(c / charge-05 :ARG1 (h / he) :ARG2 (a / and :op1 (i / intoxicate-01 :ARG1 h :location (p / public)) :op2 (r / resist-01 :ARG0 h :ARG1 (a2 / arrest-01 :ARG1 h))))' title='He was charged with public intoxication and resisting arrest'>He was charged with public intoxication and resisting arrest</option>
+<option value='(h / hopeful-03 :ARG1 (g / girl)) ' title='The hopeful girl'>The hopeful girl</option>
+<option value='(s / small :domain (m / marble))' title='The marble is small'>The marble is small</option>
+<option value='(l / lawyer :domain (m / man))' title='The man is a lawyer'>The man is a lawyer</option>
+<option value='(m / man :mod (l / lawyer))' title='The man who is a lawyer'>The man who is a lawyer</option>
+<option value='(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))' title='Four boys making pies'>Four boys making pies</option>
+<option value='(d / destroy-01 :ARG0 (b / boy) :ARG1 (r / room))' title='The boy destroyed the room'>The boy destroyed the room</option>
+<option value='(t / thing :ARG1-of (p / propose-01))' title='The thing proposed'>The thing proposed</option>
+<option value='(t / thing :ARG1-of (o / opine-01 :ARG0 (b / boy))) ' title="The boy's opinion">The boy's opinion</option>
+<option value='(o / organization :ARG0-of (m / make-01 :ARG1 (c / chip)))' title='Chip maker organization'>Chip maker organization</option>
+<option value='(p / person :ARG0-of (i / invest-01) :mod (n / nerd))' title='Nerdy investor'>Nerdy investor</option>
+<option value='(w / work-01 :ARG0 (b / boy) :manner (h / hard-02)) ' title='The boy is a hard worker'>The boy is a hard worker</option>
+<option value='(m / man :ARG0-of (a / attract-01))' title='The attractive man'>The attractive man</option>
+<option value='(r / responsible-03 :ARG0 (b / boy) :ARG1 (w / work)) ' title='The boy is responsible for the work'>The boy is responsible for the work</option>
+<option value='(s / sadden-01 :ARG1 (g / girl) :ARG2 (d / disaster))' title='The girl was saddened by the disaster'>The girl was saddened by the disaster</option>
+<option value='(a / acquaint-01 :ARG1 (b / boy) :ARG2 (m / magic))' title='The boy is acquainted with magic'>The boy is acquainted with magic</option>
+<option value='(w / want-01 :ARG0 (b / boy) :ARG1 (p / please-01 :ARG0 b))' title='Boys want to please'>Boys want to please</option>
+<option value='(e / easy-05 :ARG1 (p / please-01 :ARG1 (g / girl)))' title='Girls are easy to please'>Girls are easy to please</option>
+<option value='(s / sandwich :ARG1-of (e / eat-01 :ARG1-of (p / possible-01)))' title='A sandwich that it is possible to eat'>A sandwich that it is possible to eat</option>
+<option value='(o / observe-01 :ARG0 (i / i) :ARG1  (m / move-01 :ARG0 (a / army) :manner (q / quick-02)))' title='I observed that the army moved quickly'>I observed that the army moved quickly</option>
+<option value='(d / drive-01 :ARG0 (h / he) :direction (w / west) :source (c / city :wiki "Houston" :name (n / name :op1 "Houston")) :destination (c2 / city :wiki "Austin,_Texas" :name (n2 / name :op1 "Austin")))' title='He drove west, from Houston to Austin'>He drove west, from Houston to Austin</option>
+<option value='(d / drive-01 :ARG0 (i / i) :destination (c / city :wiki "Indianapolis" :name (n / name :op1 "Indianapolis")) :path (r / road :wiki "Interstate_65" :name (n2 / name :op1 "I-65")))' title='I drove to Indianapolis on I-65'>I drove to Indianapolis on I-65</option>
+<option value='(s / hum-02 :ARG0 (s2 / soldier) :ARG1 (t2 / tune) :beneficiary (g / girl) :time (w / walk-01 :ARG0 g :accompanier s2 :destination (t / town)))' title='The soldier hummed a tune for the girl as he walked with her to town'>The soldier hummed a tune for the girl as he walked with her to town</option>
+<option value='(k / know-01 :polarity - :ARG0 (b / boy) :ARG1 (c / come-01 :ARG1 (g / girl) :mode interrogative))' title="The boy doesn't know if the girl came">The boy doesn't know if the girl came</option>
+<option value='(p / person :wiki "Barack_Obama" :name (n / name :op1 "Obama") :ARG0-of (h / have-org-role-91 :ARG1 (c / country :wiki "United_States" :name (n2 / name :op1 "US")) :ARG2 (p2 / president)))' title='US President Obama'>US President Obama</option>
+<option value='(h / have-rel-role-91 :ARG0 (h2 / he) :ARG1 (i / i) :ARG2 (b / brother-in-law))' title='He is my brother-in-law'>He is my brother-in-law</option>
+<option value='(p / person :wiki - :name (n / name :op1 "Jay" :op2 "Bartroff") :ARG0-of (h / have-org-role-91 :ARG1 (u / university :wiki "University_of_Southern_California" :name (n2 / name :op1 "USC")) :ARG2 (p2 / professor :mod (a / associate) :topic (m / mathematics))))' title='USC Associate Professor for Mathematics Jay Bartroff'>USC Associate Professor for Mathematics Jay Bartroff</option>
+<option value='(t / talk-01 :ARG0 (s / she) :ARG2 (h / he) :medium (l / language :wiki "French_language" :name (n / name :op1 "French")))' title='She talked to him in French'>She talked to him in French</option>
+<option value='(a / announce-01 :ARG0 (p / person :wiki - :name (n / name :op1 "John")) :ARG1 (b / bear-02 :ARG1 (p2 / person :ARG0-of (h / have-rel-role-91 :ARG1 p :ARG2 (s / son)))) :medium (p3 / product :wiki "Twitter" :name (n2 / name :op1 "Twitter")))' title='John announced the birth of his son on Twitter'>John announced the birth of his son on Twitter</option>
+<option value='(a / attack-01 :ARG0 (c / country :wiki "Iraq" :name (n / name :op1 "Iraq")) :instrument (m / missile))' title='Iraq launched a missile attack'>Iraq launched a missile attack</option>
+<option value='(w / work-01 :ARG0 (h / he) :duration (t / temporal-quantity :quant 2 :unit (h2 / hour)))' title='He worked for two hours'>He worked for two hours</option>
+<option value='(e / eat-01 :ARG0 (i / i) :ARG1 (p / pasta) :instrument (f / fork))' title='I ate pasta with a fork'>I ate pasta with a fork</option>
+<option value='(s / sing-01 :ARG0 (b / boy) :manner (b2 / beautiful-02 :degree (v / very)))' title='The boy sang very beautifully'>The boy sang very beautifully</option>
+<option value='(d / decorate-01 :ARG0 (h / he) :ARG1 (r / room) :manner (c / creative))' title='He decorated the room in a creative way'>He decorated the room in a creative way</option>
+<option value='(p / propose-01 :ARG0 (p3 / person :ARG0-of (h2 / have-org-role-91 :ARG2 (m / mayor))) :ARG1 (l / lower-01 :ARG1 (c / crime) :manner (h / hire-01 :ARG2 (p4 / person :ARG0-of (h3 / have-org-role-91 :ARG1 (p2 / police) :ARG2 (o / officer)) :mod (m2 / more)))))' title='The mayor proposed to lower crime by hiring more police officers'>The mayor proposed to lower crime by hiring more police officers</option>
+<option value='(g / go-02 :ARG0 (p / person :wiki - :name (n / name :op1 "Nicole")) :ARG4 (c / country :wiki "England" :name (n2 / name :op1 "England")) :manner (t / train))' title='Nicole went to England by train'>Nicole went to England by train</option>
+<option value='(g / go-02 :ARG0 (h / he) :ARG4 (s / store) :purpose (b / buy-01 :ARG0 h :ARG1 (w / wood :purpose (f / fence :mod (n / new)))))' title='He went to the store to buy wood for a new fence'>He went to the store to buy wood for a new fence</option>
+<option value='(m / murmur-01 :ARG0 (b / boy) :manner (s / soft-02) :purpose (s2 / soothe-01 :ARG1 (g / girl)) :cause (w / worry-01 :ARG0 b :topic g))' title='The boy murmured softly to soothe the girl, because he worried about her'>The boy murmured softly to soothe the girl, because he worried about her</option>
+<option value='(c / continue-01 :ARG1 (g / game) :concession (r / rain-01))' title='The game continued although it rained'>The game continued although it rained</option>
+<option value='(s / strike-01 :ARG0 (t / torpedo) :cause-of (d / damage-01 :ARG1 (s2 / ship)))' title='The torpedo struck, causing the ship to be damaged'>The torpedo struck, causing the ship to be damaged</option>
+<option value='(p / provide-01 :ARG0 (b / boy)  :ARG1 (c / chocolate) :ARG2 (g / girl))' title='The boy provided chocolate to the girl'>The boy provided chocolate to to the girl</option>
+<option value='(e / engine :part-of (c / car))   ' title="The car's engine">The car's engine</option>
+<option value='(u / unit :part-of (c / company))' title='A unit of the company'>A unit of the company</option>
+<option value='(s / south :part-of (c / country :wiki "France" :name (n / name :op1 "France")))' title='The south of France'>The south of France</option>
+<option value='(r / ring :consist-of (g / gold))' title='A ring of gold'>A ring of gold</option>
+<option value='(t / team :consist-of (m / monkey))' title='A team of monkeys'>A team of monkeys</option>
+<option value='(c / company :example (a / and :op1 (c2 / company :wiki "IBM" :name (n / name :op1 "IBM")) :op2 (c3 / company :wiki "Google" :name (n2 / name :op1 "Google"))))' title='Companies like IBM and Google'>Companies like IBM and Google</option>
+<option value='(w / win-01 :ARG0 (b / boy) :ARG1 (r / race-01 :subevent-of (g / game :wiki "Olympic_Games" :name (n / name :op1 "Olympics"))))' title='The boy won the race in the Olympics'>The boy won the race in the Olympics</option>
+<option value='(m / meet-03 :frequency 3 :ARG0 (w / we))' title='We met three times'>We met three times</option>
+<option value='(g / go-on-15 :ARG1 (r / road) :extent (f / forever))' title='The road goes on forever'>The road goes on forever</option>
+<option value='(q / distance-quantity :unit (m / mile) :quant 10)' title='Ten miles'>Ten miles</option>
+<option value='(g / group :wiki "Reed_Elsevier#Elsevier_NV" :name (e / name :op1 "Elsevier" :op2 "N.V.") :mod (c / country :wiki "Netherlands" :name (h / name :op1 "Netherlands")) :ARG0-of (p2 / publish-01))' title='Elsevier N.V., the Dutch publishing group'>Elsevier N.V., the Dutch publishing group</option>
+<option value='(b / build-01 :ARG0 (t / they) :ARG1 (b2 / bridge) :location (s / state :wiki "Maryland" :name (n / name :op1 "Maryland")) :time (d / date-entity :month 12))  ' title='They built the bridge in Maryland in December'>They built the bridge in Maryland in December</option>
+<option value='(b / boy :quant (s / several :op1 100))' title='Several hundred boys'>Several hundred boys</option>
+<option value='(b / boy :quant (m / more-than :op1 4000))' title='More than 4000 boys'>More than 4000 boys</option>
+<option value='(b / boy :quant (m / between :op1 4000 :op2 5000))' title='Between 4000 and 5000 boys'>Between 4000 and 5000 boys</option>
+<option value='(b / buy-01 :ARG0 (w / woman) :ARG1 (m / milk :quant (q / volume-quantity :unit (g / gallon) :quant 2)))' title='The woman bought two gallons of milk'>The woman bought two gallons of milk</option>
+<option value='(w / wait-01 :mode imperative :ARG1 (y / you) :duration (t / time) :location (u / under :op1 (s / star) :manner (e / exact)))' title='Wait for a time, exactly under the star'>Wait for a time , exactly under the star</option>
+<option value='(b / before :op1 (n / now) :quant (m / more-than :op1 (t / temporal-quantity :unit (y / year) :quant 30)))' title='more than 30 years ago'>more than 30 years ago</option>
+<option value='(c / crash-01 :ARG1 (p / plane) :location (r / relative-position :op1 (g / city :wiki "Moscow" :name (n / name :op1 "Moscow")) :quant (d / distance-quantity :unit (m / mile) :quant 50) :direction (e / east)))' title='The plane crashed 50 miles east of Moscow'>The plane crashed 50 miles east of Moscow</option>
+<option value='(q / seismic-quantity :quant 7.9 :unit (d /degree) :scale (r / richter))' title='7.9 on the Richter scale'>7.9 on the Richter scale</option>
+<option value='(r / reach-01 :ARG0 (v / velocity :poss (a / aircraft)) :ARG1 (p / product-of :op1 3 :op2 (s / speed :poss (s2 / sound))))' title="The aircraft's velocity reached three times the speed of sound">The aircraft's velocity reached three times the speed of sound</option>
+<option value='(f / finish-01 :ARG0 (p / person :wiki "Patrick_Makau_Musyoki" :name (n / name :op1 "Patrick" :op2 "Makau")) :ARG1 (r / run-02 :ARG0 p :ARG1 (m / marathon) :duration (s2 / sum-of :op1 (t2 / temporal-quantity :quant 2 :unit (h / hour)) :op2 (t3 / temporal-quantity :quant 3 :unit (m2 / minute)) :op3 (t4 / temporal-quantity :quant 38 :unit (s3 / second)))))' title='Patrick Makau finished the marathon in 2 hours, 3 minutes and 38 seconds'>Patrick Makau finished the marathon in 2 hours, 3 minutes and 38 seconds</option>
+<option value='(c / continue-01 :ARG1 (g / game) :concession (e / even-if :op1 (r / rain-01))) ' title='The game will continue even if it rains'>The game will continue even if it rains</option>
+<option value='(f / fear-01 :ARG0 (t / they) :ARG1 (h / he) :concession (e / even-when :op1 (i / imprison-01 :ARG1 h)))' title='They feared him even when he was behind bars'>They feared him even when he was behind bars</option>
+<option value='(s / sing-01 :ARG0 (b / boy) :condition (g / give-01 :ARG1 (m / money) :ARG2 b))' title='The boy will sing if he is given money'>The boy will sing if he is given money</option>
+<option value='(s / sing-01 :ARG0 (b / boy) :polarity - :condition (g / give-01 :ARG1 (m / money) :ARG2 b))' title='Unless the boy is given money, he will sing'>Unless the boy is given money, he will sing</option>
+<option value='(s / see-01 :arg0 (I / I) :arg1 (a / either :op1 (b / boy) :op2 (g / girl) :op3 (d / dog)))' title='I see either a boy, a girl or a dog'>I see either a boy, a girl or a dog</option>
+<option value='(s / show-01 :ARG1 (h / have-part-91 :ARG1 (m / macro-molecular-complex :ARG0-of (s2 / signal-07) :part (p2 / protein :name (n2 / name :op1 "Grb2") :ARG0-of (m2 / mediate-01 :ARG1 (a / activate-01 :ARG1 (e / enzyme :name (n3 / name :op1 "Ras")) :condition (s3 / stimulate-01 :ARG1 (e2 / enzyme :name (n4 / name :op1 "RTK"))))))) :ARG2 (p / protein :name (n / name :op1 "Sos-1"))))' title='Sos-1 has been shown to be part of a signaling complex with Grb2, which mediates the activation of Ra'>Sos-1 has been shown to be part of a signaling complex with Grb2, which mediates the activation of Ra</option>

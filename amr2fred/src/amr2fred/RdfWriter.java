@@ -96,8 +96,8 @@ public class RdfWriter {
      * @param root Node in internel language
      * @return The tree in the chosen format
      */
-    public String writeRdf(Node root) {
-        toRdf(root);
+    public String writeRdf(Node root, boolean objectAsResource ) {
+        toRdf(root,objectAsResource);
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         model.write(b, mode);
         String rdf = b.toString();
@@ -108,7 +108,7 @@ public class RdfWriter {
     Effettua la traduzione aggiungendo al modello Jena i nodi, a partire da quello radice,
     con una visita per livello. 
      */
-    private void toRdf(Node root) {
+    private void toRdf(Node root, boolean objectAsResource) {
 
         try {
             this.list.put(root);
@@ -132,7 +132,7 @@ public class RdfWriter {
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
 
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
-                    if (this.objectAsResource) {
+                    if (objectAsResource) {
                         if (n1.var.matches(Glossary.NN_INTEGER2)) {
                             Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
                             model.add(model.createStatement(r, p, o));

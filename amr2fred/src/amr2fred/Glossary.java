@@ -356,6 +356,11 @@ public class Glossary {
     public static final String NULL = "Null";
     public static final String PB = "pb:";
     public static final String ID = "id:";
+    
+    //Stringhe usate per la generazione del grafico .dot
+    public static final String DIGRAPH_INI="digraph {\n charset=\"utf-8\"; \n";
+    
+    
 
     /**
      * Array of Fred elements local names

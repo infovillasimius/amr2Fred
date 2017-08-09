@@ -28,37 +28,38 @@ import static amr2fred.Glossary.AMR_INVERSE;
 import static amr2fred.Glossary.NodeStatus.REMOVE;
 
 /**
- * Basic object for the data structure. 
+ * Basic object for the data structure.
+ *
  * @author anto
  */
 public class Node {
-    
+
     //usato per dare ad ogni nodo un identificativo univoco
-    static int id;                             
-    
+    static int id;
+
     //informazione usata per la gestione dell'indentazione nel metodo toString()
-    static int liv = 0; 
-    
+    static int liv = 0;
+
     //valore ramo
     String relation;
-    
+
     //valore foglia
-    String var; 
-    
+    String var;
+
     //nodi collegati
     ArrayList<Node> list;
-    
+
     //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
-    private NodeStatus status;                  
-    
+    private NodeStatus status;
+
     //usato per distinguere la lavorazione da effettuare su ogni nodo 
-    private NodeType type; 
-    
+    private NodeType type;
+
     //memorizza identificativo univoco del nodo
-    private int nodeId; 
-    
+    private int nodeId;
+
     //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
-    private String verb;                      
+    private String verb;
 
     public Node(String var, String relation) {
         this.var = var;
@@ -92,7 +93,7 @@ public class Node {
         } else {
             stringa = "{" + var + " -> ";
         }
-        
+
         if (!list.isEmpty()) {
             Node.liv++;
 
@@ -184,7 +185,7 @@ public class Node {
     Node getInverse() {
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) 
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)) {
@@ -193,16 +194,16 @@ public class Node {
         }
         return null;
     }
-    
-    ArrayList<Node> getInverses(){
-        ArrayList<Node> nodes=new ArrayList<>();
+
+    ArrayList<Node> getInverses() {
+        ArrayList<Node> nodes = new ArrayList<>();
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF) 
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
-                    && n.status!=REMOVE) {
+                    && n.status != REMOVE) {
                 nodes.add(n);
             }
         }
@@ -299,7 +300,6 @@ public class Node {
         /*if (this.type != Glossary.NodeType.VERB) {
         return argsList;
         }*/
-
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_ARG)) {
                 argsList.add(n);
@@ -307,8 +307,7 @@ public class Node {
         }
         return argsList;
     }
-    
-    
+
     /**
      * Restituisce una lista con i sottonodi di tipo :op
      *
@@ -329,16 +328,18 @@ public class Node {
     public int getNodeId() {
         return nodeId;
     }
-    
-    public void substitute(Node node){
-        this.var=node.var;
-        this.relation=node.relation;
-        this.nodeId=node.nodeId;
-        this.list= new ArrayList<>();
+
+    public void substitute(Node node) {
+        this.var = node.var;
+        this.relation = node.relation;
+        this.nodeId = node.nodeId;
+        this.list = new ArrayList<>();
         this.list.addAll(node.list);
-        this.status=node.status;
-        this.type=node.type;
-        this.verb=node.verb;     
+        this.status = node.status;
+        this.type = node.type;
+        this.verb = node.verb;
     }
+
+   
 
 }

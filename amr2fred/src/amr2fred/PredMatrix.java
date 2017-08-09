@@ -34,8 +34,9 @@ import java.util.logging.Logger;
  */
 public class PredMatrix {
 
-    private static String FILE = getPath() + "resource/predmatrix.txt";
-    private static final String FILE2 = "resource/predmatrix.txt";
+    //private static String FILE = getPath() + "resource/predmatrix.txt";
+    //private static final String FILE2 = "resource/predmatrix.txt";
+    private static final String FILE3 = "predmatrix.txt";
     private static PredMatrix p;
     private final ArrayList<Line> matrix;
 
@@ -58,7 +59,8 @@ public class PredMatrix {
     private ArrayList<Line> read() {
         try {
             ArrayList<Line> l = new ArrayList<>();
-            BufferedReader reader = new BufferedReader(new FileReader(FILE));
+            //BufferedReader reader = new BufferedReader(new FileReader(FILE));
+            BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(getClass().getResourceAsStream(FILE3)));
             String line = reader.readLine();
             line = reader.readLine();
 
@@ -71,8 +73,8 @@ public class PredMatrix {
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
-            FILE = FILE2;
-            return read();
+            //FILE = FILE2;
+            //return read();
         } catch (IOException ex) {
             Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -189,15 +191,15 @@ public class PredMatrix {
         return result;
     }
 
-    private static String getPath() {
-        try {
-            String path = PredMatrix.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String decodedPath = URLDecoder.decode(path, "UTF-8");
-            return decodedPath.substring(0, decodedPath.length() - 12);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Amr2Fred.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
+    /*private static String getPath() {
+    try {
+    String path = PredMatrix.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+    String decodedPath = URLDecoder.decode(path, "UTF-8");
+    return decodedPath.substring(0, decodedPath.length() - 12);
+    } catch (UnsupportedEncodingException ex) {
+    Logger.getLogger(Amr2Fred.class.getName()).log(Level.SEVERE, null, ex);
     }
+    return "";
+    }*/
 
 }
