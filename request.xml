@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<request>
+<amr>amr text</amr>
+<mode> RDFXML / RDFXML_ABBREV / N_TRIPLES / TURTLE </mode>
+<object> RESOURCE / STRING </object>
+<errors> yes / no </errors>
+<format> FRED / PROP </format>
+</request>
