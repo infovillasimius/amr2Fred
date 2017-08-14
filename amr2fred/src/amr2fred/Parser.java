@@ -333,6 +333,9 @@ public class Parser {
         //verifica inversi
         root = this.inverseChecker(root);
 
+        //verifica rate-entity-91
+        root = this.rateEntity(root);
+
         // verifica reifing
         root = this.reifi(root);
 
@@ -657,9 +660,9 @@ public class Parser {
                 n.setStatus(OK);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
-                    || n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY)) && n.getInstance() == null) {
+                    || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER))) && n.getInstance() == null) {
 
-                //casi :quant  e :frequency con valore numerico
+                //casi :quant  e :frequency con valore numerico 
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
                 if ((n.var.matches(Glossary.NN_INTEGER) && Integer.parseInt(n.var) != 1) || !n.var.matches(Glossary.NN_INTEGER)) {
                     toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
@@ -683,7 +686,7 @@ public class Parser {
                 }
 
                 n.relation = Glossary.DUL_HAS_QUALITY;
-                n.var = FRED+firstUpper(n.getInstance().var.replaceAll(FRED, ""));
+                n.var = FRED + firstUpper(n.getInstance().var.replaceAll(FRED, ""));
                 n.list.remove(n.getInstance());
                 toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
@@ -715,7 +718,7 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
 
                 //casi :degree :time con instance
-                n.var = FRED+n.getInstance().var;
+                n.var = FRED + n.getInstance().var;
                 n.list.remove(n.getInstance());
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null
@@ -734,6 +737,11 @@ public class Parser {
                     //caso :manner non verbale
                     n.relation = Glossary.VN_ROLE_LOCATION;
                 }
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null && root.getInstance() != null
+                    && isVerb(n.getInstance().var)) {
+                // caso manner verbale 
+                n.relation = FRED + root.getInstance().var.substring(0, n.getInstance().var.length() - 3) + Glossary.BY;
+
             } else if (n.relation.startsWith(Glossary.AMR_PREP)) {
                 n.relation = n.relation.replace(Glossary.AMR_PREP, FRED);
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
@@ -786,8 +794,8 @@ public class Parser {
                 //aggiunge il nodo da rimuovere alla lista dei nodi rimossi
                 this.removed.add(n);
                 it.remove();
-            } 
-            
+            }
+
             //verifica che il nodo sia stato effettivamente tradotto
             if (n.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                 n.setStatus(AMR);
@@ -1335,7 +1343,7 @@ public class Parser {
                 arg.list.remove(arg.getInstance());
             }
             arg.relation = Glossary.DUL_HAS_QUALITY;
-            arg.var = FRED+firstUpper(parentVar.replaceAll(FRED, ""));
+            arg.var = FRED + firstUpper(parentVar.replaceAll(FRED, ""));
             root.list.addAll(arg.list);
             arg.list.clear();
             root.list.add(arg);
@@ -1440,7 +1448,7 @@ public class Parser {
 
             }
         }
-        
+
         return root;
     }
 
@@ -1541,20 +1549,26 @@ public class Parser {
         Node weekDay = root.getChild(Glossary.AMR_DATE_WEEKDAY);
         Node dayperiod = root.getChild(Glossary.AMR_DATE_DAY_PERIOD);
 
-        if (weekDay != null) {
-            root.list.remove(weekDay);
+        if (weekDay != null && dayperiod == null) {
             root.var = FRED + firstUpper(weekDay.getInstance().var);
-            root.setStatus(OK);
-        }
-
-        if (dayperiod != null && weekDay == null) {
-            root.var = firstUpper(dayperiod.getInstance().var);
+            root.list.remove(weekDay);
+            root.list.addAll(weekDay.list);
+        } else if (dayperiod != null && weekDay == null) {
+            root.var = FRED + firstUpper(dayperiod.getInstance().var);
             root.list.remove(dayperiod);
-            dayperiod.list.remove(dayperiod.getInstance());
             root.list.addAll(dayperiod.list);
             top = false;
-        } else if (dayperiod != null){
-            
+        } else if (dayperiod != null && weekDay != null) {
+            root.var = FRED + firstUpper(dayperiod.getInstance().var);
+            root.list.remove(dayperiod);
+            root.list.addAll(dayperiod.list);
+            top = false;
+            weekDay.relation = Glossary.DUL_ASSOCIATED_WITH;
+            if (weekDay.getInstance() != null) {
+                instance = weekDay.getInstance();
+                weekDay.list.remove(instance);
+                weekDay.var = FRED + firstUpper(instance.var);
+            }
         }
 
         Node quarter = root.getChild(Glossary.AMR_DATE_QUARTER);
@@ -1659,6 +1673,14 @@ public class Parser {
             }
         }
 
+        Node time = root.getChild(Glossary.AMR_TIME);
+        if (time != null) {
+            root.var = FRED + time.var;
+            root.list.remove(time);
+            root.list.addAll(time.list);
+            root.relation = Glossary.VN_ROLE_TIME;
+        }
+
         return root;
     }
 
@@ -1677,7 +1699,7 @@ public class Parser {
         }
 
         String var = root.getInstance().var;
-        Node quality = new Node(FRED+firstUpper(var.replaceAll(FRED, "")), Glossary.DUL_HAS_QUALITY, OK);
+        Node quality = new Node(FRED + firstUpper(var.replaceAll(FRED, "")), Glossary.DUL_HAS_QUALITY, OK);
 
         Node manner = root.getChild(Glossary.AMR_MANNER);
         if (manner != null) {
@@ -1727,7 +1749,7 @@ public class Parser {
         }
 
         String var = instance.var;
-        
+
         if (var.equalsIgnoreCase(Glossary.REIFI_BENEFIT)
                 || var.equalsIgnoreCase(Glossary.REIFI_EXEMPLIFY)) {
 
@@ -1913,6 +1935,92 @@ public class Parser {
             return ordinal(num);
         }
         return "";
+    }
+
+    private Node rateEntity(Node root) {
+        if (root.list.isEmpty() || (root.getInstance() == null)) {
+            return root;
+        }
+
+        if (root.getInstance().var.equalsIgnoreCase(Glossary.RATE_ENTITY)) {
+            Node instance = root.getInstance();
+            root.list.remove(instance);
+
+            Node arg1 = root.getChild(Glossary.AMR_ARG1);
+            Node arg2 = root.getChild(Glossary.AMR_ARG2);
+            Node arg3 = root.getChild(Glossary.AMR_ARG3);
+            Node arg4 = root.getChild(Glossary.AMR_ARG4);
+
+            if (arg1 != null) {
+                int n = 1;
+                if (arg1.var.matches(Glossary.NN_INTEGER)) {
+                    n = Integer.parseInt(arg1.var);
+                    root.var = "t";
+                    instance.var = "time";
+                    root.list.add(instance);
+
+                    if (n > 1) {
+                        root.list.add(new Node(Glossary.QUANT + "multiple", Glossary.QUANT_HAS_QUANTIFIER, OK));
+                    }
+                    arg1.relation = Glossary.DUL_HAS_DATA_VALUE;
+                } else if (arg1.getInstance() != null
+                        && arg1.getInstance().var.equalsIgnoreCase("several")) {
+                    root.var = "t";
+                    instance.var = "time";
+                    root.list.add(instance);
+                    root.list.add(new Node(Glossary.QUANT + "multiple", Glossary.QUANT_HAS_QUANTIFIER, OK));
+                    arg1.relation = Glossary.DUL_HAS_QUALITY;
+                    arg1.var=FRED+"Several";
+                    arg1.list.remove(arg1.getInstance());
+
+                } else if (arg1.getInstance() != null && !arg1.getInstance().var.equalsIgnoreCase("several")) {
+                    root.list.remove(arg1);
+                    root.var = arg1.var;
+                    root.list.addAll(arg1.list);
+                }
+
+            }
+
+            if (arg2 != null) {
+                arg2.relation = FRED + "per";
+            }
+
+            if (arg4 != null && arg3 == null) {
+                root.list.remove(arg4);
+                root.var = arg4.var;
+                root.list.addAll(arg4.list);
+                root.list.add(new Node(Glossary.QUANT_EVERY, Glossary.QUANT_HAS_QUANTIFIER, OK));
+            }
+
+            if (arg3 != null && arg4 == null) {
+                root.list.remove(arg3);
+                root.var = arg3.var;
+                root.list.addAll(arg3.list);
+                root.list.add(new Node(Glossary.QUANT_EVERY, Glossary.QUANT_HAS_QUANTIFIER, OK));
+            }
+
+            if (arg3 != null && arg4 != null && arg1 == null) {
+                root.list.remove(arg3);
+                root.var = arg3.var;
+                root.list.addAll(arg3.list);
+                root.list.add(new Node(Glossary.QUANT_EVERY, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                arg4.relation = Glossary.DUL_ASSOCIATED_WITH;
+
+            }
+
+            if (arg3 != null && arg4 != null && arg1 != null) {
+
+                arg3.relation = Glossary.DUL_ASSOCIATED_WITH;
+                arg4.relation = Glossary.DUL_ASSOCIATED_WITH;
+
+            }
+
+        }
+
+        for (Node n : root.list) {
+            n = rateEntity(n);
+        }
+        return root;
     }
 
 }

@@ -104,6 +104,8 @@ public class Glossary {
      * Local name for quant
      */
     public static final String QUANT = "quant:";
+    
+    public static final String QUANT_EVERY=QUANT+"every";
 
     /**
      * Name space for quant
@@ -186,6 +188,7 @@ public class Glossary {
     public static final String REIFI_BE_TEMPORALLY_AT = "be-temporally-at-91";
 
     public static final String RATE_ENTITY = "rate-entity-91";
+    
 
     /**
      * Local name for vn.data
@@ -230,9 +233,11 @@ public class Glossary {
     public static final String AMR_MINUS = "-";
     public static final String AMR_MODE = ":mode";
     public static final String AMR_POSS = ":poss";
+    public static final String AMR_ARG0 = ":arg0";
     public static final String AMR_ARG1 = ":arg1";
     public static final String AMR_ARG2 = ":arg2";
-    public static final String AMR_ARG0 = ":arg0";
+    public static final String AMR_ARG3 = ":arg3";
+    public static final String AMR_ARG4 = ":arg4";
     public static final String AMR_OP1 = ":op1";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
@@ -316,6 +321,7 @@ public class Glossary {
 
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "Of";
+    public static final String BY = "By";
     public static final String CITY = "city";
     public static final String FRED_MALE = "male";
     public static final String FRED_FEMALE = "female";
