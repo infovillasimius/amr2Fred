@@ -18,14 +18,19 @@ package webDemo;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -34,15 +39,16 @@ import static webDemo.Glossary.*;
 
 /**
  * Handler for FRED access requests
+ *
  * @author anto
  */
 public class FredHandler implements HttpHandler {
 
     /**
-     * 
+     *
      * @param text the text to send to FRED
      * @param mode output type
-     * @return 
+     * @return
      */
     private File getFred(String text, String mode) {
 
@@ -79,11 +85,10 @@ public class FredHandler implements HttpHandler {
         File tmp = null;
 
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
-        
+
         //System.out.println(request);
-        
         String par = request;
-        
+
         //sono stati previsti esclusivamente i modi corrispondenti a quelli utilizzati da amr2fred
         if (par.contains(MODE + IMG)) {
             par = par.replace(MODE + IMG, "");
@@ -109,7 +114,7 @@ public class FredHandler implements HttpHandler {
 
             tmp = getFred(text, mode);
         }
-        
+
         //se qualcosa va storto serve il logo UniCa altrimenti invia quanto ottenuto da FRED
         if (tmp == null || !tmp.isFile()) {
             ext.getFile(LOGO);
@@ -123,6 +128,35 @@ public class FredHandler implements HttpHandler {
             tmp.delete();
         }
 
+    }
+
+    public static String getFredString(String text, String mode) {
+
+        String tmp = null;
+
+        try {
+            String request = URLEncoder.encode(text, ENC);
+            String url = COMMAND + request + COMMAND2;
+            URL obj = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setDoOutput(false);
+            conn.setRequestMethod("GET");
+            //determina l'output di FRED
+            conn.setRequestProperty("accept", mode);
+            InputStream in = conn.getInputStream();
+            StringBuilder textBuilder = new StringBuilder();
+            Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName(StandardCharsets.UTF_8.name())));
+            int c = 0;
+            while ((c = reader.read()) != -1) {
+                textBuilder.append((char) c);
+            }
+            tmp = textBuilder.toString();
+
+        } catch (IOException e) {
+            Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return tmp;
     }
 
 }
