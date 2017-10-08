@@ -365,6 +365,7 @@ public class Glossary {
     
     //Stringhe usate per la generazione del grafico .dot
     public static final String DIGRAPH_INI="digraph {\n charset=\"utf-8\"; \n";
+    public static final String DIGRAPH_END="}";
     
     
 
@@ -681,7 +682,7 @@ public class Glossary {
      * Node types in AMR
      */
     public enum NodeType {
-        NOUN, VERB, OTHER
+        NOUN, VERB, OTHER, AMR2FRED, FRED, COMMON
     }
 
     /**

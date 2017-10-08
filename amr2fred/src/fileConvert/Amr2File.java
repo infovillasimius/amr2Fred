@@ -57,7 +57,8 @@ public class Amr2File {
         Amr2fredWeb amr2fred = new Amr2fredWeb();
         boolean flag = false;
         String line;
-        String amr,sentence,rdf1,rdf2;
+        String amr, sentence, rdf1, rdf2;
+        Comparator c;
 
         try {
             ArrayList<String> l = new ArrayList<>();
@@ -66,29 +67,64 @@ public class Amr2File {
             line = reader.readLine();
 
             while (line != null) {
-                
+
                 if (line.contains("</sntamr>")) {
                     flag = false;
-                    sentence=getSentence(l);
-                    amr=getAmr(l);
-                    rdf1=amr2fred.go(amr, 1, 0, true, true, true);
-                    rdf2=FredHandler.getFredString(sentence, webDemo.Glossary.FRED_RDF);
                     
+                    sentence = getSentence(l);
+                    if (sentence.endsWith(".")) {
+                        sentence = sentence.substring(0, sentence.length() - 1);
+                    }
+                    System.out.println(sentence);
+                    amr = getAmr(l);
+                    while (amr.contains("  ")) {
+                        amr = amr.replaceAll("  ", " ");
+                    }
+
+                    rdf1 = amr2fred.go(amr, 2, 1, true, true, true);
+                    //System.out.println(rdf1);
+                    rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
+                    //System.out.println(rdf2);
+                    
+                    c=new Comparator(rdf2,rdf1);
+
                     writer.append(sentence);
                     writer.newLine();
                     writer.newLine();
                     writer.append(amr);
                     writer.newLine();
                     writer.newLine();
+                    writer.append("Fred");
+                    writer.newLine();
                     writer.append(rdf2);
                     writer.newLine();
+                    writer.newLine();
+                    writer.append("amr2fred");
                     writer.newLine();
                     writer.append(rdf1);
                     writer.newLine();
                     writer.newLine();
+                    
+                    writer.append("Fred / amr2fred = "+c.getFma()*100+"%");
+                    writer.newLine();
+                    
+                    for(Triple t: c.getfMinusA()){
+                        writer.append(t.toString());
+                        writer.newLine();
+                    }
+                    writer.newLine();
+                    
+                    writer.append("amr2fred / Fred = "+c.getAmf()*100+"%");
+                    writer.newLine();
+                    for(Triple t: c.getaMinusF()){
+                        writer.append(t.toString());
+                        writer.newLine();
+                    }
+                    writer.newLine();
+                    writer.newLine();
                     l = new ArrayList<>();
                 }
-                
+
                 if (flag) {
                     l.add(line);
                 }
@@ -100,6 +136,12 @@ public class Amr2File {
                 line = reader.readLine();
             }
             
+            writer.newLine();
+            writer.append("Total generated triples = "+Triple.gettNum());
+            writer.newLine();
+            writer.append("Total correct triples = "+Comparator.getCorrect());
+            writer.newLine();
+            writer.append("Average = "+Comparator.getAverage());
             writer.flush();
 
         } catch (FileNotFoundException ex) {
@@ -118,39 +160,39 @@ public class Amr2File {
 
         for (String s : l) {
 
-            if(s.contains("<sentence")){
-                int i=s.indexOf(">");
-                int i2=s.indexOf("</sentence>");
-                temp=s.substring(i+1, i2);
+            if (s.contains("<sentence")) {
+                int i = s.indexOf(">");
+                int i2 = s.indexOf("</sentence>");
+                temp = s.substring(i + 1, i2);
+                //System.out.println(temp);
                 return temp;
             }
 
         }
         return null;
     }
-    
-    private static String getAmr(ArrayList<String> l){
+
+    private static String getAmr(ArrayList<String> l) {
         String temp = "";
         boolean flag = false;
-        
+
         for (String s : l) {
-            
-            if(s.contains("</amr>")){
+
+            if (s.contains("</amr>")) {
                 return temp;
             }
-                       
-            if(flag){
-                temp+=s;
+
+            if (flag) {
+                temp += s;
                 //System.out.println(temp);
             }
-            
-            
-            if(s.contains("<amr")){
-                flag=true;
+
+            if (s.contains("<amr")) {
+                flag = true;
             }
 
         }
-        
+
         return null;
     }
 

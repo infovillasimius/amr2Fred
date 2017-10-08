@@ -25,37 +25,46 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static webDemo.Glossary.*;
 
 /**
  * Returns graphic representation of translated root
+ *
  * @author anto
  */
 public class DigraphWriter {
 
     /**
      * Returns root Node translated into .dot graphic language
-     * @param root Node 
+     *
+     * @param root Node
      * @return String
      */
     static public String nodeToDigraph(Node root) {
 
         String digraph = Glossary.DIGRAPH_INI;
         digraph += toDigraph(root);
-        return digraph + "}";
+        return digraph + Glossary.DIGRAPH_END;
     }
 
     static private String toDigraph(Node root) {
 
         String digraph = "";
-        digraph += "\"" + root.getNodeId() + "\" [label=\"" + root.var + "\", shape=box ];\n";
+        digraph += "\"" + root.var /*getNodeId()*/ + "\" [label=\"" + root.var + "\", shape=box,";
+        if (root.var.startsWith(amr2fred.Glossary.FRED)) {
+            digraph += " color=\"0.5 0.3 0.5\" ];\n";
+        } else {
+            digraph += " color=\"1.0 0.3 0.7\" ];\n";
+        }
+
         if (!root.list.isEmpty() && root.getTreStatus() == 0) {
             for (Node a : root.list) {
-                digraph += "\"" + a.getNodeId() + "\" [label=\"" + a.var + "\", shape=box ];\n";
+                digraph += "\"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.var + "\", shape=box ];\n";
                 if (!a.relation.equalsIgnoreCase(Glossary.TOP)) {
-                    digraph += "\"" + root.getNodeId() + "\" -> \"" + a.getNodeId() + "\" [label=\"" + a.relation + "\"];\n";
+                    digraph += "\"" + root.var /*getNodeId()*/ + "\" -> \"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.relation + "\"];\n";
                 }
                 digraph += toDigraph(a);
             }
@@ -65,6 +74,7 @@ public class DigraphWriter {
 
     /**
      * Returns an image file (png) of the translated root node
+     *
      * @param root translated root node
      * @return image file (png)
      */
@@ -74,7 +84,7 @@ public class DigraphWriter {
         try {
             File tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
             tmpOut = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
-            Path tmpOutPath=tmpOut.getAbsoluteFile().toPath();
+            Path tmpOutPath = tmpOut.getAbsoluteFile().toPath();
             tmpOut.delete();
             BufferedWriter buff = new BufferedWriter(new FileWriter(tmp));
             buff.write(nodeToDigraph(root));
@@ -93,7 +103,8 @@ public class DigraphWriter {
     }
 
     /**
-     * Return a String containing a SVG image of translated root node 
+     * Return a String containing a SVG image of translated root node
+     *
      * @param root translated root node
      * @return String containing a SVG image
      */
@@ -120,7 +131,7 @@ public class DigraphWriter {
         } catch (IOException ex) {
             Logger.getLogger(DigraphWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+
         return output.toString();
     }
 }

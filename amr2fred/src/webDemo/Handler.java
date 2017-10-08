@@ -94,7 +94,7 @@ public class Handler implements HttpHandler {
             proMode = (true);
         }
         
-        //controllo per elimia errori dalla struttura dati
+        //controllo per elimina errori dalla struttura dati
         if (par.contains(RID_ERR)) {
             par = par.replace(RID_ERR, "");
             cb = (true);

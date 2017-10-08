@@ -339,6 +339,15 @@ public class Node {
         this.type = node.type;
         this.verb = node.verb;
     }
+    
+    Node getPoss(){
+        for (Node n : list) {
+            if (n.relation.matches(Glossary.AMR_POSS)) {
+                return n;
+            }
+        }
+        return null;
+    }
 
    
 

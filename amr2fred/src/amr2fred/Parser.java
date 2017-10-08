@@ -536,7 +536,15 @@ public class Parser {
                 this.setEquals(root);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
+                if(root.getPoss()!=null && root.getInstance() != null){
+                     
 
+                // caso :poss
+                root.getPoss().relation = FRED + root.getInstance().var.replaceAll(FRED, "") + Glossary.OF;
+                //root.getPoss().setStatus(OK);
+
+            
+                }
                 //caso :name
                 ArrayList<Node> ops = n.getOps();
                 if (!ops.isEmpty()) {
@@ -558,6 +566,8 @@ public class Parser {
                 n.setStatus(REMOVE);
 
             }
+            
+            
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI) && root.getInstance() != null
                     && n.getChild(Glossary.RDF_TYPE) == null) {
