@@ -62,8 +62,8 @@ public class Comparator {
     }
 
     private void calculate() {
-        this.amf = 1 - ((float) this.aMinusF.size() / this.a2fResult.size());
-        this.fma = 1 - ((float) this.fMinusA.size() / this.fredResult.size());
+        this.amf = 1.0 - ((float) this.aMinusF.size() / this.a2fResult.size());
+        this.fma = 1.0 - ((float) this.fMinusA.size() / this.fredResult.size());
     }
 
     public ArrayList<Triple> getfMinusA() {
@@ -114,8 +114,10 @@ public class Comparator {
             triple = new Triple(temp, temp1, temp2);
             //System.out.println(triple);
             if (!list.contains(triple)) {
-                list.add(triple);
+                
             }
+            
+            list.add(triple);
         }
         return list;
     }

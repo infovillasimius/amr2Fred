@@ -2051,7 +2051,7 @@ public class Parser {
         String classe = "", sottoclasse = "";
         String result = vnClass.substring(0, i + 1);
         vnClass = vnClass.substring(i + 1);
-        System.out.println(vnClass);
+        //System.out.println(vnClass);
 
         i = vnClass.indexOf(".");
         int j = vnClass.indexOf("-");
