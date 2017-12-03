@@ -132,7 +132,7 @@ $(document).ready(function () {
             
             client.get(urlo2, function (response) {
                 
-                $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><textarea id=\"compareresult2\" name=\"compareresult2\" rows=\"12\" cols=\"200\"></textarea>");
+                $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><textarea id=\"compareresult2\" name=\"compareresult2\" rows=\"12\" cols=\"200\" readonly=\"readonly\"></textarea>" );
                 $('#compareresult2').val(response);
 
             });
