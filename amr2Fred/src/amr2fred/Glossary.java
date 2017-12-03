@@ -318,6 +318,8 @@ public class Glossary {
     public static final String AMR_PREP_WITH = ":prep-with";
     public static final String AMR_PREP_WITHIN = ":prep-within";
     public static final String AMR_PREP_WITHOUT = ":prep-without";
+    
+    public static final String AMR_ENTITY="-entity";
 
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "Of";

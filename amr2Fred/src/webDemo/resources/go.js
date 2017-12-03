@@ -234,6 +234,7 @@ $(document).ready(function () {
     $(".tooltip").tooltip();
     $('#text').tooltip();
     $('#amr').tooltip();
+    $('#compareresult').tooltip();
 
 });
 

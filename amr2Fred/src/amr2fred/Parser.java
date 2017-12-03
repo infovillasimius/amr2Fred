@@ -761,6 +761,19 @@ public class Parser {
                 n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
             }
+            
+            if(n.relation.equalsIgnoreCase(Glossary.AMR_VALUE) && n.getInstance()==null){
+                if (n.var.matches(Glossary.NN_INTEGER2) || n.var.matches(Glossary.NN_INTEGER)){
+                    n.relation=Glossary.DUL_HAS_DATA_VALUE;
+                } else {
+                    n.relation=Glossary.DUL_HAS_QUALITY;
+                    n.var=FRED+n.var;
+                }
+            }
+            
+            if (n.var.contains(Glossary.AMR_ENTITY)){
+                n.var=n.var.replace(Glossary.AMR_ENTITY, "");
+            }
 
             if (n.getStatus() != REMOVE) {
 
@@ -899,9 +912,9 @@ public class Parser {
                     Node rdfNode = root.getChild(Glossary.RDF_TYPE);
 
                     if (vnSubClass.equalsIgnoreCase(Glossary.NULL) && !vnClass.equalsIgnoreCase(Glossary.NULL)) {
-                        rdfNode.list.add(new Node(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnClass, Glossary.OWL_EQUIVALENT_CLASS, OK));
+                        rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
                     } else if (!vnSubClass.equalsIgnoreCase(Glossary.NULL)) {
-                        rdfNode.list.add(new Node(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnSubClass, Glossary.OWL_EQUIVALENT_CLASS, OK));
+                        rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnSubClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
                     }
                     //Elabora i nodi argomento esplicitando i relativi nodi
                     for (Node n : root.getArgs()) {
@@ -2031,6 +2044,73 @@ public class Parser {
             n = rateEntity(n);
         }
         return root;
+    }
+    
+   private static String serializeClass(String vnClass) {
+        int i = vnClass.indexOf("_");
+        String classe = "", sottoclasse = "";
+        String result = vnClass.substring(0, i + 1);
+        vnClass = vnClass.substring(i + 1);
+        System.out.println(vnClass);
+
+        i = vnClass.indexOf(".");
+        int j = vnClass.indexOf("-");
+        if (i == -1 && j == -1) {
+            return result + vnClass + "00000000".substring(vnClass.length());
+        }
+        if (i != -1) {
+            classe += vnClass.substring(0, i);
+            vnClass = vnClass.substring(i + 1);
+        } else if (j != -1) {
+            classe += vnClass.substring(0, j);
+            vnClass = vnClass.substring(j + 1);
+        }
+
+        i = vnClass.indexOf(".");
+        j = vnClass.indexOf("-");
+        if (i == -1 && j == -1) {
+            return result + classe + vnClass + "00000000".substring((classe + vnClass).length());
+        }
+        if (i != -1) {
+            sottoclasse = vnClass.substring(0, i);
+            if (sottoclasse.length() < 2) {
+                sottoclasse = "0" + sottoclasse;
+            }
+            classe += sottoclasse;
+            vnClass = vnClass.substring(i + 1);
+        } else if (j != -1) {
+            sottoclasse = vnClass.substring(0, j);
+            if (sottoclasse.length() < 2) {
+                sottoclasse = "0" + sottoclasse;
+            }
+            classe += sottoclasse;
+            vnClass = vnClass.substring(j + 1);
+        }
+
+        i = vnClass.indexOf(".");
+        j = vnClass.indexOf("-");
+        if (i == -1 && j == -1) {
+            return result + classe + vnClass + "00000000".substring((classe + vnClass).length());
+        }
+        if (i != -1) {
+            sottoclasse = vnClass.substring(0, i);
+            if (sottoclasse.length() < 2) {
+                sottoclasse = "0" + sottoclasse;
+            }
+            classe += sottoclasse;
+            vnClass = vnClass.substring(i + 1);
+        } else if (j != -1) {
+            sottoclasse = vnClass.substring(0, j);
+            if (sottoclasse.length() < 2) {
+                sottoclasse = "0" + sottoclasse;
+            }
+            classe += sottoclasse;
+            vnClass = vnClass.substring(j + 1);
+        }
+        vnClass = vnClass.replace(".", "");
+        classe += vnClass.replace("-", "");
+
+        return result + classe + "00000000".substring(((classe).length()) % 9);
     }
 
 }
