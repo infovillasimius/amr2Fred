@@ -71,17 +71,12 @@ public class Triple {
         }
         final Triple other = (Triple) obj;
         
-        if (this.toString().equalsIgnoreCase(other.toString())) {
-            return true;
+        String thisSubject=this.subject, otherSubject=other.subject;
+        
+        if (!thisSubject.contains(otherSubject) && !otherSubject.contains(thisSubject)) {
+            return false;
         }
         
-        if (this.toString().contains(other.toString()) || other.toString().contains(this.toString())) {
-            return true;
-        }
-        
-        if (this.subject.compareToIgnoreCase(other.subject) == 0) {
-            return true;
-        }
         String thisRelation = stringAdj(this.relation), otherRelation = stringAdj(other.relation);
         
         if (!thisRelation.contains(otherRelation) && !otherRelation.contains(thisRelation)) {

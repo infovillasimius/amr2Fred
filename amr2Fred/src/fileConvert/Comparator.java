@@ -112,10 +112,6 @@ public class Comparator {
             result=result.substring(result.indexOf(" .")+2);
             
             triple = new Triple(temp, temp1, temp2);
-            //System.out.println(triple);
-            if (!list.contains(triple)) {
-                
-            }
             
             list.add(triple);
         }
