@@ -469,6 +469,12 @@ public class Parser {
                 }
             }
         }
+        
+        for (Node uguale:this.nodes){
+            if (uguale.equals(root)){
+                uguale.var=root.var;
+            }
+        }
 
         for (Node n : root.list) {
 
