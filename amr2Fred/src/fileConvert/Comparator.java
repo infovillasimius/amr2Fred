@@ -28,6 +28,7 @@ public class Comparator {
     private ArrayList<Triple> a2fResult;
     private ArrayList<Triple> fMinusA;
     private ArrayList<Triple> aMinusF;
+    private ArrayList<Triple> commons;
     private double fma;
     private double amf;
     private static int correct = 0;
@@ -38,24 +39,30 @@ public class Comparator {
         a2fResult = getList(a2f);
         fMinusA = new ArrayList<>();
         aMinusF = new ArrayList<>();
+        commons = new ArrayList<>();
         subtract();
         calculate();
     }
 
     private void subtract() {
-        for (Triple t : fredResult) {
-            if (!a2fResult.contains(t)) {
-                fMinusA.add(t);
-            } else {
-                correct += 1;
-            }
-        }
 
         for (Triple t : a2fResult) {
             if (!fredResult.contains(t)) {
                 aMinusF.add(t);
             } else {
                 correct += 1;
+                commons.add(t);
+            }
+        }
+
+        for (Triple t : fredResult) {
+            if (!a2fResult.contains(t)) {
+                fMinusA.add(t);
+            } else {
+                correct += 1;
+                if (!commons.contains(t)) {
+                    commons.add(t);
+                }
             }
         }
 
@@ -89,35 +96,33 @@ public class Comparator {
     public static double getAverage() {
         return (Math.ceil((double) correct / Triple.gettNum() * 10000)) / 100;
     }
-    
-    
-    
+
     private ArrayList<Triple> getList(String result) {
         ArrayList<Triple> list = new ArrayList<>();
         String temp = "", temp1 = "", temp2 = "";
         int start, end;
         Triple triple;
-        
-        while(result.contains(" .")){
-            
-            temp=result.substring(0, result.indexOf(" "));
-            result=result.substring(result.indexOf(" ")+1);
-            
-            
-            
-            temp1=result.substring(0, result.indexOf(" "));
-            result=result.substring(result.indexOf(" ")+1);
-            
-            temp2=result.substring(0, result.indexOf(" ."));
-            result=result.substring(result.indexOf(" .")+2);
-            
+
+        while (result.contains(" .")) {
+
+            temp = result.substring(0, result.indexOf(" "));
+            result = result.substring(result.indexOf(" ") + 1);
+
+            temp1 = result.substring(0, result.indexOf(" "));
+            result = result.substring(result.indexOf(" ") + 1);
+
+            temp2 = result.substring(0, result.indexOf(" ."));
+            result = result.substring(result.indexOf(" .") + 2);
+
             triple = new Triple(temp, temp1, temp2);
-            
+
             list.add(triple);
         }
         return list;
     }
-    
-    
+
+    public ArrayList<Triple> getCommons() {
+        return commons;
+    }
 
 }

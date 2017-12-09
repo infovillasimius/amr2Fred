@@ -78,7 +78,11 @@ public class CompareHandler implements HttpHandler {
 
         Headers responseHeaders = he.getResponseHeaders();
         responseHeaders.set(TYPE, TXT);
-        String response ="Amr2Fred -> FRED = "+Math.ceil(c.getAmf()*10000)/100+"%\n\nFRED -> Amr2Fred = "+Math.ceil(c.getFma()*10000)/100+"%\n\nAmr2Fred \\ FRED\n"+c.getaMinusF()+"\n\nFRED \\ Amr2Fred\n"+c.getfMinusA(); /* amr+"\n "+sentence;*/
+        String response ="Amr2Fred -> FRED = "+Math.ceil(c.getAmf()*10000)/100
+                +"%\n\nFRED -> Amr2Fred = "+Math.ceil(c.getFma()*10000)/100
+                +"%\n\nAmr2Fred \\ FRED\n"+c.getaMinusF()
+                +"\n\nFRED \\ Amr2Fred\n"+c.getfMinusA()
+                +"\n\nCommon triples: \n"+c.getCommons(); /* amr+"\n "+sentence;*/
         he.sendResponseHeaders(200, response.length());
             try (OutputStream os = he.getResponseBody()) {
                 os.write(response.getBytes());
