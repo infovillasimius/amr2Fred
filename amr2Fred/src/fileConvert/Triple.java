@@ -94,7 +94,7 @@ public class Triple {
     @Override
     public String toString() {
         
-        return "\n" + this.subject + " " + this.relation + " " + this.object + " .";
+        return this.subject + " " + this.relation + " " + this.object + " .\n";
         
     }
     

@@ -397,10 +397,12 @@ table{
 
 .getIt{
     clear: left;
+    padding-top: 10px;
 }
 
 .options-help {
-    float: left;
+    /*float: left;*/
+    clear: left;
     font-family: "calibri", sans-serif;
     font-size: 13px;
     background-color: white;
@@ -424,3 +426,21 @@ table{
     margin: 0px;
 }
 
+.amr2 {
+    float: left;
+    font-family: "calibri", sans-serif;
+    font-size: 13px;  
+    background-color: white;
+    height: 100px;
+    width: 100%;
+}
+
+
+.text2{
+    float: left;
+    font-family: "calibri", sans-serif;
+    font-size: 13px;  
+    background-color: white;
+    height: 100px;
+    width: 100%;
+}

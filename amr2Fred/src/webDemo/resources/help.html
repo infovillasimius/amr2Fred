@@ -96,19 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="URI_constructor">
 
                         <h3>URI constructor:</h3>
-
-                        <fieldset class="amr">
-                            <legend>Input AMR: </legend>
-                            <textarea id="amr" name="amr" cols="100" title="Input an AMR in its textual form">(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))</textarea>                     
-                        </fieldset>
-
-                        <div class="Fred">
-                            <fieldset class="text">
-                                <legend>Input TEXT:</legend> 
-                                <textarea id="text" name="text" cols="100" title="Input the text you want to send to FRED"></textarea>
-                            </fieldset>
-                        </div>
-
+                        
                         <fieldset class="options-help">
                             <legend>Options</legend>
 
@@ -122,13 +110,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <option value="4">TURTLE</option>
                                 <option value="6">Results Compare</option>
                             </select>
-                            <p class="tooltip" id="rid" title="In the Statements the Objects can be set as Resources or as Strings - Only in non-graphical mode"> 
+                            <p class="tooltip" id="ppres" title="In the Statements the Objects can be set as Resources or as Strings - Only in non-graphical mode"> 
                                 Get Statement Objects as Resources... <input type="checkbox" name="res" id="res"></p>
                             <p id="prid" class="tooltip" title="Remove errors in the data structure ang get linked data!">
                                 Get rid of errors... <input type="checkbox" name="errors" id="rid" ></p>
                         </fieldset>
-                    </div>
+                        <fieldset class="amr2">
+                            <legend>Input AMR: </legend>
+                            <textarea id="amr" name="amr" cols="100" title="Input an AMR in its textual form">(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))</textarea>                     
+                        </fieldset>
 
+
+                        <fieldset class="text2">
+                            <legend>Input TEXT:</legend> 
+                            <textarea id="text" name="text" cols="100" title="Input the text you want to send to FRED">Four boys making pies</textarea>
+                        </fieldset>
+
+
+
+                    </div>
+                     <div class="getIt">
+                         <p id="description"></p>
+                    </div>
                     <div class="getIt">
                         <button id="getIt">Get it</button>
                     </div>

@@ -69,12 +69,17 @@ $(document).ready(function () {
                     "<tr><td>&?sentence=(s)</td><td>(s) is the text to send to FRED, encoded with UTF-8 )</td></tr>" +
                     "</tbody>" );
             fred = true;
-            $("div.Fred").show();
+            $(".text2").show();
             if ($('#text').val() == "" && $('#amr').val()=="(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))" ) {
                 $('#text').val("four boys making pies");
             }
             $("#prid").hide();
-            $("#rid").hide();
+            $("#ppres").hide();
+            $('#description').html("<p id=\"description\">What you get is a text page containing:<br> \n\
+                                        1) Percentage values ​​calculated with: one minus the number of triples in the difference between the results of the two programs,\
+                                        divided by the number of triples obtained from the first program; <br>\
+                                        2) Differences of the two sets of triples;<br>\
+                                        3) The set of common triples.</p>");
         } else {
             baseURL = "http://" + host + "/amr2fred";
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
@@ -84,9 +89,10 @@ $(document).ready(function () {
                     "<tr><td>&?objAsRes</td><td >if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>\n\
                     </tbody>" );
             fred = false;
-            $("div.Fred").hide();
+            $(".text2").hide();
             $("#prid").show();
-            $("#rid").show();
+            $("#ppres").show();
+            $('#description').html("<p id=\"description\">What you get is the translated amr in the chosen format.</p>");
         }
         $('#base').html("Base URI: " + baseURL);
 
