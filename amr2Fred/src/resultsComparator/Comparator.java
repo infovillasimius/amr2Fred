@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fileConvert;
+package resultsComparator;
 
 import java.util.ArrayList;
 
@@ -35,8 +35,8 @@ public class Comparator {
 
     public Comparator(String fred, String a2f) {
         //System.out.println(fred+"\n"+a2f);
-        fredResult = getList(fred);
-        a2fResult = getList(a2f);
+        fredResult = Converter.getList(fred);
+        a2fResult = Converter.getList(a2f);
         fMinusA = new ArrayList<>();
         aMinusF = new ArrayList<>();
         commons = new ArrayList<>();
@@ -95,30 +95,6 @@ public class Comparator {
 
     public static double getAverage() {
         return (Math.ceil((double) correct / Triple.gettNum() * 10000)) / 100;
-    }
-
-    private ArrayList<Triple> getList(String result) {
-        ArrayList<Triple> list = new ArrayList<>();
-        String temp = "", temp1 = "", temp2 = "";
-        int start, end;
-        Triple triple;
-
-        while (result.contains(" .")) {
-
-            temp = result.substring(0, result.indexOf(" "));
-            result = result.substring(result.indexOf(" ") + 1);
-
-            temp1 = result.substring(0, result.indexOf(" "));
-            result = result.substring(result.indexOf(" ") + 1);
-
-            temp2 = result.substring(0, result.indexOf(" ."));
-            result = result.substring(result.indexOf(" .") + 2);
-
-            triple = new Triple(temp, temp1, temp2);
-
-            list.add(triple);
-        }
-        return list;
     }
 
     public ArrayList<Triple> getCommons() {

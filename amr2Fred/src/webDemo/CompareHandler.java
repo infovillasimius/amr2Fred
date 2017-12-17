@@ -20,7 +20,7 @@ import amr2fred.Amr2fredWeb;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import fileConvert.Comparator;
+import resultsComparator.Comparator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
@@ -82,12 +82,11 @@ public class CompareHandler implements HttpHandler {
                 +"%\n\nFRED -> Amr2Fred = "+Math.ceil(c.getFma()*10000)/100
                 +"%\n\nAmr2Fred \\ FRED\n"+c.getaMinusF()
                 +"\n\nFRED \\ Amr2Fred\n"+c.getfMinusA()
-                +"\n\nCommon triples: \n"+c.getCommons(); /* amr+"\n "+sentence;*/
+                +"\n\nCommon triples: \n"+c.getCommons();
         he.sendResponseHeaders(200, response.length());
             try (OutputStream os = he.getResponseBody()) {
                 os.write(response.getBytes());
             }
-
     }
 
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fileConvert;
+package resultsComparator;
 
 import static amr2fred.Glossary.VN_DATA_NS;
 import java.util.Objects;
@@ -94,7 +94,7 @@ public class Triple {
     @Override
     public String toString() {
         
-        return this.subject + " " + this.relation + " " + this.object + " .\n";
+        return "\n"+this.subject + " " + this.relation + " " + this.object + " .";
         
     }
     

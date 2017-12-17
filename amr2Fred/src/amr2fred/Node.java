@@ -135,21 +135,21 @@ public class Node {
         return true;
     }
 
-    Node getCopy(Node node, String relation) {
+    public Node getCopy(Node node, String relation) {
         Node newNode = new Node(node.var, relation, node.status);
         newNode.list = node.list;
         newNode.nodeId = node.nodeId;
         return newNode;
     }
 
-    Node getCopy(String relation) {
+    public Node getCopy(String relation) {
         Node newNode = new Node(this.var, relation, this.status);
         newNode.list = new ArrayList<>();
         newNode.nodeId = this.nodeId;
         return newNode;
     }
 
-    Node getCopy() {
+    public Node getCopy() {
         if (Parser.endless > ENDLESS) {
             return null;
         }
@@ -163,7 +163,7 @@ public class Node {
         return newNode;
     }
 
-    Node getInstance() {
+    public Node getInstance() {
         for (Node n : this.list) {
             if (n.relation.equalsIgnoreCase(Glossary.INSTANCE)) {
                 return n;
@@ -173,7 +173,7 @@ public class Node {
         return null;
     }
 
-    Node getChild(String relation) {
+    public Node getChild(String relation) {
         for (Node n : this.list) {
             if (n.relation.equalsIgnoreCase(relation)) {
                 return n;
@@ -182,7 +182,7 @@ public class Node {
         return null;
     }
 
-    Node getInverse() {
+    public Node getInverse() {
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
@@ -195,7 +195,7 @@ public class Node {
         return null;
     }
 
-    ArrayList<Node> getInverses() {
+    public ArrayList<Node> getInverses() {
         ArrayList<Node> nodes = new ArrayList<>();
         for (Node n : this.list) {
             if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
@@ -219,15 +219,15 @@ public class Node {
         return spaces;
     }
 
-    NodeStatus getStatus() {
+    public NodeStatus getStatus() {
         return status;
     }
 
-    void setStatus(NodeStatus status) {
+    public void setStatus(NodeStatus status) {
         this.status = status;
     }
 
-    int getTreStatus() {
+    public int getTreStatus() {
         if (Parser.endless > ENDLESS) {
             return 1000000;
         }
@@ -238,15 +238,15 @@ public class Node {
         return somma;
     }
 
-    NodeType getType() {
+    public NodeType getType() {
         return type;
     }
 
-    void setType(NodeType type) {
+    public void setType(NodeType type) {
         this.type = type;
     }
 
-    String toString2() {
+    public String toString2() {
         if (Parser.endless > ENDLESS) {
             return RECURSIVE_ERROR;
         }
@@ -280,11 +280,11 @@ public class Node {
         return string;
     }
 
-    String getVerb() {
+    public String getVerb() {
         return verb;
     }
 
-    void setVerb(String verb) {
+    public void setVerb(String verb) {
         this.verb = verb;
     }
 
@@ -293,7 +293,7 @@ public class Node {
      *
      * @return
      */
-    ArrayList<Node> getArgs() {
+    public ArrayList<Node> getArgs() {
 
         ArrayList<Node> argsList = new ArrayList<>();
 
@@ -313,7 +313,7 @@ public class Node {
      *
      * @return
      */
-    ArrayList<Node> getOps() {
+    public ArrayList<Node> getOps() {
 
         ArrayList<Node> argsList = new ArrayList<>();
 
@@ -340,7 +340,7 @@ public class Node {
         this.verb = node.verb;
     }
     
-    Node getPoss(){
+    public Node getPoss(){
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_POSS)) {
                 return n;
@@ -349,6 +349,24 @@ public class Node {
         return null;
     }
 
-   
+    public String getRelation() {
+        return relation;
+    }
+
+    public void setRelation(String relation) {
+        this.relation = relation;
+    }
+
+    public String getVar() {
+        return var;
+    }
+
+    public void setVar(String var) {
+        this.var = var;
+    }
+
+    public ArrayList<Node> getList() {
+        return list;
+    }
 
 }
