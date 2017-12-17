@@ -1,0 +1,605 @@
+<!DOCTYPE amrset SYSTEM "amrset.dtd">
+<amrset name="le-petit-prince" version="1.6" date="2016-03-14" corpus="The Little Prince, a novel by Antoine Saint-Exupery">
+  <sntamr>
+    <sentence id="lpp_1943.1">Chapter 1 .</sentence>
+    <amr date="2012-06-07T17:06:07">
+(c / chapter
+  :mod 1)
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.2">Once when I was six years old I saw a magnificent picture in a book , called True Stories from Nature , about the primeval forest .</sentence>
+    <amr date="2012-06-07T17:06:20">
+(s / see-01
+      :ARG0 (i / i)
+      :ARG1 (p / picture
+            :mod (m / magnificent)
+            :location (b2 / book :wiki -
+                  :name (n / name :op1 "True" :op2 "Stories" :op3 "from" :op4 "Nature")
+                  :topic (f / forest
+                        :mod (p2 / primeval))))
+      :mod (o / once)
+      :time (a / age-01
+            :ARG1 i
+            :ARG2 (t / temporal-quantity :quant 6
+                  :unit (y / year))))
+    </amr>
+    <note>auto-repair-amr 2014-03-13T18:17:50 wikify:-</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.3">It was a picture of a boa constrictor in the act of swallowing an animal .</sentence>
+    <amr date="2012-06-07T17:06:23">
+(p / picture
+  :domain (i / it)
+  :topic (b2 / boa
+           :mod (c2 / constrictor)
+           :ARG0-of (s / swallow-01
+                      :ARG1 (a / animal))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.4">Here is a copy of the drawing .</sentence>
+    <amr date="2012-06-07T17:06:28">
+(b / be-located-at-91
+      :ARG1 (t2 / thing
+            :ARG2-of (c / copy-01
+                  :ARG1 (p / picture
+                        :ARG1-of (d / draw-01))))
+      :ARG2 (h / here))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.5">In the book it said : " Boa constrictors swallow their prey whole , without chewing it .</sentence>
+    <amr date="2012-06-07T17:06:32">
+(s2 / say-01
+      :ARG0 (b2 / book)
+      :ARG1 (s / swallow-01
+            :ARG0 (b / boa
+                  :mod (c / constrictor))
+            :ARG1 (p / prey
+                  :mod (w / whole)
+                  :poss b)
+            :manner (c2 / chew-01 :polarity -
+                  :ARG0 b
+                  :ARG1 p)))
+    </amr>
+  </sntamr>
+  
+  <sntamr>
+    <sentence id="lpp_1943.7">I pondered deeply , then , over the adventures of the jungle .</sentence>
+    <amr date="2012-06-07T17:06:38">
+(p / ponder-01
+      :ARG0 (i / i)
+      :ARG1 (a / adventure
+            :location (j / jungle))
+      :ARG1-of (d / deep-02)
+      :time (t / then))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.8">And after some work with a colored pencil I succeeded in making my first drawing .</sentence>
+    <amr date="2012-06-07T17:06:41">
+(a2 / and
+      :op2 (s / succeed-01
+            :ARG0 (i / i)
+            :ARG1 (m / make-01
+                  :ARG0 i
+                  :ARG1 (p2 / picture
+                        :ARG1-of (d / draw-01
+                              :ARG0 i
+                              :ord (o / ordinal-entity :value 1))))
+            :time (a / after
+                  :op1 (w / work-01
+                        :ARG0 i
+                        :instrument (p / pencil
+                              :mod (c / color))
+                        :mod (s2 / some)))))
+    </amr>
+    <note>auto-repair-amr 2004-07-21T23:18:15 ordinal-update:first:1</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.9">My Drawing Number One .</sentence>
+    <amr date="2012-06-07T17:06:44">
+(p / picture :wiki -
+      :name (n2 / name :op1 "Drawing" :op2 "Number" :op3 "One")
+      :poss (i / i))
+    </amr>
+    <note>auto-repair-amr 2014-03-13T18:21:08 wikify:-</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.10">It looked like this : I showed my masterpiece to the grown - ups , and asked them whether the drawing frightened them .</sentence>
+    <amr date="2012-06-07T17:06:47">
+(a / and
+      :op1 (l / look-02
+            :ARG0 (i / it)
+            :ARG1 (t / this))
+      :op2 (s / show-01
+            :ARG0 (i2 / i)
+            :ARG1 (m / masterpiece
+                  :poss i2)
+            :ARG2 (g / grown-up))
+      :op3 (a2 / ask-01
+            :ARG0 i2
+            :ARG1 (f / frighten-01 :mode interrogative
+                  :ARG0 (p / picture
+                        :ARG1-of (d / draw-01))
+                  :ARG1 g)
+            :ARG2 g))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.11">But they answered : " Frighten ?</sentence>
+    <amr date="2012-06-07T17:41:58">
+(c / contrast-01
+  :ARG2 (a / answer-01
+          :ARG0 (t / they)
+          :ARG2 (f / frighten-01
+                  :mode interrogative)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.12">Why should any one be frightened by a hat ? "</sentence>
+    <amr date="2012-06-07T17:42:59">
+(f / frighten-01
+  :ARG0 (h / hat)
+  :ARG1 (o / one
+          :mod (a / any))
+  :ARG1-of (c / cause-01
+             :ARG0 (a2 / amr-unknown)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.13">My drawing was not a picture of a hat .</sentence>
+    <amr date="2012-06-07T17:45:40">
+(p / picture-01 :polarity -
+      :ARG0 (p2 / picture
+            :ARG1-of (d / draw-01
+                  :ARG0 (i / i)))
+      :ARG1 (h / hat))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.14">It was a picture of a boa constrictor digesting an elephant .</sentence>
+    <amr date="2012-06-07T17:46:19">
+(p / picture-01
+  :ARG0 (i / it)
+  :ARG1 (b2 / boa
+          :mod (c / constrictor)
+          :ARG0-of (d / digest-01
+                     :ARG1 (e / elephant))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.15">But since the grown - ups were not able to understand it , I made another drawing : I drew the inside of the boa constrictor , so that the grown - ups could see it clearly .</sentence>
+    <amr date="2012-06-07T17:46:55">
+(c / contrast-01
+      :ARG2 (a2 / and
+            :op1 (d3 / draw-01
+                  :ARG0 (i / i)
+                  :ARG1 (p2 / picture
+                        :mod (a / another))
+                  :ARG1-of (c3 / cause-01
+                        :ARG0 (p3 / possible-01 :polarity -
+                              :ARG1 (u / understand-01
+                                    :ARG0 (g / grown-up)
+                                    :ARG1 (i2 / it)))))
+            :op2 (d / draw-01
+                  :ARG0 i
+                  :ARG1 (i3 / inside
+                        :part-of (b2 / boa
+                              :mod (c4 / constrictor)))
+                  :purpose (p / possible-01
+                        :ARG1 (s / see-01
+                              :ARG0 g
+                              :ARG1 (i4 / it)
+                              :ARG1-of (c2 / clear-06))))))
+    </amr>
+    <note>auto-repair-amr 2015-06-11T19:20:40 map-concept:possible->possible-01:domain->ARG1(2)</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.16">They always need to have things explained .</sentence>
+    <amr date="2012-06-08T13:12:10">
+(n / need-01
+      :ARG0 (t / they)
+      :ARG1 (e / explain-01)
+      :time (a / always))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.17">My Drawing Number Two looked like this : The grown - ups ' response , this time , was to advise me to lay aside my drawings of boa constrictors , whether from the inside or the outside , and devote myself instead to geography , history , arithmetic and grammar .</sentence>
+    <amr date="2012-06-08T13:12:54">
+(a6 / and
+      :op1 (l / look-02
+            :ARG0 (p / picture :wiki - :name (n / name :op1 "Drawing" :op2 "Number" :op3 "Two")
+                  :poss i)
+            :ARG1 (t2 / this))
+      :op2 (r / respond-01
+            :ARG0 (g / grown-up)
+            :ARG1 (i / i)
+            :ARG2 (a / advise-01
+                  :ARG0 g
+                  :ARG1 i
+                  :ARG2 (a3 / and
+                        :op1 (l2 / lay-01
+                              :ARG0 i
+                              :ARG1 (p2 / picture
+                                    :ARG1-of (d2 / draw-01
+                                          :ARG0 i)
+                                    :topic (b2 / boa
+                                          :mod (c2 / constrictor)
+                                          :mod (o / or
+                                                :op1 (i2 / inside)
+                                                :op2 (o2 / outside))))
+                              :ARG2 (a2 / aside))
+                        :op2 (d3 / devote-01
+                              :ARG0 i
+                              :ARG1 i
+                              :ARG2 (a4 / and
+                                    :op1 (g2 / geography)
+                                    :op2 (h / history)
+                                    :op3 (a5 / arithmetic)
+                                    :op4 (g3 / grammar))
+                              :ARG1-of (i4 / instead-of-91
+                                    :ARG2 d2))))
+            :time (t4 / time
+                  :mod (t5 / this))))
+    </amr>
+    <note>auto-repair-amr 2013-05-14 wikify:-</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.18">That is why , at the age of six , I gave up what might have been a magnificent career as a painter .</sentence>
+    <amr date="2012-06-08T13:18:52">
+(c2 / cause-01
+      :ARG0 (t2 / that)
+      :ARG1 (g / give-up-07
+            :ARG0 (i / i)
+            :ARG1 (c / career
+                  :mod (m / magnificent)
+                  :topic (p / person
+                        :ARG0-of (p2 / paint-02)))
+            :time (a / age-01
+                  :ARG1 i
+                  :ARG2 (t / temporal-quantity :quant 6
+                        :unit (y / year)))))
+    </amr>
+    <note>auto-repair-amr 2015-05-14T18:35:34 map-concept:give-07->give-up-07</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.19">I had been disheartened by the failure of my Drawing Number One and my Drawing Number Two .</sentence>
+    <amr date="2012-06-09T11:31:56">
+(d / dishearten-01
+      :ARG0 (f / fail-01
+            :ARG1 (a / and
+                  :op1 (p / picture :wiki -
+                        :name (n / name :op1 "Drawing" :op2 "Number" :op3 "One"))
+                  :op2 (p2 / picture :wiki -
+                        :name (n2 / name :op1 "Drawing" :op2 "Number" :op3 "Two"))
+                  :poss i))
+      :ARG1 (i / i))
+    </amr>
+    <note>auto-repair-amr 2013-05-14 wikify:-(2)</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.20">Grown - ups never understand anything by themselves , and it is tiresome for children to be always and forever explaining things to them .</sentence>
+    <amr date="2012-07-17T12:15:00">
+(a / and
+      :op1 (u / understand-01 :polarity -
+            :ARG0 (g / grown-up)
+            :ARG1 (a3 / anything)
+            :time (e2 / ever)
+            :mod (b / by-oneself))
+      :op2 (t / tiresome
+            :domain (e / explain-01
+                  :ARG0 (c / child)
+                  :ARG1 (t2 / thing)
+                  :ARG2 g
+                  :time (a4 / always)
+                  :mod (f / forever))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.21">So then I chose another profession , and learned to pilot airplanes .</sentence>
+    <amr date="2012-06-14T16:08:08">
+(c2 / cause-01
+  :ARG1 (a / and
+          :op1 (c / choose-01
+                 :ARG0 (i / i)
+                 :ARG1 (p / profession
+                         :mod (a2 / another)))
+          :op2 (l / learn-01
+                 :ARG0 i
+                 :ARG1 (p2 / pilot-01
+                         :ARG0 i
+                         :ARG1 (a3 / airplane)))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.22">I have flown a little over all parts of the world ; and it is true that geography has been very useful to me .</sentence>
+    <amr>
+(a / and
+      :op1 (f / fly-01
+            :ARG0 i
+            :location (o / over
+                  :op1 (p2 / part
+                        :part-of (w / world))))
+      :op2 (u / useful-05
+            :ARG0 (i / i)
+            :ARG1 (g / geography)
+            :degree (v / very)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.23">At a glance I can distinguish China from Arizona .</sentence>
+    <amr>
+(p / possible-01
+      :ARG1 (d / distinguish-01
+            :ARG0 (i / i)
+            :ARG1 (c / country :wiki "China"
+                  :name (n / name :op1 "China"))
+            :ARG2 (s / state :wiki "Arizona"
+                  :name (n2 / name :op1 "Arizona"))
+            :manner (g / glance-01
+                  :ARG0 i)))
+    </amr>
+    <note>auto-repair-amr 2014-02-27T17:53:25 wikify:Arizona wikify:China</note>
+    <note>auto-repair-amr 2015-06-11T19:20:40 map-concept:possible->possible-01:domain->ARG1</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.24">If one gets lost in the night , such knowledge is valuable .</sentence>
+    <amr date="2012-07-17T13:04:10">
+(v / value-02
+      :ARG1 (k / knowledge
+            :mod (s / such))
+      :condition (g / get-03
+            :ARG1 (o / one)
+            :ARG2 (l / lost
+                  :time (d / date-entity :dayperiod (n / night)))))
+    </amr>
+    <note>auto-repair-amr 2016-02-26T19:12:45 update:dayperiod</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.25">In the course of this life I have had a great many encounters with a great many people who have been concerned with matters of consequence .</sentence>
+    <amr date="2012-07-17T13:14:43">
+(e / encounter-01
+  :ARG0 (i / i)
+  :ARG1 (p / person
+          :quant (m2 / many
+                   :mod (g2 / great))
+          :ARG1-of (c / concern-01
+                     :ARG0 (m3 / matter
+                             :mod (c2 / consequence))))
+  :quant (m / many
+           :mod (g / great))
+  :time (c3 / course
+          :poss (l / life
+                  :mod (t / this))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.26">I have lived a great deal among grown - ups .</sentence>
+    <amr date="2012-07-17T13:29:12">
+(l / live-01
+      :ARG0 (i / i)
+      :mod (d / deal
+            :mod (g2 / great))
+      :location (a / among
+            :op1 (g / grown-up)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.27">I have seen them intimately , close at hand .</sentence>
+    <amr date="2012-07-17T13:31:50">
+(s / see-01
+      :ARG0 (i / i)
+      :ARG1 (t / they)
+      :ARG1-of (c / close-10
+            :ARG2 (a / at-hand))
+      :ARG2-of (i2 / intimate-02
+            :ARG1 i))
+    </amr>
+    <note>auto-repair-amr 2015-04-09T19:24:05 map-concept:close-41->close-10</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.28">And that has n't much improved my opinion of them .</sentence>
+    <amr date="2012-07-17T13:35:38">
+(a / and
+      :op2 (i / improve-01 :polarity -
+            :ARG0 (t / that)
+            :ARG1 (t3 / thing
+                  :ARG1-of (o2 / opine-01
+                        :ARG0 (i2 / i)
+                        :topic (t2 / they)))
+            :degree (m2 / much)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.29">Whenever I met one of them who seemed to me at all clear - sighted , I tried the experiment of showing him my Drawing Number One , which I have always kept .</sentence>
+    <amr date="2012-07-17T13:38:25">
+(t / try-01
+      :ARG0 (i / i)
+      :ARG1 (e / experiment-01
+            :ARG1 (s / show-01
+                  :ARG1 (p2 / picture :wiki - :name (n / name :op1 "Drawing" :op2 "Number" :op3 "One"))
+                  :ARG2 p
+                  :ARG1-of (k / keep-01
+                        :ARG0 i
+                        :time (a / always))))
+      :time (m / meet-02
+            :ARG0 i
+            :ARG1 (p / person
+                  :ARG1-of (i2 / include-91
+                        :ARG2 (t3 / they))
+                  :ARG0-of (s3 / see-01
+                        :ARG1-of (c / clear-08)
+                        :ARG1-of (s4 / seem-01
+                              :ARG2 i)))
+            :mod (a2 / any)))
+    </amr>
+    <note>auto-repair-amr 2014-03-13T18:23:07 wikify:-</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.30">I would try to find out , so , if this was a person of true understanding .</sentence>
+    <amr date="2012-07-24T08:57:30">
+(t / try-01
+      :ARG0 (i / i)
+      :ARG1 (f / find-out-03
+            :ARG0 i
+            :ARG1 (u2 / understand-01 :mode interrogative
+                  :ARG0 (p / person
+                        :mod (t2 / this))
+                  :ARG1-of (t3 / true-01))))
+    </amr>
+    <note>auto-repair-amr 2015-06-20T20:43:07 map-concept:find-03->find-out-03</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.31">But , whoever it was , he , or she , would always say : " That is a hat . "</sentence>
+    <amr date="2012-07-24T09:59:02">
+(c / contrast-01
+  :ARG2 (s / say-01
+          :ARG0 (o / or
+                  :op1 (h / he)
+                  :op2 (s2 / she))
+          :ARG1 (h2 / hat
+                  :domain (t / that))
+          :time (a / always)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.32">Then I would never talk to that person about boa constrictors , or primeval forests , or stars .</sentence>
+    <amr date="2012-07-24T10:00:58">
+(t / talk-01
+  :ARG0 (i / i)
+  :ARG1 (o / or
+          :op1 (b / boa
+                 :mod (c2 / constrictor))
+          :op2 (f / forest
+                 :mod (p2 / primeval))
+          :op3 (s / star))
+  :ARG2 (p / person
+          :mod (t2 / that))
+  :time (e / ever)
+  :polarity -)
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.33">I would bring myself down to his level .</sentence>
+    <amr date="2012-07-24T10:02:52">
+(b / bring-01
+      :ARG0 (i / i)
+      :ARG1 i
+      :ARG2 (l / level
+            :poss (h / he))
+      :ARG3 (d / down))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.34">I would talk to him about bridge , and golf , and politics , and neckties .</sentence>
+    <amr date="2012-07-24T10:05:56">
+(t / talk-01
+  :ARG0 (i / i)
+  :ARG1 (a / and
+          :op1 (b / bridge)
+          :op2 (g / golf)
+          :op3 (p / politics)
+          :op4 (n2 / necktie))
+  :ARG2 (h / he))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.35">And the grown - up would be greatly pleased to have met such a sensible man .</sentence>
+    <amr date="2012-07-24T10:08:31">
+(a / and
+      :op2 (p / please-01
+            :ARG0 (m / meet-02
+                  :ARG0 g
+                  :ARG1 (m2 / man
+                        :ARG2-of (s / sense-02
+                              :degree (s2 / such))))
+            :ARG1 (g / grown-up)
+            :degree (g2 / great)))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.36">Chapter 2 .</sentence>
+    <amr date="2012-07-24T10:10:29">
+(c / chapter
+  :mod 2)
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.37">So I lived my life alone , without anyone that I could really talk to , until I had an accident with my plane in the Desert of Sahara , six years ago .</sentence>
+    <amr date="2012-07-24T10:10:35">
+(c / cause-01
+      :ARG1 (l / live-01
+            :ARG0 (i / i
+                  :ARG0-of (t3 / talk-01 :polarity -
+                        :ARG2 (a5 / anyone)
+                        :ARG1-of (r / real-04)))
+            :ARG1 (l2 / life
+                  :poss i)
+            :manner (a / alone)
+            :duration (u / until
+                  :op1 (h / have-06
+                        :ARG0 i
+                        :ARG1 (a3 / accident
+                              :mod (p / plane))
+                        :location (d / desert :wiki "Sahara" :name (n / name :op1 "Desert" :op2 "of" :op3 "Sahara"))
+                        :time (b / before
+                              :op1 (n2 / now)
+                              :quant (t2 / temporal-quantity :quant 6
+                                    :unit (y / year)))))))
+    </amr>
+    <note>auto-repair-amr 2013-05-14 wikify:Sahara</note>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.38">Something was broken in my engine .</sentence>
+    <amr date="2012-07-24T10:25:32">
+(b / break-01
+      :ARG1 (s / something
+            :location (e / engine
+                  :poss (i / i))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.39">And as I had with me neither a mechanic nor any passengers , I set myself to attempt the difficult repairs all alone .</sentence>
+    <amr date="2012-07-24T10:28:08">
+(a / and
+  :op2 (c / cause-01
+         :ARG0 (h / have-03
+                 :ARG0 i
+                 :ARG1 (o / or
+                         :op1 (m / mechanic)
+                         :op2 (p / passenger))
+                 :accompanier (i / i)
+                 :polarity -)
+         :ARG1 (a2 / attempt-01
+                 :ARG0 i
+                 :ARG1 (r / repair-01
+                         :mod (d / difficult))
+                 :mod (a3 / alone
+                        :degree (a4 / all)))))
+    </amr>
+  </sntamr>
+  <sntamr>
+    <sentence id="lpp_1943.40">It was a question of life or death for me : I had scarcely enough drinking water to last a week .</sentence>
+    <amr date="2012-07-24T10:37:48">
+(q / question-01
+      :ARG0 i
+      :ARG1 (o / or
+            :op1 (l / live-01)
+            :op2 (d / die-01))
+      :ARG1-of (c / cause-01
+            :ARG0 (h / have-03
+                  :ARG0 (i / i)
+                  :ARG1 (w / water
+                        :purpose (d2 / drink-01
+                              :ARG0 i)
+                        :quant (e / enough
+                              :mod (s / scarce))
+                        :ARG1-of (l2 / last-03
+                              :ARG2 (t / temporal-quantity :quant 1
+                                    :unit (w2 / week))
+                              :ARG3 i)))))
+    </amr>
+  </sntamr>
+  </amrset>
