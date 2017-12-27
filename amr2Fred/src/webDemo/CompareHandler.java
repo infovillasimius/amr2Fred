@@ -17,16 +17,27 @@
 package webDemo;
 
 import amr2fred.Amr2fredWeb;
+import amr2fred.DigraphWriter;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import java.io.File;
 import resultsComparator.Comparator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import static webDemo.Glossary.AMR;
+import static webDemo.Glossary.COMMONS;
 import static webDemo.Glossary.ENC;
+import static webDemo.Glossary.GRAPHIC;
+import static webDemo.Glossary.IMG;
+import static webDemo.Glossary.LOGO;
+import static webDemo.Glossary.NOFREDPNG;
+import static webDemo.Glossary.PAGESDIR;
+import static webDemo.Glossary.PNG;
 import static webDemo.Glossary.SENTENCE;
+import static webDemo.Glossary.SVG;
 import static webDemo.Glossary.TXT;
 import static webDemo.Glossary.TYPE;
 
@@ -41,15 +52,27 @@ public class CompareHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
+        File tmp = null;
         String amr = "", sentence;
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
         String par = request;
-        String rdf1,rdf2;
+        String rdf1, rdf2;
         Amr2fredWeb amr2fred = new Amr2fredWeb();
+        int commonsType;
+
+        if (he.getRequestMethod().equalsIgnoreCase("GET") && request.length() > 11 && request.contains(COMMONS + GRAPHIC)) {
+            commonsType = 1;
+            request = request.replace(COMMONS + GRAPHIC, "");
+        } else if (he.getRequestMethod().equalsIgnoreCase("GET") && request.length() > 11 && request.contains(COMMONS + IMG)) {
+            commonsType = 2;
+            request = request.replace(COMMONS + GRAPHIC, "");
+        } else {
+            commonsType = 0;
+        }
 
         if (he.getRequestMethod().equalsIgnoreCase("GET") && request.length() > 6 && request.contains(AMR)) {
             int pos = request.indexOf(AMR);
-            int pos1 = request.indexOf(SENTENCE, pos+1);
+            int pos1 = request.indexOf(SENTENCE, pos + 1);
             if (pos1 < 0) {
                 pos1 = request.length();
             }
@@ -57,10 +80,10 @@ public class CompareHandler implements HttpHandler {
         } else {
             amr = "No AMR";
         }
-        
+
         if (he.getRequestMethod().equalsIgnoreCase("GET") && request.length() > 11 && request.contains(SENTENCE)) {
             int pos = request.indexOf(SENTENCE);
-            int pos1 = request.indexOf(AMR, pos+1);
+            int pos1 = request.indexOf(AMR, pos + 1);
             if (pos1 < 0) {
                 pos1 = request.length();
             }
@@ -68,25 +91,75 @@ public class CompareHandler implements HttpHandler {
         } else {
             sentence = "No sentence";
         }
-        
+
         rdf1 = amr2fred.go(amr, 2, 1, true, true, true);
         rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
-        
-        Comparator c=new Comparator(rdf2, rdf1);
-        
-        //System.out.println(c.getaMinusF()+"\n\n"+c.getfMinusA());
 
-        Headers responseHeaders = he.getResponseHeaders();
-        responseHeaders.set(TYPE, TXT);
-        String response ="Amr2Fred -> FRED = "+Math.ceil(c.getAmf()*10000)/100
-                +"%\n\nFRED -> Amr2Fred = "+Math.ceil(c.getFma()*10000)/100
-                +"%\n\nAmr2Fred \\ FRED\n"+c.getaMinusF()
-                +"\n\nFRED \\ Amr2Fred\n"+c.getfMinusA()
-                +"\n\nCommon triples: \n"+c.getCommons();
-        he.sendResponseHeaders(200, response.length());
-            try (OutputStream os = he.getResponseBody()) {
-                os.write(response.getBytes());
+        if (!rdf2.contains("FRED is not Reachable!")) {
+            Comparator c = new Comparator(rdf2, rdf1);
+            Headers responseHeaders = he.getResponseHeaders();
+            switch (commonsType) {
+                case 0: {
+                    responseHeaders.set(TYPE, TXT);
+                    String response = "Amr2Fred -> FRED = " + Math.ceil(c.getAmf() * 10000) / 100
+                            + "%\n\nFRED -> Amr2Fred = " + Math.ceil(c.getFma() * 10000) / 100
+                            + "%\n\nAmr2Fred \\ FRED\n" + c.getaMinusF()
+                            + "\n\nFRED \\ Amr2Fred\n" + c.getfMinusA()
+                            + "\n\nCommon triples: \n" + c.getCommons();
+                    he.sendResponseHeaders(200, response.length());
+                    try (OutputStream os = he.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                    break;
+                }
+                case 1: {
+                    responseHeaders.set(TYPE, SVG);
+                    String response = DigraphWriter.toSvgString(c.getRoot());
+                    he.sendResponseHeaders(200, response.length());
+                    try (OutputStream os = he.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                    break;
+                }
+                default:
+                    responseHeaders.set(TYPE, PNG);
+                    tmp = DigraphWriter.toPng(c.getRoot());
+                    he.sendResponseHeaders(200, tmp.length());
+                    try (OutputStream os = he.getResponseBody()) {
+                        Files.copy(tmp.toPath(), os);
+                        tmp.delete();
+                    }
+                    break;
             }
+
+        } else {
+            Headers responseHeaders = he.getResponseHeaders();
+            switch (commonsType) {
+                case 0: {
+                    responseHeaders.set(TYPE, TXT);
+                    String response = "FRED is not Reachable!";
+                    he.sendResponseHeaders(200, response.length());
+                    try (OutputStream os = he.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                    break;
+                }
+
+                default:
+                    FileHandler ext = new FileHandler();
+                    responseHeaders.set(TYPE, PNG);
+                    ext.getFile(NOFREDPNG);
+                    tmp = new File(PAGESDIR + NOFREDPNG);
+                    he.sendResponseHeaders(200, tmp.length());
+                    try (OutputStream os = he.getResponseBody()) {
+                        Files.copy(tmp.toPath(), os);
+                        tmp.delete();
+                    }
+                    break;
+            }
+
+        }
+
     }
 
 }

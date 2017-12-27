@@ -17,6 +17,7 @@
 package resultsComparator;
 
 import amr2fred.Glossary;
+import static amr2fred.Glossary.NodeStatus.OK;
 import amr2fred.Node;
 import java.util.ArrayList;
 
@@ -39,15 +40,7 @@ public class Converter {
                 + "<http://www.ontologydesignpatterns.org/ont/fred/domain.owl#See> <http://www.w3.org/2002/07/owl#equivalentClass> <http://www.ontologydesignpatterns.org/ont/vn/data/See_30011000> .\n"
                 + "<http://www.ontologydesignpatterns.org/ont/fred/domain.owl#See> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Event> .\n"
                 + "<http://www.ontologydesignpatterns.org/ont/fred/domain.owl#boy_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ontologydesignpatterns.org/ont/fred/domain.owl#Boy> .";
-        /*        ArrayList<Triple> list = getList(test);
-        ArrayList<String> l = tops(list);
-        for (String s : l) {
-        System.out.println(getInternalName(s));
-        }
-        for (Triple t : list) {
-        System.out.println(getInternalName(t.getSubject()) + " " + getInternalName(t.getRelation()) + " " + getInternalName(t.getObject()));
-        System.out.println();
-        }*/
+       
         Node toNode = toNode(test);
         System.out.println(toNode);
     }
@@ -130,6 +123,13 @@ public class Converter {
         s = s.replaceAll(">", "");
         String pref;
         String name;
+        int num=s.indexOf("\"");
+        if (num>=0){
+            pref="";
+            name=s.substring(num+1, s.indexOf("\"", num+1));
+            return name;
+        }
+
         int dp = s.indexOf("#");
         if (dp < 0) {
             dp = s.lastIndexOf("/");
@@ -155,9 +155,9 @@ public class Converter {
 
     private static ArrayList<Triple> internalList(ArrayList<Triple> list) {
         ArrayList<Triple> newList = new ArrayList<>();
-        
-        for(Triple t:list){
-            Triple newT=new Triple(getInternalName(t.getSubject()),getInternalName(t.getRelation()),getInternalName(t.getObject()));
+
+        for (Triple t : list) {
+            Triple newT = new Triple(getInternalName(t.getSubject()), getInternalName(t.getRelation()), getInternalName(t.getObject()));
             newList.add(newT);
         }
 
@@ -165,31 +165,62 @@ public class Converter {
     }
 
     public static Node toNode(String rdf) {
-        ArrayList<Node> nList=new ArrayList<>();
-        ArrayList<Triple> list = getList(rdf);
-        ArrayList<String> l = tops(list);
-        
-        list=internalList(list);
-        
 
-        //System.out.println(list);
+        ArrayList<Triple> list = getList(rdf);
+        Node root = toNode(list);
+        return root;
+    }
+
+    public static Node toNode(ArrayList<Triple> list) {
+        ArrayList<Node> nList = new ArrayList<>();
+        ArrayList<Node> copiaNList = new ArrayList<>();
+        ArrayList<String> l = tops(list);
+        list = internalList(list);
         
-        for(String s:l){
-            Node n=new Node(s,Glossary.TOP,Glossary.NodeStatus.OK);
+        for (String s : l) {
+            Node n = new Node(s, Glossary.TOP, Glossary.NodeStatus.OK);
             nList.add(n);
         }
-        
-        Node root=nList.get(0);
-        
-        for (Node n:nList){
-            if(!root.equals(n)){
+        copiaNList.addAll(nList);
+        Node root = nList.get(0);
+
+        addNodes(list, nList);
+
+        for (Node n : copiaNList) {
+            if (!root.equals(n)) {
                 root.getList().add(n);
             }
         }
-        
-        
-        
         return root;
+    }
+
+    private static Node getNode(ArrayList<Node> list, String s) {
+        for (Node n : list) {
+            String str = n.getVar();
+            if (str.equalsIgnoreCase(s) || str.contains(s) || s.contains(str)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    private static void addNodes(ArrayList<Triple> list, ArrayList<Node> nList) {
+
+        ArrayList<Triple> newList = new ArrayList<>();
+        for (Triple t : list) {
+            Node n = getNode(nList, t.getSubject());
+            if (n != null) {
+                Node newNode = new Node(t.getObject(), t.getRelation(), OK);
+                nList.add(newNode);
+                n.getList().add(newNode);
+            } else {
+                newList.add(t);
+            }
+        }
+
+        if (!newList.isEmpty()) {
+            addNodes(newList, nList);
+        }
 
     }
 

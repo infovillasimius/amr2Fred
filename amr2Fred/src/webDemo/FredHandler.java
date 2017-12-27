@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 import static webDemo.Glossary.*;
 
 /**
@@ -51,14 +52,28 @@ public class FredHandler implements HttpHandler {
      * @return
      */
     private File getFred(String text, String mode) {
-
         File tmp = null;
+
+        if (!isIpReachable()) {
+
+            FileHandler ext = new FileHandler();
+            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+                ext.getFile(NOFREDPNG);
+                tmp = new File(PAGESDIR + NOFREDPNG);
+            } else {
+                ext.getFile(NOFREDTEXT);
+                tmp = new File(PAGESDIR + NOFREDTEXT);
+            }
+
+            return tmp;
+        }
 
         try {
             String request = URLEncoder.encode(text, ENC);
             String url = COMMAND + request + COMMAND2;
             URL obj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setReadTimeout(TIMEOUT);
             conn.setDoOutput(false);
             conn.setRequestMethod("GET");
             //determina l'output di FRED
@@ -83,10 +98,7 @@ public class FredHandler implements HttpHandler {
         String mode = "";
         FileHandler ext = new FileHandler();
         File tmp = null;
-
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
-
-        //System.out.println(request);
         String par = request;
 
         //sono stati previsti esclusivamente i modi corrispondenti a quelli utilizzati da amr2fred
@@ -127,18 +139,20 @@ public class FredHandler implements HttpHandler {
             Files.copy(tmp.toPath(), os);
             tmp.delete();
         }
-
     }
 
     public static String getFredString(String text, String mode) {
 
+        if (!isIpReachable()) {    
+            return "FRED is not Reachable!";
+        } 
         String tmp = null;
-
         try {
             String request = URLEncoder.encode(text, ENC);
             String url = COMMAND + request + COMMAND2;
             URL obj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setReadTimeout(TIMEOUT);
             conn.setDoOutput(false);
             conn.setRequestMethod("GET");
             //determina l'output di FRED
@@ -157,6 +171,24 @@ public class FredHandler implements HttpHandler {
         }
 
         return tmp;
+    }
+
+    public static boolean isIpReachable() {
+        boolean state = false;
+        
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec("ping -c 1 -w 1 " + Glossary.FREDHOST);
+            InputStream in = (p.getInputStream());
+            String test = IOUtils.toString(in, Glossary.ENC);
+            
+            if (test.contains("1 packets transmitted, 1 received, 0% packet loss")) {
+                state = true;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return state;
     }
 
 }

@@ -49,10 +49,13 @@ public class Glossary {
     public static final String HELP_SCRIPT = "help.js";
     public static final String LOADING = "loading.gif";
     public static final String COMPARE="/compare";
+    public static final String NOFREDTEXT="fred_not_reachable.txt";
+    public static final String NOFREDPNG="fred_not_reachable.png";
 
     /**
      * FRED parameters
      */
+    public static final String FREDHOST="wit.istc.cnr.it";
     public static final String COMMAND = "http://wit.istc.cnr.it/stlab-tools/fred?text=";
     public static final String COMMAND2 = "&wfd_profile=b&textannotation=earmark&semantic-subgraph=true";
     public static final String FRED_RDF = "application/rdf+xml";
@@ -61,6 +64,7 @@ public class Glossary {
     public static final String FRED_N3 = "text/rdf+n3";
     public static final String FRED_IMAGE = "image/png";
     public static final String TEXT = "&?text=";
+    public static final int TIMEOUT=1000;
 
     /**
      * AMR2FRED parameters
@@ -78,6 +82,7 @@ public class Glossary {
     public static final String RES_OBJ = "&?objAsRes";
     public static final String ENC = "UTF-8";
     public static final String SENTENCE="&?sentence=";
+    public static final String COMMONS="&?commons=";
 
     public static final String TMP_FILE_NAME = "amr2fred";
     public static final String TMP_FILE_EXT = "tmp";

@@ -48,7 +48,12 @@ $(document).ready(function () {
             }
         } else {
             var amr = $('#amr').val();
-            urlo+="&?amr=" + amr+"&?sentence="+$('#text').val();
+            urlo += "&?amr=" + amr + "&?sentence=" + $('#text').val();
+            if(output==7){
+                urlo+="&?commons=png";
+            } else if (output==8){
+                urlo+="&?commons=DIGRAPH";
+            }
         }
         urlo = encodeURI(urlo);
         var href = '<a href="' + urlo + '" target="_blank">' + urlo + '</a>';
@@ -62,15 +67,16 @@ $(document).ready(function () {
 
     function checkFred() {
         var output = $('select#outMode option:selected').attr('value');
-        if (output == 6) {
+        if (output >= 6) {
             baseURL = "http://" + host + "/compare";
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
                     "<tr><td>&?sentence=(s)</td><td>(s) is the text to send to FRED, encoded with UTF-8 )</td></tr>" +
-                    "</tbody>" );
+                    "<tr><td>&?commons=(f)</td><td>(f)select the output format - it is one from ( DIGRAPH | png )</td></tr>" +
+                    "</tbody>");
             fred = true;
             $(".text2").show();
-            if ($('#text').val() == "" && $('#amr').val()=="(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))" ) {
+            if ($('#text').val() == "" && $('#amr').val() == "(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))") {
                 $('#text').val("four boys making pies");
             }
             $("#prid").hide();
@@ -87,7 +93,7 @@ $(document).ready(function () {
                     "<tr><td>&?format=(f)</td><td>(f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )</td></tr>" +
                     "<tr><td>&?rid_err=ON</td><td>if present it tells to amr2fred to remove nodes with translation errors</td></tr>" +
                     "<tr><td>&?objAsRes</td><td >if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>\n\
-                    </tbody>" );
+                    </tbody>");
             fred = false;
             $(".text2").hide();
             $("#prid").show();

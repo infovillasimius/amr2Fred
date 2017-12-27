@@ -16,6 +16,7 @@
  */
 package resultsComparator;
 
+import amr2fred.Node;
 import java.util.ArrayList;
 
 /**
@@ -29,6 +30,7 @@ public class Comparator {
     private ArrayList<Triple> fMinusA;
     private ArrayList<Triple> aMinusF;
     private ArrayList<Triple> commons;
+    private Node root;
     private double fma;
     private double amf;
     private static int correct = 0;
@@ -42,6 +44,7 @@ public class Comparator {
         commons = new ArrayList<>();
         subtract();
         calculate();
+        root=Converter.toNode(commons);
     }
 
     private void subtract() {
@@ -101,4 +104,8 @@ public class Comparator {
         return commons;
     }
 
+    public Node getRoot() {
+        return root;
+    }
+    
 }
