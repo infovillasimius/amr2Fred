@@ -734,7 +734,7 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
 
                 //casi :degree :time con instance
-                n.var = FRED + n.getInstance().var;
+                n.var = FRED + firstUpper(n.getInstance().var);
                 n.list.remove(n.getInstance());
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null
@@ -773,7 +773,7 @@ public class Parser {
                     n.relation=Glossary.DUL_HAS_DATA_VALUE;
                 } else {
                     n.relation=Glossary.DUL_HAS_QUALITY;
-                    n.var=FRED+n.var;
+                    n.var=FRED+firstUpper(n.var);
                 }
             }
             
@@ -1361,7 +1361,7 @@ public class Parser {
             if (root.getChild(Glossary.AMR_DEGREE) != null && root.getChild(Glossary.AMR_DEGREE).getInstance() != null) {
 
                 //caso :degree senza :compared-to
-                instance.var = root.getChild(Glossary.AMR_DEGREE).getInstance().var + firstUpper(instance.var);
+                instance.var = firstUpper(root.getChild(Glossary.AMR_DEGREE).getInstance().var) + firstUpper(instance.var);
                 root.list.remove(root.getChild(Glossary.AMR_DEGREE));
 
             }
@@ -1395,7 +1395,7 @@ public class Parser {
 
             String parentVar = instance.var;
             if (arg.getInstance() != null) {
-                instance.var = arg.getInstance().var;
+                instance.var = firstUpper(arg.getInstance().var);
                 arg.list.remove(arg.getInstance());
             }
             arg.relation = Glossary.DUL_HAS_QUALITY;

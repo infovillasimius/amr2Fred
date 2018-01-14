@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static webDemo.Glossary.AMR;
 import static webDemo.Glossary.COMMONS;
 import static webDemo.Glossary.ENC;
@@ -34,6 +36,7 @@ import static webDemo.Glossary.GRAPHIC;
 import static webDemo.Glossary.IMG;
 import static webDemo.Glossary.LOGO;
 import static webDemo.Glossary.NOFREDPNG;
+import static webDemo.Glossary.NOTRIPLE;
 import static webDemo.Glossary.PAGESDIR;
 import static webDemo.Glossary.PNG;
 import static webDemo.Glossary.SENTENCE;
@@ -58,7 +61,7 @@ public class CompareHandler implements HttpHandler {
         String par = request;
         String rdf1, rdf2;
         Amr2fredWeb amr2fred = new Amr2fredWeb();
-        int commonsType;
+        int commonsType = 0;
 
         if (he.getRequestMethod().equalsIgnoreCase("GET") && request.length() > 11 && request.contains(COMMONS + GRAPHIC)) {
             commonsType = 1;
@@ -94,7 +97,7 @@ public class CompareHandler implements HttpHandler {
 
         rdf1 = amr2fred.go(amr, 2, 1, true, true, true);
         rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
-
+        //System.out.println(rdf2);
         if (!rdf2.contains("FRED is not Reachable!")) {
             Comparator c = new Comparator(rdf2, rdf1);
             Headers responseHeaders = he.getResponseHeaders();
@@ -114,20 +117,28 @@ public class CompareHandler implements HttpHandler {
                 }
                 case 1: {
                     responseHeaders.set(TYPE, SVG);
-                    String response = DigraphWriter.toSvgString(c.getRoot());
-                    he.sendResponseHeaders(200, response.length());
-                    try (OutputStream os = he.getResponseBody()) {
-                        os.write(response.getBytes());
+                    if (c.getRoot() != null) {
+                        String response = DigraphWriter.toSvgString(c.getRoot());
+                        he.sendResponseHeaders(200, response.length());
+                        try (OutputStream os = he.getResponseBody()) {
+                            os.write(response.getBytes());
+                        }
+                    } else {
+                        noTriple(he);
                     }
                     break;
                 }
                 default:
-                    responseHeaders.set(TYPE, PNG);
-                    tmp = DigraphWriter.toPng(c.getRoot());
-                    he.sendResponseHeaders(200, tmp.length());
-                    try (OutputStream os = he.getResponseBody()) {
-                        Files.copy(tmp.toPath(), os);
-                        tmp.delete();
+                    if (c.getRoot() != null) {
+                        responseHeaders.set(TYPE, PNG);
+                        tmp = DigraphWriter.toPng(c.getRoot());
+                        he.sendResponseHeaders(200, tmp.length());
+                        try (OutputStream os = he.getResponseBody()) {
+                            Files.copy(tmp.toPath(), os);
+                            tmp.delete();
+                        }
+                    } else {
+                        noTriple(he);
                     }
                     break;
             }
@@ -160,6 +171,25 @@ public class CompareHandler implements HttpHandler {
 
         }
 
+    }
+
+    private void noTriple(HttpExchange he) {
+
+        try {
+            Headers responseHeaders = he.getResponseHeaders();
+            FileHandler ext = new FileHandler();
+            File tmp;
+            responseHeaders.set(TYPE, PNG);
+            ext.getFile(NOTRIPLE);
+            tmp = new File(PAGESDIR + NOTRIPLE);
+            he.sendResponseHeaders(200, tmp.length());
+            try (OutputStream os = he.getResponseBody()) {
+                Files.copy(tmp.toPath(), os);
+                tmp.delete();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(CompareHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

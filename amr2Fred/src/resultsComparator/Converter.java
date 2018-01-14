@@ -176,7 +176,9 @@ public class Converter {
         ArrayList<Node> copiaNList = new ArrayList<>();
         ArrayList<String> l = tops(list);
         list = internalList(list);
-        
+        if(l.isEmpty() || list.isEmpty()){
+            return null;
+        }
         for (String s : l) {
             Node n = new Node(s, Glossary.TOP, Glossary.NodeStatus.OK);
             nList.add(n);

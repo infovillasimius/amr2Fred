@@ -67,12 +67,25 @@ $(document).ready(function () {
 
     function checkFred() {
         var output = $('select#outMode option:selected').attr('value');
-        if (output >= 6) {
+        if (output < 6) {
+            baseURL = "http://" + host + "/amr2fred";
+            $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
+                    "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
+                    "<tr><td>&?format=(f)</td><td>(f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )</td></tr>" +
+                    "<tr><td>&?rid_err=ON</td><td>if present it tells to amr2fred to remove nodes with translation errors</td></tr>" +
+                    "<tr><td>&?objAsRes</td><td >if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>\n\
+                    </tbody>");
+            fred = false;
+            $(".text2").hide();
+            $("#prid").show();
+            $("#ppres").show();
+            $('#description').html("<p id=\"description\">What you get is the translated amr in the chosen format.</p>");
+        } else if (output >= 6) {
             baseURL = "http://" + host + "/compare";
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
                     "<tr><td>&?sentence=(s)</td><td>(s) is the text to send to FRED, encoded with UTF-8 )</td></tr>" +
-                    "<tr><td>&?commons=(f)</td><td>(f)select the output format - it is one from ( DIGRAPH | png )</td></tr>" +
+                    "<tr><td>&?commons=(f)</td><td>If present (f) is used to select the output format - it is one from ( DIGRAPH | png )</td></tr>" +
                     "</tbody>");
             fred = true;
             $(".text2").show();
@@ -86,20 +99,12 @@ $(document).ready(function () {
                                         divided by the number of triples obtained from the first program; <br>\
                                         2) Differences of the two sets of triples;<br>\
                                         3) The set of common triples.</p>");
-        } else {
-            baseURL = "http://" + host + "/amr2fred";
-            $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
-                    "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
-                    "<tr><td>&?format=(f)</td><td>(f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )</td></tr>" +
-                    "<tr><td>&?rid_err=ON</td><td>if present it tells to amr2fred to remove nodes with translation errors</td></tr>" +
-                    "<tr><td>&?objAsRes</td><td >if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>\n\
-                    </tbody>");
-            fred = false;
-            $(".text2").hide();
-            $("#prid").show();
-            $("#ppres").show();
-            $('#description').html("<p id=\"description\">What you get is the translated amr in the chosen format.</p>");
+        } 
+        
+        if(output>6){
+            $('#description').html("<p id=\"description\">What you get is an image containing the set of common triples.");
         }
+        
         $('#base').html("Base URI: " + baseURL);
 
     }

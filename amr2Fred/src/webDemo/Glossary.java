@@ -51,6 +51,7 @@ public class Glossary {
     public static final String COMPARE="/compare";
     public static final String NOFREDTEXT="fred_not_reachable.txt";
     public static final String NOFREDPNG="fred_not_reachable.png";
+    public static final String NOTRIPLE="no_triple.png";
 
     /**
      * FRED parameters
@@ -64,7 +65,7 @@ public class Glossary {
     public static final String FRED_N3 = "text/rdf+n3";
     public static final String FRED_IMAGE = "image/png";
     public static final String TEXT = "&?text=";
-    public static final int TIMEOUT=1000;
+    public static final int TIMEOUT=5000;
 
     /**
      * AMR2FRED parameters

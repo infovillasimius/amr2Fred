@@ -143,8 +143,8 @@ public class FredHandler implements HttpHandler {
 
     public static String getFredString(String text, String mode) {
 
-        if (!isIpReachable()) {    
-            return "FRED is not Reachable!";
+        if (!isIpReachable()) {
+        return "FRED is not Reachable!";
         } 
         String tmp = null;
         try {

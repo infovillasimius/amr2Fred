@@ -283,6 +283,13 @@ h3{
     padding-bottom: 10px;
 }
 
+.imgfred{
+    display: block;
+    margin: auto;
+    background-color: white;
+    max-width: 100%;
+    padding-bottom: 10px;
+}
 
 #imgamr2fred {
     display: block;

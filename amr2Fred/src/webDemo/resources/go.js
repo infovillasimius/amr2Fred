@@ -114,25 +114,28 @@ $(document).ready(function () {
          */
         if (fred) {
             $('#fredresult').show();
-            $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img id=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
-            client.get(urlo1, function (response) {
+            $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img class=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
+            client.get(encodeURI(urlo1), function (response) {
 
                 if (output > 0) {
                     $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><textarea id=\"tofred2\" name=\"tofred2\" rows=\"10\" cols=\"200\"></textarea>");
                     $('#tofred2').val(response);
                 } else {
                     var uri = encodeURI(urlo1);
-                    $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img id=\"imgfred\" src=" + uri + " alt=\"Fred's result\" >");
+                    
+                    $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img class=\"imgfred\" src=" + uri + " alt=\"Fred's result\" >");
                 }
             });
 
             $('#compareresult').show();
-            $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><img id=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
+            $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><img class=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
             urlo2 += "&?amr=" + amr + "&?sentence=" + text;
+            var urlo3=encodeURI(urlo2+"&?commons=DIGRAPH");
             
-            client.get(urlo2, function (response) {
+            client.get(encodeURI(urlo2), function (response) {
                 
-                $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><textarea id=\"compareresult2\" name=\"compareresult2\" rows=\"12\" cols=\"200\" readonly=\"readonly\"></textarea>" );
+                $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><textarea id=\"compareresult2\" name=\"compareresult2\" rows=\"12\" cols=\"200\" readonly=\"readonly\"></textarea>" +
+                                            "<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Common Triples</p><img class=\"imgfred\" src=" + urlo3 + " alt=\"Commons triples\" >");
                 $('#compareresult2').val(response);
 
             });
