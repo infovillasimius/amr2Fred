@@ -86,6 +86,15 @@ public class FredHandler implements HttpHandler {
 
         } catch (IOException e) {
             Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
+            FileHandler ext = new FileHandler();
+            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+                ext.getFile(NOFREDPNG);
+                tmp = new File(PAGESDIR + NOFREDPNG);
+            } else {
+                ext.getFile(NOFREDTEXT);
+                tmp = new File(PAGESDIR + NOFREDTEXT);
+            }
+            return tmp;
         }
 
         return tmp;
@@ -144,8 +153,8 @@ public class FredHandler implements HttpHandler {
     public static String getFredString(String text, String mode) {
 
         if (!isIpReachable()) {
-        return "FRED is not Reachable!";
-        } 
+            return "FRED is not Reachable!";
+        }
         String tmp = null;
         try {
             String request = URLEncoder.encode(text, ENC);
@@ -168,6 +177,7 @@ public class FredHandler implements HttpHandler {
 
         } catch (IOException e) {
             Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
+            return "FRED is not Reachable!";
         }
 
         return tmp;
@@ -175,13 +185,13 @@ public class FredHandler implements HttpHandler {
 
     public static boolean isIpReachable() {
         boolean state = false;
-        
+
         Process p;
         try {
             p = Runtime.getRuntime().exec("ping -c 1 -w 1 " + Glossary.FREDHOST);
             InputStream in = (p.getInputStream());
             String test = IOUtils.toString(in, Glossary.ENC);
-            
+
             if (test.contains("1 packets transmitted, 1 received, 0% packet loss")) {
                 state = true;
             }
