@@ -18,6 +18,7 @@ package webDemo;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +79,9 @@ public class FredHandler implements HttpHandler {
             conn.setRequestMethod("GET");
             //determina l'output di FRED
             conn.setRequestProperty("accept", mode);
+                    
+            conn.setRequestProperty("Authorization",  "Bearer " +  Glossary.FRED_AUTHORIZATION);
+            
             InputStream in = conn.getInputStream();
             tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
             Path tmpPath = tmp.getAbsoluteFile().toPath();
@@ -166,6 +170,8 @@ public class FredHandler implements HttpHandler {
             conn.setRequestMethod("GET");
             //determina l'output di FRED
             conn.setRequestProperty("accept", mode);
+            conn.setRequestProperty("Authorization",  "Bearer " +  Glossary.FRED_AUTHORIZATION);
+            
             InputStream in = conn.getInputStream();
             StringBuilder textBuilder = new StringBuilder();
             Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName(StandardCharsets.UTF_8.name())));

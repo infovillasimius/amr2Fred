@@ -64,6 +64,7 @@ public class Glossary {
     public static final String FRED_N_TRIPLES = "text/rdf+nt";
     public static final String FRED_N3 = "text/rdf+n3";
     public static final String FRED_IMAGE = "image/png";
+    public static final String FRED_AUTHORIZATION="";
     public static final String TEXT = "&?text=";
     public static final int TIMEOUT=5000;
 
