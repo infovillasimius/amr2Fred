@@ -23,6 +23,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +38,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 import resultsComparator.Converter;
 import static webDemo.Glossary.*;
@@ -49,6 +52,14 @@ import static webDemo.Glossary.*;
  * @author anto
  */
 public class FredHandler implements HttpHandler {
+
+    private static HashMap<String, String> map;
+
+    public FredHandler() {
+        if (map == null) {
+            map = new HashMap<>();
+        }
+    }
 
     /**
      *
@@ -76,17 +87,38 @@ public class FredHandler implements HttpHandler {
             try {
                 String request = URLEncoder.encode(text, ENC);
                 String url = COMMAND + request + COMMAND2;
-                URL obj = new URL(url);
-                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-                conn.setReadTimeout(TIMEOUT);
-                conn.setDoOutput(false);
-                conn.setRequestMethod("GET");
-                //determina l'output di FRED
-                conn.setRequestProperty("accept", mode);
+                InputStream in;
 
-                conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
+                String result = map.get(url);
+                if (result == null) {
+                    URL obj = new URL(url);
+                    HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                    conn.setReadTimeout(TIMEOUT);
+                    conn.setDoOutput(false);
+                    conn.setRequestMethod("GET");
+                    //determina l'output di FRED
+                    conn.setRequestProperty("accept", mode);
 
-                InputStream in = conn.getInputStream();
+                    conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
+
+                    in = conn.getInputStream();
+
+                    result = IOUtils.toString(in, Glossary.ENC);
+
+                    if (map.size() < 100) {
+                        map.put(url, result);
+                    } else {
+                        map.keySet().iterator().remove();
+                        map.put(url, result);
+                    }
+
+                    /*                    tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
+                    Path tmpPath = tmp.getAbsoluteFile().toPath();
+                    tmp.delete();
+                    Files.copy(in, tmpPath);*/
+                }
+
+                in = new ByteArrayInputStream(result.getBytes());
                 tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
                 Path tmpPath = tmp.getAbsoluteFile().toPath();
                 tmp.delete();
@@ -169,23 +201,35 @@ public class FredHandler implements HttpHandler {
         try {
             String request = URLEncoder.encode(text, ENC);
             String url = COMMAND + request + COMMAND2;
-            URL obj = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setReadTimeout(TIMEOUT);
-            conn.setDoOutput(false);
-            conn.setRequestMethod("GET");
-            //determina l'output di FRED
-            conn.setRequestProperty("accept", mode);
-            conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
+            String result = map.get(url);
+            if (result == null) {
+                URL obj = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                conn.setReadTimeout(TIMEOUT);
+                conn.setDoOutput(false);
+                conn.setRequestMethod("GET");
+                //determina l'output di FRED
+                conn.setRequestProperty("accept", mode);
+                conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
 
-            InputStream in = conn.getInputStream();
-            StringBuilder textBuilder = new StringBuilder();
-            Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName(StandardCharsets.UTF_8.name())));
-            int c = 0;
-            while ((c = reader.read()) != -1) {
-                textBuilder.append((char) c);
+                InputStream in = conn.getInputStream();
+                StringBuilder textBuilder = new StringBuilder();
+                Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName(StandardCharsets.UTF_8.name())));
+                int c = 0;
+                while ((c = reader.read()) != -1) {
+                    textBuilder.append((char) c);
+                }
+                tmp = textBuilder.toString();
+                result = tmp;
+                if (map.size() < 100) {
+                    map.put(url, result);
+                } else {
+                    map.keySet().iterator().remove();
+                    map.put(url, result);
+                }
+            } else {
+                tmp=result;
             }
-            tmp = textBuilder.toString();
 
         } catch (IOException e) {
             Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
