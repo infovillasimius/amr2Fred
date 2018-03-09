@@ -16,6 +16,9 @@
  */
 package webDemo;
 
+import amr2fred.Amr2fredWeb;
+import amr2fred.DigraphWriter;
+import amr2fred.Node;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -37,6 +40,7 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import resultsComparator.Converter;
 import static webDemo.Glossary.*;
 
 /**
@@ -68,40 +72,42 @@ public class FredHandler implements HttpHandler {
 
             return tmp;
         }
+        if (!mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+            try {
+                String request = URLEncoder.encode(text, ENC);
+                String url = COMMAND + request + COMMAND2;
+                URL obj = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                conn.setReadTimeout(TIMEOUT);
+                conn.setDoOutput(false);
+                conn.setRequestMethod("GET");
+                //determina l'output di FRED
+                conn.setRequestProperty("accept", mode);
 
-        try {
-            String request = URLEncoder.encode(text, ENC);
-            String url = COMMAND + request + COMMAND2;
-            URL obj = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setReadTimeout(TIMEOUT);
-            conn.setDoOutput(false);
-            conn.setRequestMethod("GET");
-            //determina l'output di FRED
-            conn.setRequestProperty("accept", mode);
-                    
-            conn.setRequestProperty("Authorization",  "Bearer " +  Glossary.FRED_AUTHORIZATION);
-            
-            InputStream in = conn.getInputStream();
-            tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
-            Path tmpPath = tmp.getAbsoluteFile().toPath();
-            tmp.delete();
-            Files.copy(in, tmpPath);
+                conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
 
-        } catch (IOException e) {
-            Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
-            FileHandler ext = new FileHandler();
-            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
-                ext.getFile(NOFREDPNG);
-                tmp = new File(PAGESDIR + NOFREDPNG);
-            } else {
-                ext.getFile(NOFREDTEXT);
-                tmp = new File(PAGESDIR + NOFREDTEXT);
+                InputStream in = conn.getInputStream();
+                tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
+                Path tmpPath = tmp.getAbsoluteFile().toPath();
+                tmp.delete();
+                Files.copy(in, tmpPath);
+
+            } catch (IOException e) {
+                Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
+                FileHandler ext = new FileHandler();
+                if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+                    ext.getFile(NOFREDPNG);
+                    tmp = new File(PAGESDIR + NOFREDPNG);
+                } else {
+                    ext.getFile(NOFREDTEXT);
+                    tmp = new File(PAGESDIR + NOFREDTEXT);
+                }
+                return tmp;
             }
+
             return tmp;
         }
-
-        return tmp;
+        return getFredImage(text, tmp);
     }
 
     @Override
@@ -170,8 +176,8 @@ public class FredHandler implements HttpHandler {
             conn.setRequestMethod("GET");
             //determina l'output di FRED
             conn.setRequestProperty("accept", mode);
-            conn.setRequestProperty("Authorization",  "Bearer " +  Glossary.FRED_AUTHORIZATION);
-            
+            conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
+
             InputStream in = conn.getInputStream();
             StringBuilder textBuilder = new StringBuilder();
             Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName(StandardCharsets.UTF_8.name())));
@@ -205,6 +211,22 @@ public class FredHandler implements HttpHandler {
             Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return state;
+    }
+
+    private File getFredImage(String sentence, File tmp) {
+
+        String rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
+        Node root = Converter.toNode(rdf2);
+        if (root != null) {
+
+            tmp = DigraphWriter.toPng(root);
+
+        } else {
+            FileHandler ext = new FileHandler();
+            ext.getFile(NOFREDPNG);
+            tmp = new File(PAGESDIR + NOFREDPNG);
+        }
+        return tmp;
     }
 
 }
