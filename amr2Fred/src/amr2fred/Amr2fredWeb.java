@@ -17,7 +17,6 @@
 package amr2fred;
 
 import java.io.File;
-import org.apache.log4j.BasicConfigurator;
 
 /**
  * Used by Amr2FredWebDemo to get AMR translated into RDF (text or graphic)
@@ -32,7 +31,7 @@ public class Amr2fredWeb {
     RdfWriter rdfWriter = RdfWriter.getWriter();
 
     public String go(String amr, int writerMode, int check, boolean cb, boolean cb1, boolean proMode) {
-        String fred = "", removed = "", err = "";
+        String fred = "";
         if (amr.length() > 3) {
 
             Parser instance = Parser.getInstance();
@@ -68,7 +67,6 @@ public class Amr2fredWeb {
                     writer.setObjectAsResource(cb1);
                     fred = (writer.writeRdf(result,cb1));
                 } else {
-                    fred = (result.toString());
 
                     if (result.getTreStatus() == 0) {
                         fred = DigraphWriter.toSvgString(result);
@@ -83,21 +81,6 @@ public class Amr2fredWeb {
                 }
 
                 /*
-                        Quando sono stati rimossi dei nodi dall'albero, sono elencati nel riquadro in alto a destra
-                 */
-                if (!instance.getRemoved().isEmpty()) {
-                    String removedNodes = "Removed nodes:\n";
-                    for (Node n : instance.getRemoved()) {
-                        removedNodes += n.toString2() + "\n";
-                    }
-                    removed = removedNodes;
-                }
-
-                if (instance.getRootCopy() != null) {
-                    removed = ("AMR tree:\n" + instance.getRootCopy().toString2() + "\n\n" + removed);
-                }
-
-                /*
                         Verifica della presenza di errori e generazione di un messagio personalizzato in base al numero degli stessi
                  */
                 if (result.getTreStatus() == 1) {
@@ -106,9 +89,7 @@ public class Amr2fredWeb {
                     fred = ("Warning! Something went wrong: there is a recursive error!\n\n") + fred;
                 } else if (result.getTreStatus() > 0) {
                     fred = ("Warning! Something went wrong: " + result.getTreStatus() + " nodes are not ok!\n\n") + fred;
-                } else {
-                    err = (" ");
-                }
+                } 
             } else {
                 fred = ("Sintax error");
             }
