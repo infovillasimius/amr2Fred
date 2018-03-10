@@ -67,6 +67,7 @@ public class Glossary {
     public static final String FRED_AUTHORIZATION="";
     public static final String TEXT = "&?text=";
     public static final int TIMEOUT=5000;
+    public static final int FRED_CACHE=200;
 
     /**
      * AMR2FRED parameters

@@ -16,7 +16,6 @@
  */
 package webDemo;
 
-import amr2fred.Amr2fredWeb;
 import amr2fred.DigraphWriter;
 import amr2fred.Node;
 import com.sun.net.httpserver.HttpExchange;
@@ -41,7 +40,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 import resultsComparator.Converter;
 import static webDemo.Glossary.*;
@@ -59,87 +57,6 @@ public class FredHandler implements HttpHandler {
         if (map == null) {
             map = new HashMap<>();
         }
-    }
-
-    /**
-     *
-     * @param text the text to send to FRED
-     * @param mode output type
-     * @return
-     */
-    private File getFred(String text, String mode) {
-        File tmp = null;
-
-        if (!isIpReachable()) {
-
-            FileHandler ext = new FileHandler();
-            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
-                ext.getFile(NOFREDPNG);
-                tmp = new File(PAGESDIR + NOFREDPNG);
-            } else {
-                ext.getFile(NOFREDTEXT);
-                tmp = new File(PAGESDIR + NOFREDTEXT);
-            }
-
-            return tmp;
-        }
-        if (!mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
-            try {
-                String request = URLEncoder.encode(text, ENC);
-                String url = COMMAND + request + COMMAND2;
-                InputStream in;
-
-                String result = map.get(url);
-                if (result == null) {
-                    URL obj = new URL(url);
-                    HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-                    conn.setReadTimeout(TIMEOUT);
-                    conn.setDoOutput(false);
-                    conn.setRequestMethod("GET");
-                    //determina l'output di FRED
-                    conn.setRequestProperty("accept", mode);
-
-                    conn.setRequestProperty("Authorization", "Bearer " + Glossary.FRED_AUTHORIZATION);
-
-                    in = conn.getInputStream();
-
-                    result = IOUtils.toString(in, Glossary.ENC);
-
-                    if (map.size() < 100) {
-                        map.put(url, result);
-                    } else {
-                        map.keySet().iterator().remove();
-                        map.put(url, result);
-                    }
-
-                    /*                    tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
-                    Path tmpPath = tmp.getAbsoluteFile().toPath();
-                    tmp.delete();
-                    Files.copy(in, tmpPath);*/
-                }
-
-                in = new ByteArrayInputStream(result.getBytes());
-                tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
-                Path tmpPath = tmp.getAbsoluteFile().toPath();
-                tmp.delete();
-                Files.copy(in, tmpPath);
-
-            } catch (IOException e) {
-                Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
-                FileHandler ext = new FileHandler();
-                if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
-                    ext.getFile(NOFREDPNG);
-                    tmp = new File(PAGESDIR + NOFREDPNG);
-                } else {
-                    ext.getFile(NOFREDTEXT);
-                    tmp = new File(PAGESDIR + NOFREDTEXT);
-                }
-                return tmp;
-            }
-
-            return tmp;
-        }
-        return getFredImage(text, tmp);
     }
 
     @Override
@@ -192,6 +109,50 @@ public class FredHandler implements HttpHandler {
         }
     }
 
+    /**
+     *
+     * @param text the text to send to FRED
+     * @param mode output type
+     * @return
+     */
+    private File getFred(String text, String mode) {
+        File tmp = null;
+
+        if (!isIpReachable()) {
+
+            FileHandler ext = new FileHandler();
+            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+                ext.getFile(NOFREDPNG);
+                tmp = new File(PAGESDIR + NOFREDPNG);
+            } else {
+                ext.getFile(NOFREDTEXT);
+                tmp = new File(PAGESDIR + NOFREDTEXT);
+            }
+
+            return tmp;
+        }
+        if (!mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
+            try {
+                String result = getFredString(text, mode);
+                InputStream in = new ByteArrayInputStream(result.getBytes());
+                tmp = File.createTempFile(TMP_FILE_NAME, TMP_FILE_EXT);
+                Path tmpPath = tmp.getAbsoluteFile().toPath();
+                tmp.delete();
+                Files.copy(in, tmpPath);
+
+            } catch (IOException e) {
+                Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
+                FileHandler ext = new FileHandler();
+                ext.getFile(NOFREDTEXT);
+                tmp = new File(PAGESDIR + NOFREDTEXT);
+                return tmp;
+            }
+
+            return tmp;
+        }
+        return getFredImage(text, tmp);
+    }
+
     public static String getFredString(String text, String mode) {
 
         if (!isIpReachable()) {
@@ -221,14 +182,15 @@ public class FredHandler implements HttpHandler {
                 }
                 tmp = textBuilder.toString();
                 result = tmp;
-                if (map.size() < 100) {
+                
+                if (map.size() < Glossary.FRED_CACHE) {
                     map.put(url, result);
                 } else {
                     map.keySet().iterator().remove();
                     map.put(url, result);
                 }
             } else {
-                tmp=result;
+                tmp = result;
             }
 
         } catch (IOException e) {
