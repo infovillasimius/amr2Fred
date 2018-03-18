@@ -25,13 +25,22 @@ import java.util.logging.Logger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.commons.io.FileUtils;
+import static resultsComparator.Amr2File.amr;
+import static resultsComparator.Amr2File.amr2fred;
+import static resultsComparator.Amr2File.counter;
+import static resultsComparator.Amr2File.o;
+import static resultsComparator.Amr2File.rdf1;
+import static resultsComparator.Amr2File.rdf2;
+import static resultsComparator.Amr2File.sentence;
 import static webDemo.Glossary.*;
 
 /**
- * Run the Web Server
- * input par [IP address] [TCP Port]
- * if no par is provided default is localhost
+ * Run the Web Server input par [IP address] [TCP Port] if no par is provided
+ * default is localhost
+ *
  * @author anto
  */
 public class Amr2FredWebDemo {
@@ -42,6 +51,14 @@ public class Amr2FredWebDemo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                FredHandler.timeIncreaseQueries();
+            }
+        }, 1 * 1000, Glossary.FRED_RECHARGE_TIME * 1000);
 
         String rawAddress = RAW_ADDRESS;
         String rawPort = RAW_PORT;
@@ -88,7 +105,7 @@ public class Amr2FredWebDemo {
                 server.createContext(WEB_ROOT, new StaticHandler());
 
                 server.createContext(FRED, new FredHandler());
-                
+
                 server.createContext(COMPARE, new CompareHandler());
 
                 server.start();

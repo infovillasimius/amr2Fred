@@ -48,15 +48,15 @@ public class Glossary {
     public static final String HELP = "help.html";
     public static final String HELP_SCRIPT = "help.js";
     public static final String LOADING = "loading.gif";
-    public static final String COMPARE="/compare";
-    public static final String NOFREDTEXT="fred_not_reachable.txt";
-    public static final String NOFREDPNG="fred_not_reachable.png";
-    public static final String NOTRIPLE="no_triple.png";
+    public static final String COMPARE = "/compare";
+    public static final String NOFREDTEXT = "fred_not_reachable.txt";
+    public static final String NOFREDPNG = "fred_not_reachable.png";
+    public static final String NOTRIPLE = "no_triple.png";
 
     /**
      * FRED parameters
      */
-    public static final String FREDHOST="wit.istc.cnr.it";
+    public static final String FREDHOST = "wit.istc.cnr.it";
     public static final String COMMAND = "http://wit.istc.cnr.it/stlab-tools/fred?text=";
     public static final String COMMAND2 = "&wfd_profile=b&textannotation=earmark&semantic-subgraph=true";
     public static final String FRED_RDF = "application/rdf+xml";
@@ -64,10 +64,17 @@ public class Glossary {
     public static final String FRED_N_TRIPLES = "text/rdf+nt";
     public static final String FRED_N3 = "text/rdf+n3";
     public static final String FRED_IMAGE = "image/png";
-    public static final String FRED_AUTHORIZATION="";
+    public static final String FRED_AUTHORIZATION = "";
+    public static final int FRED_RECHARGE_TIME=15;
     public static final String TEXT = "&?text=";
-    public static final int TIMEOUT=5000;
-    public static final int FRED_CACHE=200;
+    public static final int TIMEOUT = 5000;
+    public static final int FRED_CACHE = 200;
+    public static final String FRED_CACHE_FILE = "cache.txt";
+    public static final String FRED_CACHE_URL_REQUEST = "<FredRequestUrl>";
+    public static final String FRED_CACHE_URL_END_REQUEST = "</FredRequestUrl>";
+    public static final String FRED_CACHE_RESULT = "<FredResult>";
+    public static final String FRED_CACHE_END_RESULT = "</FredResult>";
+    public static int FRED_QUERIES=4;
 
     /**
      * AMR2FRED parameters
@@ -84,8 +91,8 @@ public class Glossary {
     public static final String RID_ERR = "&?rid_err=ON";
     public static final String RES_OBJ = "&?objAsRes";
     public static final String ENC = "UTF-8";
-    public static final String SENTENCE="&?sentence=";
-    public static final String COMMONS="&?commons=";
+    public static final String SENTENCE = "&?sentence=";
+    public static final String COMMONS = "&?commons=";
 
     public static final String TMP_FILE_NAME = "amr2fred";
     public static final String TMP_FILE_EXT = "tmp";

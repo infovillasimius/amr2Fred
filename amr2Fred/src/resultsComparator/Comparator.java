@@ -107,5 +107,14 @@ public class Comparator {
     public Node getRoot() {
         return root;
     }
+
+    public ArrayList<Triple> getFredResult() {
+        return fredResult;
+    }
+
+    public ArrayList<Triple> getA2fResult() {
+        return a2fResult;
+    }
+    
     
 }

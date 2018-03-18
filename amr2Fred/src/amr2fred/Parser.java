@@ -756,7 +756,7 @@ public class Parser {
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null && root.getInstance() != null
                     && isVerb(n.getInstance().var)) {
                 // caso manner verbale 
-                n.relation = FRED + root.getInstance().var.substring(0, n.getInstance().var.length() - 3) + Glossary.BY;
+                n.relation = FRED + root.getInstance().var.substring(0, root.getInstance().var.length() - 3) + Glossary.BY;
 
             } else if (n.relation.startsWith(Glossary.AMR_PREP)) {
                 n.relation = n.relation.replace(Glossary.AMR_PREP, FRED);

@@ -22,8 +22,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,10 +41,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import resultsComparator.Amr2File;
 import resultsComparator.Converter;
 import static webDemo.Glossary.*;
 
@@ -51,12 +60,27 @@ import static webDemo.Glossary.*;
  */
 public class FredHandler implements HttpHandler {
 
-    private static HashMap<String, String> map;
+    private static Queue<String> urls = new LinkedList<String>();
+    private static HashMap<String, String> map = loadMap();
+    private static final int QUERIES = 1;
+    private static final Semaphore AVAILABLE = new Semaphore(QUERIES, true);
 
     public FredHandler() {
         if (map == null) {
-            map = new HashMap<>();
+            map = loadMap();
         }
+    }
+
+    private static boolean getToken() throws InterruptedException {
+        AVAILABLE.acquire();
+        return true;
+    }
+
+    public static void timeIncreaseQueries() {
+        if(AVAILABLE.availablePermits()<Glossary.FRED_QUERIES){
+            AVAILABLE.release();
+        }
+        
     }
 
     @Override
@@ -154,7 +178,7 @@ public class FredHandler implements HttpHandler {
     }
 
     public static String getFredString(String text, String mode) {
-
+        
         if (!isIpReachable()) {
             return "FRED is not Reachable!";
         }
@@ -162,10 +186,16 @@ public class FredHandler implements HttpHandler {
         try {
             String request = URLEncoder.encode(text, ENC);
             String url = COMMAND + request + COMMAND2;
-            String result = map.get(url);
+            String result = getFromCache(url);
             if (result == null) {
+                try {
+                    getToken();         
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 URL obj = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                conn.setConnectTimeout(TIMEOUT);
                 conn.setReadTimeout(TIMEOUT);
                 conn.setDoOutput(false);
                 conn.setRequestMethod("GET");
@@ -182,20 +212,21 @@ public class FredHandler implements HttpHandler {
                 }
                 tmp = textBuilder.toString();
                 result = tmp;
-                
-                if (map.size() < Glossary.FRED_CACHE) {
-                    map.put(url, result);
-                } else {
-                    map.keySet().iterator().remove();
-                    map.put(url, result);
-                }
+
+                addToCache(url, result);
+
             } else {
                 tmp = result;
             }
 
         } catch (IOException e) {
             Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, e);
-            return "FRED is not Reachable!";
+            if (!e.getMessage().contains("500 for URL")) {
+                return "FRED is not Reachable!";
+            }
+
+            return "Server Error";
+
         }
 
         return tmp;
@@ -235,4 +266,153 @@ public class FredHandler implements HttpHandler {
         return tmp;
     }
 
+    public static void append(String url, String fredResult) {
+
+        try {
+            FileWriter fstream = new FileWriter(Glossary.FRED_CACHE_FILE, true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            fbw.write(Glossary.FRED_CACHE_URL_REQUEST);
+            fbw.newLine();
+            fbw.write(url);
+            fbw.newLine();
+            fbw.write(Glossary.FRED_CACHE_URL_END_REQUEST);
+            fbw.newLine();
+            fbw.write(Glossary.FRED_CACHE_RESULT);
+            fbw.newLine();
+            fbw.write(fredResult);
+            fbw.write(Glossary.FRED_CACHE_END_RESULT);
+            fbw.newLine();
+            fbw.close();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public static String getFromCache(String url) {
+        String result = map.get(url);
+        if (result == null) {
+            result = cacheSearch(url);
+        }
+        return result;
+    }
+
+    public static void addToCache(String url, String fredResult) {
+        if (map.size() > Glossary.FRED_CACHE) {
+            String remove = urls.poll();
+            map.remove(remove);
+        }
+        urls.add(url);
+        map.put(url, fredResult);
+        append(url, fredResult);
+    }
+
+    private static HashMap<String, String> loadMap() {
+        HashMap<String, String> map = new HashMap<>();
+
+        String line, url, result;
+
+        try {
+            ArrayList<String> l = new ArrayList<>();
+            File f = new File(Glossary.FRED_CACHE_FILE);
+            BufferedReader reader = new BufferedReader(new FileReader(f.getAbsolutePath()));
+            line = reader.readLine();
+
+            while (line != null) {
+                url = "";
+                result = "";
+                if (line.contains(Glossary.FRED_CACHE_URL_REQUEST)) {
+
+                    line = reader.readLine();
+                    url = line;
+                    urls.add(url);
+                    line = reader.readLine();
+                    line = reader.readLine();
+                }
+
+                if (line.contains(Glossary.FRED_CACHE_RESULT)) {
+
+                    line = reader.readLine();
+                    while (!line.contains(Glossary.FRED_CACHE_END_RESULT)) {
+                        result = result + line;
+                        line = reader.readLine();
+                    }
+
+                    if (map.size() > Glossary.FRED_CACHE) {
+                        String remove = urls.poll();
+                        map.remove(remove);
+                    }
+                    urls.add(url);
+                    map.put(url, result);
+
+                }
+
+                line = reader.readLine();
+
+            }
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException ex) {
+            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return map;
+    }
+
+    private static String cacheSearch(String searchedUrl) {
+
+        String line, url, result;
+
+        try {
+            ArrayList<String> l = new ArrayList<>();
+            File f = new File(Glossary.FRED_CACHE_FILE);
+            BufferedReader reader = new BufferedReader(new FileReader(f.getAbsolutePath()));
+            line = reader.readLine();
+
+            while (line != null) {
+                url = "";
+                result = "";
+                if (line.contains(Glossary.FRED_CACHE_URL_REQUEST)) {
+
+                    line = reader.readLine();
+                    url = line;
+                    if (url.equalsIgnoreCase(searchedUrl)) {
+
+                        line = reader.readLine();
+                        line = reader.readLine();
+                        if (line.contains(Glossary.FRED_CACHE_RESULT)) {
+
+                            line = reader.readLine();
+                            while (!line.contains(Glossary.FRED_CACHE_END_RESULT)) {
+                                result = result + line;
+                                line = reader.readLine();
+                            }
+
+                        }
+
+                        if (map.size() > Glossary.FRED_CACHE) {
+                            String remove = urls.poll();
+                            map.remove(remove);
+                        }
+                        urls.add(url);
+                        map.put(url, result);
+                        return result;
+                    }
+
+                }
+
+                line = reader.readLine();
+
+            }
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException ex) {
+            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
 }
