@@ -48,7 +48,6 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import resultsComparator.Amr2File;
 import resultsComparator.Converter;
 import static webDemo.Glossary.*;
@@ -62,8 +61,8 @@ public class FredHandler implements HttpHandler {
 
     private static Queue<String> urls = new LinkedList<String>();
     private static HashMap<String, String> map = loadMap();
-    private static final int QUERIES = 1;
-    private static final Semaphore AVAILABLE = new Semaphore(QUERIES, true);
+    private static final int INITIAL_QUERIES = 1;
+    private static final Semaphore AVAILABLE = new Semaphore(INITIAL_QUERIES, true);
 
     public FredHandler() {
         if (map == null) {
@@ -77,10 +76,10 @@ public class FredHandler implements HttpHandler {
     }
 
     public static void timeIncreaseQueries() {
-        if(AVAILABLE.availablePermits()<Glossary.FRED_QUERIES){
+        if (AVAILABLE.availablePermits() < Glossary.FRED_QUERIES) {
             AVAILABLE.release();
         }
-        
+
     }
 
     @Override
@@ -141,20 +140,7 @@ public class FredHandler implements HttpHandler {
      */
     private File getFred(String text, String mode) {
         File tmp = null;
-
-        if (!isIpReachable()) {
-
-            FileHandler ext = new FileHandler();
-            if (mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
-                ext.getFile(NOFREDPNG);
-                tmp = new File(PAGESDIR + NOFREDPNG);
-            } else {
-                ext.getFile(NOFREDTEXT);
-                tmp = new File(PAGESDIR + NOFREDTEXT);
-            }
-
-            return tmp;
-        }
+        
         if (!mode.equalsIgnoreCase(Glossary.FRED_IMAGE)) {
             try {
                 String result = getFredString(text, mode);
@@ -178,10 +164,7 @@ public class FredHandler implements HttpHandler {
     }
 
     public static String getFredString(String text, String mode) {
-        
-        if (!isIpReachable()) {
-            return "FRED is not Reachable!";
-        }
+
         String tmp = null;
         try {
             String request = URLEncoder.encode(text, ENC);
@@ -189,7 +172,7 @@ public class FredHandler implements HttpHandler {
             String result = getFromCache(url);
             if (result == null) {
                 try {
-                    getToken();         
+                    getToken();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -230,24 +213,6 @@ public class FredHandler implements HttpHandler {
         }
 
         return tmp;
-    }
-
-    public static boolean isIpReachable() {
-        boolean state = false;
-
-        Process p;
-        try {
-            p = Runtime.getRuntime().exec("ping -c 1 -w 1 " + Glossary.FREDHOST);
-            InputStream in = (p.getInputStream());
-            String test = IOUtils.toString(in, Glossary.ENC);
-
-            if (test.contains("1 packets transmitted, 1 received, 0% packet loss")) {
-                state = true;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(FredHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return state;
     }
 
     private File getFredImage(String sentence, File tmp) {
@@ -415,4 +380,5 @@ public class FredHandler implements HttpHandler {
 
         return null;
     }
+    
 }
