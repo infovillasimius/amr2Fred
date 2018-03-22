@@ -49,9 +49,9 @@ public class Converter {
     }
 
     /**
-     *
-     * @param result
-     * @return
+     *  Convert the string containing the results into a list of triples
+     * @param result a string with the result of a conversion from amr or from fred
+     * @return a list of triple
      */
     public static ArrayList<Triple> getList(String result) {
         ArrayList<Triple> list = new ArrayList<>();

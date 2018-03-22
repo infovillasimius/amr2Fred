@@ -169,7 +169,7 @@ public class FredHandler implements HttpHandler {
         try {
             String request = URLEncoder.encode(text, ENC);
             String url = COMMAND + request + COMMAND2;
-            String result = getFromCache(url);
+            String result = getFromCache(url,mode);
             if (result == null) {
                 try {
                     getToken();
@@ -196,7 +196,7 @@ public class FredHandler implements HttpHandler {
                 tmp = textBuilder.toString();
                 result = tmp;
 
-                addToCache(url, result);
+                addToCache(url, result, mode);
 
             } else {
                 tmp = result;
@@ -253,22 +253,22 @@ public class FredHandler implements HttpHandler {
         }
     }
 
-    public static String getFromCache(String url) {
-        String result = map.get(url);
+    public static String getFromCache(String url,String mode) {
+        String result = map.get(url+mode);
         if (result == null) {
-            result = cacheSearch(url);
+            result = cacheSearch(url+mode);
         }
         return result;
     }
 
-    public static void addToCache(String url, String fredResult) {
+    public static void addToCache(String url, String fredResult, String mode) {
         if (map.size() > Glossary.FRED_CACHE) {
             String remove = urls.poll();
             map.remove(remove);
         }
-        urls.add(url);
-        map.put(url, fredResult);
-        append(url, fredResult);
+        urls.add(url+mode);
+        map.put(url+mode, fredResult);
+        append(url+mode, fredResult);
     }
 
     private static HashMap<String, String> loadMap() {
