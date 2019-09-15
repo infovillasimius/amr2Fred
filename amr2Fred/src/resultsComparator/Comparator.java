@@ -48,7 +48,6 @@ public class Comparator {
     }
 
     private void subtract() {
-
         for (Triple t : a2fResult) {
             if (!fredResult.contains(t)) {
                 aMinusF.add(t);
@@ -68,7 +67,6 @@ public class Comparator {
                 }
             }
         }
-
     }
 
     private void calculate() {
@@ -115,6 +113,4 @@ public class Comparator {
     public ArrayList<Triple> getA2fResult() {
         return a2fResult;
     }
-    
-    
 }
