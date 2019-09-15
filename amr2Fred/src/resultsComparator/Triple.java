@@ -24,7 +24,6 @@ import java.util.Objects;
  * @author anto
  */
 public class Triple {
-
     private String subject;
     private String relation;
     private String object;
@@ -93,9 +92,7 @@ public class Triple {
     
     @Override
     public String toString() {
-        
-        return "\n"+this.subject + " " + this.relation + " " + this.object + " .";
-        
+        return "\n"+this.subject + " " + this.relation + " " + this.object + " .";        
     }
     
     public static int gettNum() {
@@ -103,13 +100,10 @@ public class Triple {
     }
     
     private String stringAdj(String obj) {
-        
         obj = obj.replace("vnrole.owl#", "");
-        
         if (obj.contains(VN_DATA_NS)) {
             obj = obj.substring(0, obj.indexOf("_", VN_DATA_NS.length()));
         }
-        
         return obj;
     }
     
