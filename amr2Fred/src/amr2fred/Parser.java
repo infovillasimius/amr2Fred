@@ -359,7 +359,7 @@ public class Parser {
         Node instance = root.getInstance();
         String lemma = instance.var.substring(0, instance.var.length() - 3);
 
-        if (lemma.equalsIgnoreCase("likely") || lemma.equalsIgnoreCase("recommend")) {
+        if (lemma.equalsIgnoreCase("likely") /*|| lemma.equalsIgnoreCase("recommend")*/) {
             Node arg1 = root.getChild(Glossary.AMR_ARG1);
             if (arg1 != null) {
                 root.var = arg1.var;
@@ -741,8 +741,10 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
                 //caso :manner con forma verbale
                 if (n.getInstance().var.matches(Glossary.AMR_VERB2) || !mannerAdverb(n.getInstance().var).isEmpty()) {
-
-                    if (!mannerAdverb(n.getInstance().var).isEmpty()) {
+                    System.out.println();
+                    if (n.getInstance().var.matches(Glossary.AMR_VERB2) && !mannerAdverb(n.getInstance().var.substring(0, n.getInstance().var.length() - 3)).isEmpty()){
+                        n.var = FRED + firstUpper(mannerAdverb(n.getInstance().var.substring(0, n.getInstance().var.length() - 3)));
+                    } else if (!mannerAdverb(n.getInstance().var).isEmpty()) {
                         n.var = FRED + firstUpper(mannerAdverb(n.getInstance().var));
                     } else {
                         n.var = FRED + firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
@@ -1714,6 +1716,7 @@ public class Parser {
     }
 
     private String mannerAdverb(String var) {
+        //System.out.println(var);
         for (String adv : Glossary.MANNER_ADVERBS) {
             if (adv.matches("^" + var + ".*")) {
                 return adv;
