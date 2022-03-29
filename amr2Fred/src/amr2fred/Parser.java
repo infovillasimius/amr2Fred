@@ -741,13 +741,12 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
                 //caso :manner con forma verbale
                 if (n.getInstance().var.matches(Glossary.AMR_VERB2) || !mannerAdverb(n.getInstance().var).isEmpty()) {
-                    System.out.println();
                     if (n.getInstance().var.matches(Glossary.AMR_VERB2) && !mannerAdverb(n.getInstance().var.substring(0, n.getInstance().var.length() - 3)).isEmpty()){
                         n.var = FRED + firstUpper(mannerAdverb(n.getInstance().var.substring(0, n.getInstance().var.length() - 3)));
                     } else if (!mannerAdverb(n.getInstance().var).isEmpty()) {
                         n.var = FRED + firstUpper(mannerAdverb(n.getInstance().var));
                     } else {
-                        n.var = FRED + firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) + "ly");
+                        n.var = FRED + firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) /*+ "ly"*/);
                     }
                     n.list.remove(n.getInstance());
                 } else {
@@ -1045,7 +1044,7 @@ public class Parser {
             System.out.println(n.var);
             }*/
             if (root.relation.equalsIgnoreCase(TOP)) {
-
+                //System.out.println("top "+root.toString2());
                 root.list.remove(n);
                 String arg = n.relation;
                 n.relation = root.relation;
@@ -1054,6 +1053,7 @@ public class Parser {
                 root = n;
                 n = scambio;
                 root.list.add(n);
+                //System.out.println("top2 "+root.toString2());
                 return inverseChecker(root);
 
             } else if (root.getArgs().size() <= 1 && root.getChild(":arg1-of") != null
@@ -1061,21 +1061,24 @@ public class Parser {
                     && root.getChild(":arg1-of").getInstance().var.matches(Glossary.AMR_VERB2)
                     && n.getArgs().isEmpty()
                     && !root.getInstance().var.equalsIgnoreCase(Glossary.AMR_UNKNOWN)) {
-
+                //System.out.println(root.toString2());
                 //risolve il caso del nodo con relazione inversa e var "amr-unknown"
                 n.relation = n.relation.substring(0, n.relation.length() - 3);
-                String swap = root.getInstance().var;
+                /*String swap = root.getInstance().var;
                 root.getInstance().var = n.getInstance().var;
-                n.getInstance().var = swap;
-
+                n.getInstance().var = swap;*/
+                root.list.remove(n);
+                root.swap(n);
+                root.list.add(n);
+                //System.out.println(root.toString2());
             } else {
-
+                //System.out.println(root.toString2());
                 Node newNode = root.getCopy(n.relation.substring(0, n.relation.length() - 3));
-
                 //newNode.list.add(root.getInstance());
                 this.nodes.add(newNode);
                 n.relation = TOP;
                 n.list.add(newNode);
+                //System.out.println(root.toString2());
             }
 
         }
