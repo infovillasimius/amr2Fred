@@ -338,7 +338,7 @@ public class Node {
     
     public void swap(Node node){
         String swapVar = node.var;
-        String swapRelation = node.relation;
+        //String swapRelation = node.relation;
         NodeStatus swapStatus = node.status;
         NodeType swapType = node.type;
         ArrayList<Node> swapList = node.list;
@@ -346,7 +346,7 @@ public class Node {
         String swapVerb = node.verb;
         
         node.var = this.var;
-        node.relation = this.relation;
+        //node.relation = this.relation;
         node.status = this.status;
         node.type = this.type;
         node.list = this.list;
@@ -354,7 +354,7 @@ public class Node {
         node.verb = this.verb;
         
         this.var = swapVar;
-        this.relation = swapRelation;
+        //this.relation = swapRelation;
         this.status = swapStatus;
         this.type = swapType;
         this.list = swapList;

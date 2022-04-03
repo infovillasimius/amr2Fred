@@ -78,6 +78,7 @@ public class Glossary {
 
     public static final String BOXER_AGENT = BOXER + "agent";
     public static final String BOXER_PATIENT = BOXER + "patient";
+    public static final String BOXER_THEME = BOXER + "theme";
 
     /**
      * Name space for boxer
@@ -99,6 +100,7 @@ public class Glossary {
     public static final String BOXING_HAS_MODALITY = "boxing:hasModality";
     public static final String BOXING_FALSE = "boxing:False";
     public static final String BOXING_HAS_TRUTH_VALUE = "boxing:hasTruthValue";
+    public static final String BOXING_UNKNOWN = "boxing:Unknown";
 
     /**
      * Local name for quant
@@ -186,6 +188,7 @@ public class Glossary {
     public static final String REIFI_HAVE_SUBEVENT = "have-subevent-91";
     public static final String REIFI_INCLUDE = "include-91";
     public static final String REIFI_BE_TEMPORALLY_AT = "be-temporally-at-91";
+    public static final String REIFI_HAVE_DEGREE = "have-degree-91";
 
     public static final String RATE_ENTITY = "rate-entity-91";
     
@@ -238,6 +241,8 @@ public class Glossary {
     public static final String AMR_ARG2 = ":arg2";
     public static final String AMR_ARG3 = ":arg3";
     public static final String AMR_ARG4 = ":arg4";
+    public static final String AMR_ARG5 = ":arg5";
+    public static final String AMR_ARG6 = ":arg6";
     public static final String AMR_OP1 = ":op1";
     public static final String AMR_QUANT = ":quant";
     public static final String AMR_TOPIC = ":topic";
