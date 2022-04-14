@@ -167,6 +167,7 @@ public class Glossary {
     public static final String VN_ROLE_CAUSE = VN_ROLE + "Cause";
     public static final String VN_ROLE_EXPERIENCER = VN_ROLE + "Expreriencer";
     public static final String VN_ROLE_THEME = VN_ROLE + "Theme";
+    public static final String VN_ROLE_PREDICATE = VN_ROLE + "Predicate";
 
     public static final String REIFI_BENEFIT = "benefit-01";
     public static final String REIFI_HAVE_CONCESSION = "have-concession-91";
@@ -217,6 +218,8 @@ public class Glossary {
 
     public static final String SCHEMA_ORG = "schemaorg:";
     public static final String SCHEMA_ORG_NS = "http://schema.org/";
+    
+    
 
     /**
      * String for AMR elements identification
@@ -415,7 +418,7 @@ public class Glossary {
 
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_TRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
-        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_BENEFICIARY, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
+        VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_PREDICATE, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
         VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
         FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF, DUL_ASSOCIATED_WITH, FRED_WITH};
 
@@ -730,6 +733,21 @@ public class Glossary {
         WN_SYNSET_REL_NUM,
         ESO_CLASS,
         ESO_ROLE
+    }
+    
+    
+    /**
+     * Field names of pb2vn table
+     */
+    public enum Pb2vnFields {
+
+        PB_Role_URI,
+        PB_RoleSet,
+        PB_Role,
+        VerbNet_Role_URI_for_FRED,
+        VN_Role,
+        VN_Sense,
+        VerbNet_VerbSense_URI_for_FRED
     }
 
     /**

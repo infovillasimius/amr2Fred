@@ -32,6 +32,7 @@ import static amr2fred.Glossary.AMR_ARG;
 import static amr2fred.Glossary.AMR_ARG0;
 import static amr2fred.Glossary.AMR_ARG1;
 import static amr2fred.Glossary.AMR_ARG2;
+import java.math.BigInteger;
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -137,6 +138,9 @@ public class Parser {
             root = findVnClass(root);
             //verifica la necessità di inserire il nodo speciale TOPIC
             root = topic(root);
+
+            //verifica nodi arg residui
+            root = residual(root);
         }
 
         return root;
@@ -714,7 +718,7 @@ public class Parser {
 
                 //casi :quant  e :frequency con valore numerico 
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
-                if ((n.var.matches(Glossary.NN_INTEGER) && Integer.parseInt(n.var) != 1) || !n.var.matches(Glossary.NN_INTEGER)) {
+                if ((n.var.matches(Glossary.NN_INTEGER) && !new BigInteger(n.var).equals(new BigInteger("1"))) || !n.var.matches(Glossary.NN_INTEGER)) {
                     toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 }
 
@@ -932,6 +936,35 @@ public class Parser {
         if (root.getType() == VERB) {
 
             PredMatrix pred = PredMatrix.getPredMatrix();
+            Pb2vn pb = Pb2vn.getPb2vn();
+
+            ArrayList<ArrayList<String>> result2 = pb.find(lemma.substring(3), Glossary.Pb2vnFields.PB_RoleSet);
+            if (result2 != null && !result2.isEmpty()) {
+                String vnClass2 = result2.get(0).get(Glossary.Pb2vnFields.VN_Sense.ordinal());
+
+                if (!vnClass2.equalsIgnoreCase(Glossary.NULL)) {
+                    Node rdfNode = root.getChild(Glossary.RDF_TYPE);
+                    rdfNode.list.add(new Node(Glossary.VN_DATA + vnClass2, Glossary.OWL_EQUIVALENT_CLASS, OK));
+                }
+
+                //Elabora i nodi argomento esplicitando i relativi nodi
+                for (Node n : root.getArgs()) {
+                    String r = n.relation.substring(1);
+
+                    String role;
+                    ArrayList<ArrayList<String>> result1 = pb.find(lemma.substring(3), Glossary.Pb2vnFields.PB_RoleSet, Glossary.Pb2vnFields.PB_Role, r);
+
+                    if (result1 != null && !result1.isEmpty()) {
+                        role = result1.get(0).get(Glossary.Pb2vnFields.VN_Role.ordinal());
+                        if (!role.equalsIgnoreCase(Glossary.NULL)) {
+                            n.relation = VN_ROLE + role;
+                            n.setStatus(OK);
+                        }
+                    }
+                }
+
+            }
+
             /*
             Trova tutte le righe della tabella predmatrix che contengono il lemma 
             cercato; il risultato è ordinato per valori decrescenti sul campo che 
@@ -950,12 +983,15 @@ public class Parser {
                 if (result != null && !result.isEmpty()) {
                     String vnClass = result.get(0).getLine().get(Glossary.LineFields.VN_CLASS_NUMBER.ordinal()).substring(3);
                     String vnSubClass = result.get(0).getLine().get(Glossary.LineFields.VN_SUBCLASS_NUMBER.ordinal()).substring(3);
-                    Node rdfNode = root.getChild(Glossary.RDF_TYPE);
 
-                    if (vnSubClass.equalsIgnoreCase(Glossary.NULL) && !vnClass.equalsIgnoreCase(Glossary.NULL)) {
-                        rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
-                    } else if (!vnSubClass.equalsIgnoreCase(Glossary.NULL)) {
-                        rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnSubClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
+                    if (root.getChild(Glossary.RDF_TYPE).getChild(Glossary.OWL_EQUIVALENT_CLASS) == null) {
+                        Node rdfNode = root.getChild(Glossary.RDF_TYPE);
+
+                        if (vnSubClass.equalsIgnoreCase(Glossary.NULL) && !vnClass.equalsIgnoreCase(Glossary.NULL)) {
+                            rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
+                        } else if (!vnSubClass.equalsIgnoreCase(Glossary.NULL)) {
+                            rdfNode.list.add(new Node(serializeClass(Glossary.VN_DATA + (rdfNode.var.replaceAll(FRED, "")) + "_" + vnSubClass), Glossary.OWL_EQUIVALENT_CLASS, OK));
+                        }
                     }
                     //Elabora i nodi argomento esplicitando i relativi nodi
                     for (Node n : root.getArgs()) {
@@ -1160,22 +1196,26 @@ public class Parser {
     }
 
     /*
-    Verifica se la parola in input è un verbo contenuto nella predmatrix
+    Verifica se la parola in input è un verbo contenuto nella predmatrix o nella Pb2vn
      */
     private boolean isVerb(String word) {
-
+        Pb2vn pb = Pb2vn.getPb2vn();
         PredMatrix pred = PredMatrix.getPredMatrix();
-        word = Glossary.ID + word.replace('-', '.');
-        ArrayList<Line> result = pred.find(word, Glossary.LineFields.ID_PRED);
-        return result != null && !result.isEmpty();
+        word = word.replace('-', '.');
+        ArrayList<Line> result = pred.find(Glossary.ID + word, Glossary.LineFields.ID_PRED);
+        ArrayList<ArrayList<String>> result2 = pb.find(word, Glossary.Pb2vnFields.PB_RoleSet);
+        return (result != null && !result.isEmpty()) || (result2 != null && !result2.isEmpty());
     }
 
     private boolean isVerb(String word, ArrayList<Node> list) {
+        Pb2vn pb = Pb2vn.getPb2vn();
         PredMatrix pred = PredMatrix.getPredMatrix();
-        word = Glossary.ID + word.replace('-', '.');
-        ArrayList<Line> result = pred.find(word, Glossary.LineFields.ID_PRED);
+        word = word.replace('-', '.');
+        ArrayList<Line> result = pred.find(Glossary.ID + word, Glossary.LineFields.ID_PRED);
+        ArrayList<ArrayList<String>> result2 = pb.find(word, Glossary.Pb2vnFields.PB_RoleSet);
         result = pred.find(result, list);
-        return result != null && !result.isEmpty();
+        result2 = pb.find(result2, list);
+        return (result != null && !result.isEmpty()) || (result2 != null && !result2.isEmpty());
 
     }
 
@@ -1342,7 +1382,7 @@ public class Parser {
 
                 newRoot.relation = root.relation;
                 root.list.remove(newRoot);
-                if (arg2Instance != null) {
+                if (arg2 != null && arg2Instance != null) {
                     arg2.list.remove(arg2Instance);
                     arg2Instance.relation = Glossary.RDF_TYPE;
                     arg2Instance.var = FRED + firstUpper(arg2Instance.var);
@@ -2216,4 +2256,18 @@ public class Parser {
         return result + classe + "00000000".substring(((classe).length()) % 9);
     }
 
+    private Node residual(Node root) {
+        if(root.var.matches(Glossary.AMR_VERB2)){
+            root.list.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
+            root.var = root.var.substring(0, root.var.length() - 3);
+        }
+        if(root.relation.matches(Glossary.AMR_ARG)){
+            root.relation = Glossary.VN_ROLE_PREDICATE;
+            root.setStatus(OK);
+        }
+        for(Node n : root.getList()){
+            n = residual(n);   
+        }
+        return root;
+    }
 }
