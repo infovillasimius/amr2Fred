@@ -94,7 +94,7 @@ public class Amr2File {
                         //System.out.println("" + from + " " + counter + " - amr.size " + amr.size());
                         //System.out.println(amr.get(from + counter));
                         try {
-                            amrS = amr2fred.go(amr.get(from + counter), 2, 1, true, true, true);
+                            amrS = amr2fred.go(amr.get(from + counter), 2, 1, true, true, true, false);
                         } catch (Exception e) {
                             amrS = "";
                         }

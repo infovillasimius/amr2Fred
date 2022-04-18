@@ -99,6 +99,7 @@ public class Glossary {
     public static final String BOXING_POSSIBLE = "boxing:Possible";
     public static final String BOXING_HAS_MODALITY = "boxing:hasModality";
     public static final String BOXING_FALSE = "boxing:False";
+    public static final String BOXING_TRUTH = "boxing:Truth";
     public static final String BOXING_HAS_TRUTH_VALUE = "boxing:hasTruthValue";
     public static final String BOXING_UNKNOWN = "boxing:Unknown";
 
@@ -152,6 +153,7 @@ public class Glossary {
      */
     public static final String RDFS_NS = org.apache.jena.vocabulary.RDFS.getURI();
     public static final String RDFS_SUBCLASS_OF = "rdfs:subClassOf";
+    public static final String RDFS_SUB_PROPERTY_OF = "rdfs:subPropertyOf";
 
     /**
      * Local name for vn.role
@@ -237,6 +239,7 @@ public class Glossary {
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
     public static final String AMR_MINUS = "-";
+    public static final String AMR_PLUS = "+";
     public static final String AMR_MODE = ":mode";
     public static final String AMR_POSS = ":poss";
     public static final String AMR_ARG0 = ":arg0";
@@ -260,6 +263,7 @@ public class Glossary {
     public static final String AMR_WIKI = ":wiki";
     public static final String AMR_NAME = ":name";
     public static final String AMR_PURPOSE = ":purpose";
+    public static final String AMR_POLITE = ":polite";
 
     public static final String AMR_ACCOMPANIER = ":accompanier";
     public static final String AMR_AGE = ":age";
@@ -377,24 +381,25 @@ public class Glossary {
     public static final String DIGRAPH_INI="digraph {\n charset=\"utf-8\"; \n";
     public static final String DIGRAPH_END="}";
     
-    
+    public static final String AMR_NS = "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#";
+    public static final String AMR = "amr:";
 
     /**
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
-        RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG};
+        RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR};
 
     /**
      * Array of fred elements name space
      */
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
-        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS, SCHEMA_ORG_NS};
+        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS, SCHEMA_ORG_NS, AMR_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 12;
+    public static final int PREFIX_NUM = 13;
 
     /**
      * Jena's writers output modes

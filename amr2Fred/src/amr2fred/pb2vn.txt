@@ -10718,5 +10718,3 @@ https://w3id.org/framester/pb/pbdata/upgrade.02__1	upgrade.02	ARG1	https://w3id.
 https://w3id.org/framester/pb/pbdata/upgrade.02__2	upgrade.02	ARG2	https://w3id.org/framester/vn/vn31/data/Result.upgrade_29010000	Amount/EXT	Upgrade_29010000	https://w3id.org/framester/vn/vn31/data/upgrade_29010000
 https://w3id.org/framester/pb/pbdata/upgrade.02__3	upgrade.02	ARG3	https://w3id.org/framester/vn/vn31/data/Result.upgrade_29010000	Start_point	Upgrade_29010000	https://w3id.org/framester/vn/vn31/data/upgrade_29010000
 https://w3id.org/framester/pb/pbdata/upgrade.02__4	upgrade.02	ARG4	https://w3id.org/framester/vn/vn31/data/Result.upgrade_29010000	Result	Upgrade_29010000	https://w3id.org/framester/vn/vn31/data/upgrade_29010000
-Null	bad.07	ARG0	Bad_000	causer_of_badness	Bad_000 Bad_000
-Null	bad.07	ARG1	Bad_000	generally_negative/displeasing_entity	Bad_000	Bad_000

@@ -80,14 +80,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     &?rid_err=ON
                                 </td>
                                 <td>
-                                    if present it tells to amr2fred to remove nodes with translation errors
+                                    if present it tells amr2fred to remove nodes with translation errors
                                 </td>
                             </tr>
                             <tr>
                                 <td>&?objAsRes
                                 </td>
                                 <td >
-                                    if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings
+                                    if present it tells amr2fred to insert third parts of rdf statements as resources instead of as strings
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&?alt_label
+                                </td>
+                                <td >
+                                    if present, tell amr2fred to use alternate AMR labels for core roles
                                 </td>
                             </tr>
                         </tbody>
@@ -116,6 +123,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 Get Statement Objects as Resources... <input type="checkbox" name="res" id="res"></p>
                             <p id="prid" class="tooltip" title="Remove errors in the data structure ang get linked data!">
                                 Get rid of errors... <input type="checkbox" name="errors" id="rid" ></p>
+                            <p class="tooltip" title="Get results with AMR alternate labels for core roles"> 
+                                Alternate AMR labels... <input type="checkbox" name="altLabel" id="altLabel"></p>
                         </fieldset>
                         <fieldset class="amr2">
                             <legend>Input AMR: </legend>

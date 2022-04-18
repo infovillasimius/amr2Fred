@@ -141,7 +141,7 @@ public class Amr2Fred extends Application {
                     if (!amr.startsWith("(")) {
                         amr = "(" + amr + ")";
                     }
-                    Node result = instance.parse(amr);
+                    Node result = instance.parse(amr, false);
 
                     //cancella il contenuto rel riquadro a dx in alto
                     removed.setText("");

@@ -13,6 +13,15 @@ $(document).ready(function () {
     $("#fred").change(function (event) {
         checkFred();
     });
+    
+    $("#altLabel").change(function (event) {
+        if ($('#altLabel')[0].checked === true){
+            if ($('#fred')[0].checked === true){
+                $('#fred')[0].checked = false
+            }
+        }
+        checkFred();
+    });
 
     $('#amr2fred').click(function (event) {
         event.preventDefault();
@@ -26,18 +35,22 @@ $(document).ready(function () {
         if ($('#res')[0].checked === true) {
             urlo += "&?objAsRes";
         }
-
+        
+        if ($('#altLabel')[0].checked === true && !fred) {
+            urlo += "&?alt_label";
+        }
 
         var urlControl = urlo;
         var output = $('select#outMode option:selected').attr('value');
         var amr = $('#amr').val();
+        amr = encodeURIComponent(amr);
         var text = $('#text').val();
         urlControl += "&?amr=" + amr;
 
         switch (output) {
             case "0":
                 urlo1 += "&?format=png" + "&?text=" + text;
-                urlo += "&?format=png" + "&?amr=" + amr;
+                urlo += "&?format=DIGRAPH" + "&?amr=" + amr;
                 break;
             case "1":
                 urlo += "&?amr=" + amr;
@@ -66,8 +79,7 @@ $(document).ready(function () {
         $('.Amr2fred').show();
         $('#amr2fredresult').html("<img id=\"imgamr2fred\" src=\"loading.gif\" alt=\"Loading\" >");
 
-        client.get(encodeURI(urlControl), function (response) {
-
+        client.get(urlControl, function (response) {
 
             errResponse = response.toString();
 
@@ -88,7 +100,7 @@ $(document).ready(function () {
             }
         });
 
-        client.get(encodeURI(urlo), function (response) {
+        client.get(urlo, function (response) {
 
             if (errors) {
                 $('#amr2fredresult').html("<textarea id=\"tofred\" name=\"tofred\" rows=\"10\" cols=\"200\"></textarea>");
@@ -101,7 +113,7 @@ $(document).ready(function () {
                     $('#tofred').val(response);
 
                 } else {
-                    var uri = encodeURI(urlo);
+                    var uri = urlo;
                     $('#amr2fredresult').html("<img id=\"imgamr2fred\" src=" + uri + " alt=\"Amr2Fred's result\" >");
                 }
 
@@ -115,13 +127,13 @@ $(document).ready(function () {
         if (fred) {
             $('#fredresult').show();
             $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img class=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
-            client.get(encodeURI(urlo1), function (response) {
+            client.get(urlo1, function (response) {
 
                 if (output > 0) {
                     $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><textarea id=\"tofred2\" name=\"tofred2\" rows=\"10\" cols=\"200\"></textarea>");
                     $('#tofred2').val(response);
                 } else {
-                    var uri = encodeURI(urlo1);
+                    var uri = urlo1;
                     
                     $('#fredresult').html("<p class=\"left\"><img class=\"loghini\" src=\"ktools_logo_short.png\"> Fred result...</p><img class=\"imgfred\" src=" + uri + " alt=\"Fred's result\" >");
                 }
@@ -130,9 +142,9 @@ $(document).ready(function () {
             $('#compareresult').show();
             $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><img class=\"imgfred\" src=\"loading.gif\" alt=\"Loading\" >");
             urlo2 += "&?amr=" + amr + "&?sentence=" + text;
-            var urlo3=encodeURI(urlo2+"&?commons=DIGRAPH");
+            var urlo3=urlo2+"&?commons=DIGRAPH";
             
-            client.get(encodeURI(urlo2), function (response) {
+            client.get(urlo2, function (response) {
                 
                 $('#compareresult').html("<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Comparing results...</p><textarea id=\"compareresult2\" name=\"compareresult2\" rows=\"12\" cols=\"200\" readonly=\"readonly\"></textarea>" +
                                             "<p class=\"left\"><img class=\"loghini\" src=\"Logo_UniCa.png\"> Common Triples</p><img class=\"imgfred\" src=" + urlo3 + " alt=\"Commons triples\" >");
@@ -220,6 +232,7 @@ $(document).ready(function () {
     function checkFred() {
         if ($('#fred')[0].checked === true) {
             fred = true;
+            $('#altLabel')[0].checked = false
             $("div.Fred").show();
         } else {
             fred = false;
@@ -234,10 +247,10 @@ $(document).ready(function () {
     }
 
 
-    $(".tooltip").tooltip();
-    $('#text').tooltip();
-    $('#amr').tooltip();
-    $('#compareresult').tooltip();
+    //$(".tooltip").tooltip();
+    //$('#text').tooltip();
+    //$('#amr').tooltip();
+    //$('#compareresult').tooltip();
 
 });
 
@@ -253,6 +266,3 @@ var HttpClient = function () {
         anHttpRequest.send(null);
     };
 };
-
-
-

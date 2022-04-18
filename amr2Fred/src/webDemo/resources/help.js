@@ -20,9 +20,13 @@ $(document).ready(function () {
             if ($('#res')[0].checked === true) {
                 urlo += "&?objAsRes";
             }
-
+            
+            if ($('#altLabel')[0].checked === true) {
+                urlo += "&?alt_label";
+            }
 
             var amr = $('#amr').val();
+            amr = encodeURIComponent(amr);
 
             switch (output) {
                 case "0":
@@ -47,6 +51,7 @@ $(document).ready(function () {
                     urlo += "&?proMode=on" + "&?amr=" + amr;
             }
         } else {
+            $('#altLabel')[0].checked = false;
             var amr = $('#amr').val();
             urlo += "&?amr=" + amr + "&?sentence=" + $('#text').val();
             if(output==7){
@@ -55,7 +60,7 @@ $(document).ready(function () {
                 urlo+="&?commons=DIGRAPH";
             }
         }
-        urlo = encodeURI(urlo);
+        
         var href = '<a href="' + urlo + '" target="_blank">' + urlo + '</a>';
         $('#path').html(href);
     });
@@ -72,15 +77,17 @@ $(document).ready(function () {
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
                     "<tr><td>&?format=(f)</td><td>(f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )</td></tr>" +
-                    "<tr><td>&?rid_err=ON</td><td>if present it tells to amr2fred to remove nodes with translation errors</td></tr>" +
-                    "<tr><td>&?objAsRes</td><td >if present it tells to amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>\n\
-                    </tbody>");
+                    "<tr><td>&?rid_err=ON</td><td>if present it tells amr2fred to remove nodes with translation errors</td></tr>" +
+                    "<tr><td>&?objAsRes</td><td >if present it tells amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>"+
+                    "<tr><td>&?alt_label</td><td >if present, tell amr2fred to use alternate AMR labels for core roles</td></tr>"+
+                    "</tbody>");
             fred = false;
             $(".text2").hide();
             $("#prid").show();
             $("#ppres").show();
             $('#description').html("<p id=\"description\">What you get is the translated amr in the chosen format.</p>");
         } else if (output >= 6) {
+            $('#altLabel')[0].checked = false;
             baseURL = "http://" + host + "/compare";
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
@@ -113,10 +120,8 @@ $(document).ready(function () {
 
 
 
-    $(".tooltip").tooltip();
-    $('#text').tooltip();
-    $('#amr').tooltip();
+    //$(".tooltip").tooltip();
+    //$('#text').tooltip();
+    //$('#amr').tooltip();
 });
-
-
 

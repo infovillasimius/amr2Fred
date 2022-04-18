@@ -29,7 +29,8 @@ import java.nio.file.Files;
 import static webDemo.Glossary.*;
 
 /**
- * Handler for amr2fred REST service 
+ * Handler for amr2fred REST service
+ *
  * @author anto
  */
 public class Handler implements HttpHandler {
@@ -47,12 +48,20 @@ public class Handler implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
         String amr = "";
         File tmp = null;
-        boolean cb = false, cb1 = true, proMode = false, png = false, svg=false;
+        boolean cb = false, cb1 = true, proMode = false, png = false, svg = false, altLabel = false;
         int check = 0, writerMode = 0;
 
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
 
         String par = request;
+
+        //controllo per alternate label
+        if (!par.contains(ALT_LABEL)) {
+            altLabel = false;
+        } else {
+            par = par.replace(ALT_LABEL, "");
+            altLabel = true;
+        }
         
         //controllo per object as resources
         if (!par.contains(RES_OBJ)) {
@@ -61,7 +70,7 @@ public class Handler implements HttpHandler {
             par = par.replace(RES_OBJ, "");
             cb1 = true;
         }
-        
+
         //controllo per promode
         if (par.contains(PROMODE)) {
             par = par.replace(PROMODE, "");
@@ -69,7 +78,7 @@ public class Handler implements HttpHandler {
         } else {
             proMode = true;
         }
-        
+
         //controllo per modo output
         if (par.contains(MODE + RDF_XML)) {
             par = par.replace(MODE + RDF_XML, "");
@@ -86,14 +95,14 @@ public class Handler implements HttpHandler {
         } else if (par.contains(MODE + GRAPHIC)) {
             par = par.replace(MODE + GRAPHIC, "");
             proMode = (false);
-            svg=true;
+            svg = true;
         } else if (par.contains(MODE + IMG)) {
             par = par.replace(MODE + IMG, "");
             png = (true);
         } else {
             proMode = (true);
         }
-        
+
         //controllo per elimina errori dalla struttura dati
         if (par.contains(RID_ERR)) {
             par = par.replace(RID_ERR, "");
@@ -110,34 +119,31 @@ public class Handler implements HttpHandler {
 
             int pos = request.indexOf(AMR);
 
-            amr = request.substring(pos + 6);
+            amr = request.substring(pos + 6); 
             if (png) {
-                tmp = amr2fred.goPng(amr);
+                tmp = amr2fred.goPng(amr, altLabel);
             }
-            amr = amr2fred.go(amr, writerMode, check, cb, cb1, proMode);
+            amr = amr2fred.go(amr, writerMode, check, cb, cb1, proMode, altLabel);
         } else {
             amr = "No AMR";
         }
-        
         Headers responseHeaders = he.getResponseHeaders();
-        
         //settaggio del mime_type
         if (!png || tmp == null) {
             String response = amr;
-            if(svg){
+            if (svg) {
                 responseHeaders.set(TYPE, SVG);
             } else {
                 responseHeaders.set(TYPE, TXT);
             }
-            
             he.sendResponseHeaders(200, response.length());
-            try (OutputStream os = he.getResponseBody()) {
+            try ( OutputStream os = he.getResponseBody()) {
                 os.write(response.getBytes());
             }
         } else {
             responseHeaders.set(TYPE, PNG);
             he.sendResponseHeaders(200, tmp.length());
-            try (OutputStream os = he.getResponseBody()) {
+            try ( OutputStream os = he.getResponseBody()) {
                 Files.copy(tmp.toPath(), os);
                 tmp.delete();
             }
