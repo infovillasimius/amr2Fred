@@ -89,7 +89,7 @@ public class AmrCoreRoles {
                 }
                 word = string.substring(inizio, fine);
                 string = string.substring(fine);
-                list.add(word);
+                list.add(word.trim());
                 inizio = string.indexOf(SEPARATOR) + 1;
             }
         } catch (java.lang.StringIndexOutOfBoundsException e) {
@@ -100,18 +100,16 @@ public class AmrCoreRoles {
         Lemma lem = new Lemma(list.get(0));
         list.remove(0);
         for (String arg : list) {
-            //System.out.println(arg);
-            if (arg.startsWith(" ARG")) {
+            if (arg.startsWith("ARG")) {
                 int pos = arg.indexOf(":");
                 if (pos != -1) {
-                    String r = arg.substring(0, pos);
-                    String d = arg.substring(pos + 1);
+                    String r = arg.substring(0, pos).trim();
+                    String d = arg.substring(pos + 1).trim().replaceAll(" ", "_");
                     CoreRole ro = new CoreRole(r, d);
                     lem.roles.add(ro);
                 }
             }
         }
-        //System.out.println(lem);
         return lem;
     }
 
@@ -167,13 +165,23 @@ public class AmrCoreRoles {
             if (lemma.equalsIgnoreCase(lem.lemma)) {
                 l = lem;
                 for (CoreRole ro : l.roles) {
-                    if(role.equalsIgnoreCase(ro.role)){
+                    
+                    if (role.equalsIgnoreCase(ro.role)) {
                         return ro.description;
                     }
                 }
             }
         }
         return null;
+    }
+
+    public boolean find(String lemma) {
+        for (Lemma lem : matrix) {
+            if (lemma.equalsIgnoreCase(lem.lemma)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

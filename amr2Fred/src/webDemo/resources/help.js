@@ -26,7 +26,13 @@ $(document).ready(function () {
             }
 
             var amr = $('#amr').val();
+            
+            while(amr.indexOf("  ")!==-1){
+                amr = amr.replaceAll("  ", " ");
+            }
+            
             amr = encodeURIComponent(amr);
+            amr = amr.replaceAll("%0A","");
 
             switch (output) {
                 case "0":

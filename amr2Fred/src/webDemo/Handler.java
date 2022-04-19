@@ -119,7 +119,12 @@ public class Handler implements HttpHandler {
 
             int pos = request.indexOf(AMR);
 
-            amr = request.substring(pos + 6); 
+            amr = request.substring(pos + 6);
+            
+            if (amr.startsWith("\n")){
+                amr = amr.replace("\n", "");
+            }
+            
             if (png) {
                 tmp = amr2fred.goPng(amr, altLabel);
             }

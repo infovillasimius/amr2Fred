@@ -43,7 +43,14 @@ $(document).ready(function () {
         var urlControl = urlo;
         var output = $('select#outMode option:selected').attr('value');
         var amr = $('#amr').val();
+        
+        while(amr.indexOf("  ")!==-1){
+            amr = amr.replaceAll("  ", " ");
+        }
+        
         amr = encodeURIComponent(amr);
+        amr = amr.replaceAll("%0A","");
+        
         var text = $('#text').val();
         urlControl += "&?amr=" + amr;
 
