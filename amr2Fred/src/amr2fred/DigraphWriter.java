@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static webDemo.Glossary.*;
@@ -43,7 +44,7 @@ public class DigraphWriter {
      * @return String
      */
     static public String nodeToDigraph(Node root) {
-
+  
         String digraph = Glossary.DIGRAPH_INI;
         digraph += toDigraph(root);
         return digraph + Glossary.DIGRAPH_END;
@@ -61,7 +62,12 @@ public class DigraphWriter {
 
         if (!root.list.isEmpty() && root.getTreStatus() == 0) {
             for (Node a : root.list) {
-                digraph += "\"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.var + "\", shape=box ];\n";
+                digraph += "\"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.var + "\", shape=box,";
+                if (a.var.startsWith(amr2fred.Glossary.FRED)) {
+                    digraph += " color=\"0.5 0.3 0.5\" ];\n";
+                } else {
+                    digraph += " color=\"1.0 0.3 0.7\" ];\n";
+                }
                 if (!a.relation.equalsIgnoreCase(Glossary.TOP)) {
                     digraph += "\"" + root.var /*getNodeId()*/ + "\" -> \"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.relation + "\"];\n";
                 }

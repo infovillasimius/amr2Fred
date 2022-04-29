@@ -159,6 +159,22 @@ public class Node {
         return newNode;
     }
 
+    public Node getCopy(ArrayList<Node> nodesCopy) {
+        if (Parser.endless > ENDLESS) {
+            return null;
+        }
+        Parser.endless += 1;
+        Node newNode = new Node(var, relation, status);
+        newNode.nodeId = nodeId;
+        nodesCopy.add(newNode);
+        newNode.list = new ArrayList<>();
+        for (Node n : list) {
+            newNode.list.add(n.getCopy(nodesCopy));
+        }
+        newNode.nodeId = nodeId;
+        return newNode;
+    }
+
     public Node getInstance() {
         for (Node n : this.list) {
             if (n.relation.equalsIgnoreCase(Glossary.INSTANCE)) {
@@ -184,6 +200,7 @@ public class Node {
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)) {
                 return n;
             }
@@ -199,9 +216,27 @@ public class Node {
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
                     && n.status != REMOVE) {
                 nodes.add(n);
             }
+        }
+        return nodes;
+    }
+
+    public ArrayList<Node> getInverses(ArrayList<Node> nodes) {
+        for (Node n : this.list) {
+            if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
+                    && n.status != REMOVE
+                    && nodes.indexOf(n) == -1) {
+                nodes.add(n);
+            }
+            nodes = n.getInverses(nodes);
         }
         return nodes;
     }
@@ -335,8 +370,8 @@ public class Node {
         this.type = node.type;
         this.verb = node.verb;
     }
-    
-    public void swap(Node node){
+
+    public void swap(Node node) {
         String swapVar = node.var;
         //String swapRelation = node.relation;
         NodeStatus swapStatus = node.status;
@@ -344,7 +379,7 @@ public class Node {
         ArrayList<Node> swapList = node.list;
         int swapNodeId = node.nodeId;
         String swapVerb = node.verb;
-        
+
         node.var = this.var;
         //node.relation = this.relation;
         node.status = this.status;
@@ -352,7 +387,7 @@ public class Node {
         node.list = this.list;
         node.nodeId = this.nodeId;
         node.verb = this.verb;
-        
+
         this.var = swapVar;
         //this.relation = swapRelation;
         this.status = swapStatus;
@@ -361,8 +396,8 @@ public class Node {
         this.nodeId = swapNodeId;
         this.verb = swapVerb;
     }
-    
-    public Node getPoss(){
+
+    public Node getPoss() {
         for (Node n : list) {
             if (n.relation.matches(Glossary.AMR_POSS)) {
                 return n;
@@ -389,6 +424,14 @@ public class Node {
 
     public ArrayList<Node> getList() {
         return list;
+    }
+
+    void makeEquals(Node n) {
+        this.nodeId = n.nodeId;
+    }
+
+    void makeEquals(int n) {
+        this.nodeId = n;
     }
 
 }

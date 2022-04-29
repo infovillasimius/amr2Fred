@@ -107,8 +107,8 @@ public class Glossary {
      * Local name for quant
      */
     public static final String QUANT = "quant:";
-    
-    public static final String QUANT_EVERY=QUANT+"every";
+
+    public static final String QUANT_EVERY = QUANT + "every";
 
     /**
      * Name space for quant
@@ -194,7 +194,6 @@ public class Glossary {
     public static final String REIFI_HAVE_DEGREE = "have-degree-91";
 
     public static final String RATE_ENTITY = "rate-entity-91";
-    
 
     /**
      * Local name for vn.data
@@ -220,8 +219,6 @@ public class Glossary {
 
     public static final String SCHEMA_ORG = "schemaorg:";
     public static final String SCHEMA_ORG_NS = "http://schema.org/";
-    
-    
 
     /**
      * String for AMR elements identification
@@ -283,6 +280,7 @@ public class Glossary {
     public static final String AMR_ORD = ":ord";
     public static final String AMR_PART = ":part";
     public static final String AMR_PART_OF = ":part-of";
+    public static final String AMR_QUANT_OF = ":quant-of";
     public static final String AMR_RANGE = ":range";
     public static final String AMR_SCALE = ":scale";
     public static final String AMR_SUB_EVENT = ":subevent";
@@ -330,8 +328,8 @@ public class Glossary {
     public static final String AMR_PREP_WITH = ":prep-with";
     public static final String AMR_PREP_WITHIN = ":prep-within";
     public static final String AMR_PREP_WITHOUT = ":prep-without";
-    
-    public static final String AMR_ENTITY="-entity";
+
+    public static final String AMR_ENTITY = "-entity";
 
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "Of";
@@ -376,11 +374,11 @@ public class Glossary {
     public static final String NULL = "Null";
     public static final String PB = "pb:";
     public static final String ID = "id:";
-    
+
     //Stringhe usate per la generazione del grafico .dot
-    public static final String DIGRAPH_INI="digraph {\n charset=\"utf-8\"; \n";
-    public static final String DIGRAPH_END="}";
-    
+    public static final String DIGRAPH_INI = "digraph {\n charset=\"utf-8\"; \n";
+    public static final String DIGRAPH_END = "}";
+
     public static final String AMR_NS = "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#";
     public static final String AMR = "amr:";
 
@@ -443,7 +441,7 @@ public class Glossary {
         "adorable", "adventurous", "afraid", "aggressive", "agonizing", "agreeable",
         "ahead", "ajar", "alcoholic", "alert", "alike", "alive", "alleged", "alluring",
         "aloof", "amazing", "ambiguous", "ambitious", "amuck", "amused", "amusing",
-        "ancient", "angry", "animated", "annoyed", "annoying", "anxious", "apathetic",
+        "ancient", "angelic", "angry", "animated", "annoyed", "annoying", "anxious", "apathetic", "appropriate",
         "aquatic", "aromatic", "arrogant", "ashamed", "aspiring", "assorted", "astonishing",
         "attractive", "auspicious", "automatic", "available", "average", "awake",
         "aware", "awesome", "awful", "axiomatic", "bad", "barbarous", "bashful",
@@ -739,8 +737,7 @@ public class Glossary {
         ESO_CLASS,
         ESO_ROLE
     }
-    
-    
+
     /**
      * Field names of pb2vn table
      */
