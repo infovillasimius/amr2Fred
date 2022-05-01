@@ -48,6 +48,9 @@ public class Node {
 
     //nodi collegati
     ArrayList<Node> list;
+    
+    // Nodo genitore
+    Node parent;
 
     //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
     private NodeStatus status;
@@ -433,5 +436,28 @@ public class Node {
     void makeEquals(int n) {
         this.nodeId = n;
     }
+    
+    void add(Node n){
+        this.list.add(n);
+        n.parent = this;
+    }
+    
+    void addAll(ArrayList<Node> nodes){
+        for(Node n : nodes){
+            this.list.add(n);
+            n.parent = this;
+        }
+    }
+    
+    public ArrayList<Node> getChildren(String relation) {
 
+        ArrayList<Node> argsList = new ArrayList<>();
+
+        for (Node n : list) {
+            if (n.relation.equalsIgnoreCase(relation)) {
+                argsList.add(n);
+            }
+        }
+        return argsList;
+    }
 }
