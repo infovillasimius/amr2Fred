@@ -42,6 +42,9 @@ public class Node {
 
     //valore ramo
     String relation;
+    
+    //label relazione
+    String label;
 
     //valore foglia
     String var;
@@ -459,5 +462,21 @@ public class Node {
             }
         }
         return argsList;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
+        this.parent = parent;
     }
 }

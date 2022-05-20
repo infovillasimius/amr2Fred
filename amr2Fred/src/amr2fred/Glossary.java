@@ -154,6 +154,7 @@ public class Glossary {
     public static final String RDFS_NS = org.apache.jena.vocabulary.RDFS.getURI();
     public static final String RDFS_SUBCLASS_OF = "rdfs:subClassOf";
     public static final String RDFS_SUB_PROPERTY_OF = "rdfs:subPropertyOf";
+    public static final String RDFS_LABEL = "rdfs:label";
 
     /**
      * Local name for vn.role
@@ -379,25 +380,55 @@ public class Glossary {
     public static final String DIGRAPH_INI = "digraph {\n charset=\"utf-8\"; \n";
     public static final String DIGRAPH_END = "}";
 
+    //Nuovi prefissi e nuovi Spazi Nomi
     public static final String AMR_NS = "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#";
     public static final String AMR = "amr:";
 
+    public static final String VA_NS = "http://verbatlas.org/";
+    public static final String VA = "va:";
+    
+    public static final String BN_NS = "http://babelnet.org/rdf/";
+    public static final String BN = "bn:";
+    
+    public static final String WN30_SCHEMA_NS = "https://w3id.org/framester/wn/wn30/schema/";
+    public static final String WN30_SCHEMA = "wn30schema:";
+    
+    public static final String WN30_INSTANCES_NS = "https://w3id.org/framester/wn/wn30/instances/";
+    public static final String WN30_INSTANCES = "wn30instances:";
+    
+    public static final String FS_SCHEMA_NS = "https://w3id.org/framester/schema/";
+    public static final String FS_SCHEMA = "fschema:";
+    
+    public static final String PB_DATA_NS = "https://w3id.org/framester/pb/data/";
+    public static final String PB_DATA = "pbdata:";
+    
+    public static final String PB_SCHEMA_NS = "https://w3id.org/framester/pb/schema/";
+    public static final String PB_SCHEMA = "pbschema:";
+    
+    public static final String FN_FRAME_NS = "https://w3id.org/framester/framenet/abox/frame/";
+    public static final String FN_FRAME = "fnframe:";
+    
+    public static final String FS_SCHEMA_SUBSUMED_UNDER = FS_SCHEMA+"subsumedUnder";
+    
     /**
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
-        RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR};
+        RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA, 
+        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME};
 
     /**
      * Array of fred elements name space
      */
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
-        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS, SCHEMA_ORG_NS, AMR_NS};
+        QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS, 
+        SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, 
+        WN30_INSTANCES_NS, FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 13;
+    public static final int PREFIX_NUM = 21;
 
     /**
      * Jena's writers output modes
@@ -750,6 +781,27 @@ public class Glossary {
         VN_Role,
         VN_Sense,
         VerbNet_VerbSense_URI_for_FRED
+    }
+    
+    /**
+     * Field names of propbankframe table
+     */
+    public enum PropbankFrameFields {
+        PB_Frame,
+        PB_FrameLabel,
+        PB_Role,
+        FN_Frame,
+        VA_Frame
+    }
+    
+     /**
+     * Field names of propbankrole table
+     */
+    public enum PropbankRoleFields {
+        PB_Role,
+        PB_RoleLabel,
+        PB_RoleSup,
+        VA_Role
     }
 
     /**

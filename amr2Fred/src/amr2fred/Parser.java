@@ -427,11 +427,6 @@ public class Parser {
         //Interpretazione verbi ed eliminazione instance
         Node instance = root.getInstance();
 
-        if (root.var.equalsIgnoreCase("z13") || root.var.equalsIgnoreCase(FRED + "Time")) {
-            System.out.println(root + " - " + root.getNodeId());
-            //this.setEquals(root);
-        }
-
         if (root.getStatus() == OK && root.relation.startsWith(Glossary.AMR_RELATION_BEGIN)
                 && !root.relation.equalsIgnoreCase(TOP)) {
             root.setStatus(Glossary.NodeStatus.AMR);
@@ -843,7 +838,7 @@ public class Parser {
                     } else {
                         n.var = FRED + firstUpper(n.getInstance().var.substring(0, n.getInstance().var.length() - 3) /*+ "ly"*/);
                     }
-                    
+
                     this.removeInstance(n);
                     //n.list.remove(n.getInstance());
                 } else {
@@ -995,8 +990,9 @@ public class Parser {
         String lemma = root.getVerb();
         if (root.getType() == VERB) {
             PredMatrix pred = PredMatrix.getPredMatrix();
-            Pb2vn pb = Pb2vn.getPb2vn();
+            //Pb2vn pb = Pb2vn.getPb2vn();
             AmrCoreRoles acr = AmrCoreRoles.getAmrCoreRoles();
+            Propbank pb = Propbank.getPropbank();
 
             if (!this.altLabel) {
 
@@ -1048,7 +1044,7 @@ public class Parser {
                         }
                     }
                 }
-
+                /*
                 ArrayList<ArrayList<String>> result2 = pb.find(lemma.substring(3), Glossary.Pb2vnFields.PB_RoleSet);
                 if (result2 != null && !result2.isEmpty()) {
                     String vnClass2 = result2.get(0).get(Glossary.Pb2vnFields.VN_Sense.ordinal());
@@ -1074,11 +1070,50 @@ public class Parser {
                         }
                     }
 
-                }
+                }*/
 
             } else {
                 String lemma2 = lemma.substring(3).replace(".", "-");
-                if (acr.find(lemma2)) {
+                //System.out.println(lemma2);
+                ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_DATA + lemma2, Glossary.PropbankFrameFields.PB_Frame);
+                if (!roles.isEmpty()) {
+                    String label = roles.get(0).get(Glossary.PropbankFrameFields.PB_FrameLabel.ordinal());
+                    root.label = label;
+                    root.list.add(new Node(label, Glossary.RDFS_LABEL, OK));
+                    
+                    ArrayList<String> newNodesVars = new ArrayList<>();
+                    for (ArrayList<String> l : roles) {
+                        
+                        String fnFrame = l.get(Glossary.PropbankFrameFields.FN_Frame.ordinal());
+                        if ( fnFrame != null && !newNodesVars.contains(fnFrame)) {
+                            newNodesVars.add(fnFrame);
+                        }
+                        
+                        String vaFrame = l.get(Glossary.PropbankFrameFields.VA_Frame.ordinal());
+                        if ( vaFrame != null && !newNodesVars.contains(vaFrame)) {
+                            newNodesVars.add(vaFrame);
+                        }
+                    }
+                    
+                    for(String var : newNodesVars){
+                        root.list.add(new Node(var, Glossary.FS_SCHEMA_SUBSUMED_UNDER, OK));
+                    }
+                    
+                    for (Node n : root.getArgs()) {
+                        String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
+                        ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
+                        //System.out.println(pbroles);
+                        if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal()) != null) {
+                            n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal());
+                        } else {
+                            n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
+                        }
+                        n.setStatus(OK);
+                    }
+
+                }
+
+                if (false && acr.find(lemma2)) {
 
                     //Elabora i nodi argomento esplicitando i relativi nodi
                     for (Node n : root.getArgs()) {
@@ -1317,24 +1352,42 @@ public class Parser {
         Pb2vn pb = Pb2vn.getPb2vn();
         PredMatrix pred = PredMatrix.getPredMatrix();
         AmrCoreRoles acr = AmrCoreRoles.getAmrCoreRoles();
+        Propbank prb = Propbank.getPropbank();
         boolean result3 = acr.find(word);
+        ArrayList<ArrayList<String>> result4 = prb.find(Glossary.PB_DATA + word, Glossary.PropbankFrameFields.PB_Frame);
+        //System.out.println(result4);
         word = word.replace('-', '.');
         ArrayList<Line> result = pred.find(Glossary.ID + word, Glossary.LineFields.ID_PRED);
         ArrayList<ArrayList<String>> result2 = pb.find(word, Glossary.Pb2vnFields.PB_RoleSet);
-        return (result != null && !result.isEmpty()) || (result2 != null && !result2.isEmpty()) || (result3 && this.altLabel);
+        return (result != null && !result.isEmpty())
+                || (result2 != null && !result2.isEmpty())
+                || (result3 && this.altLabel)
+                || ((result4 != null && !result4.isEmpty()) && this.altLabel);
     }
 
     private boolean isVerb(String word, ArrayList<Node> list) {
-        Pb2vn pb = Pb2vn.getPb2vn();
+        //Pb2vn pb = Pb2vn.getPb2vn();
         PredMatrix pred = PredMatrix.getPredMatrix();
         AmrCoreRoles acr = AmrCoreRoles.getAmrCoreRoles();
-        boolean result3 = acr.find(word);
+        Propbank prb = Propbank.getPropbank();
+        boolean result3 = false;
+        ArrayList<ArrayList<String>> result4 = new ArrayList<>();
+        if (this.altLabel) {
+            result3 = acr.find(word);
+            result4 = prb.find(word, list);
+            //System.out.println(result4);
+        }
+
         word = word.replace('-', '.');
         ArrayList<Line> result = pred.find(Glossary.ID + word, Glossary.LineFields.ID_PRED);
-        ArrayList<ArrayList<String>> result2 = pb.find(word, Glossary.Pb2vnFields.PB_RoleSet);
+        //ArrayList<ArrayList<String>> result2 = pb.find(word, Glossary.Pb2vnFields.PB_RoleSet);
         result = pred.find(result, list);
-        result2 = pb.find(result2, list);
-        return (result != null && !result.isEmpty()) || (result2 != null && !result2.isEmpty()) || (result3 && this.altLabel);
+        //result2 = pb.find(result2, list);
+        //result4 = prb.find(result4, list);
+        return (result != null && !result.isEmpty())
+                //|| (result2 != null && !result2.isEmpty()) 
+                || (result3 && this.altLabel)
+                || ((result4 != null && !result4.isEmpty()) && this.altLabel);
 
     }
 
@@ -2419,7 +2472,7 @@ public class Parser {
     }
 
     private Node residual(Node root) {
-
+        Propbank p = Propbank.getPropbank();
         if (root.var.contains("fred:Fred:")) {
             root.var = root.var.replace("fred:Fred:", "");
             root.var = FRED + this.firstUpper(root.var);
@@ -2453,7 +2506,7 @@ public class Parser {
             root.var = FRED + newVar.substring(0, newVar.length() - 3) + "_" + occurrence(newVar.substring(0, newVar.length() - 3));
             setEquals(root);
         }
-
+        /*
         if (root.relation.matches(Glossary.AMR_ARG) && altLabel && root.getVerb() != null) {
             AmrCoreRoles acr = AmrCoreRoles.getAmrCoreRoles();
             String r = root.relation.substring(1);
@@ -2463,7 +2516,7 @@ public class Parser {
                 root.setStatus(OK);
 
             }
-        }
+        }*/
 
         if (root.relation.matches(Glossary.AMR_ARG)) {   // && !altLabel
             root.relation = Glossary.VN_ROLE_PREDICATE;

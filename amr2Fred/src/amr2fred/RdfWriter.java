@@ -171,13 +171,14 @@ public class RdfWriter {
         String name;
         int dp = s.indexOf(':');
         if (dp < 0) {
-            pref = "";
             name = s;
+            return name;
         } else {
             pref = s.substring(0, dp + 1);
             name = s.substring(dp + 1);
         }
         for (int n = 0; n < PREFIX_NUM; n++) {
+            //System.out.println(Glossary.PREFIX[n]+" - "+ pref);
             if (pref.equalsIgnoreCase(Glossary.PREFIX[n])) {
                 return Glossary.NAMESPACE[n] + name;
             }
