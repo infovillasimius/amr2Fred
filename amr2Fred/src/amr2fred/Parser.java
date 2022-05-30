@@ -122,7 +122,7 @@ public class Parser {
      * @return Node Fred root node
      */
     public Node parse(String amr, boolean altLabel) {
-        this.altLabel = altLabel;
+        this.altLabel = !altLabel;
 
         /*
         Il nodo root contiene la struttura dati che si ottiene
@@ -1103,11 +1103,14 @@ public class Parser {
                         String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
                         ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
                         //System.out.println(pbroles);
-                        if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal()) != null) {
+                        if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal()) != null) {
+                            n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
+                        } 
+                        /*if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal()) != null) {
                             n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal());
                         } else {
                             n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
-                        }
+                        }*/
                         n.setStatus(OK);
                     }
 
