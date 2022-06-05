@@ -233,6 +233,7 @@ public class Glossary {
     public static final String AMR_INVERSE = ":+.+-of";
     public static final String AMR_OP = ":op[0-9]+";
     public static final String ALL = ".+";
+    public static final String AMR_SENTENCE = ":snt[0-9]$";
 
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
@@ -329,9 +330,12 @@ public class Glossary {
     public static final String AMR_PREP_WITH = ":prep-with";
     public static final String AMR_PREP_WITHIN = ":prep-within";
     public static final String AMR_PREP_WITHOUT = ":prep-without";
+    public static final String AMR_CONJ_AS_IF = ":conj-as-if";
 
     public static final String AMR_ENTITY = "-entity";
-
+    
+    public static final String AMR_MULTI_SENTENCE = "multi-sentence";
+    
     //Stringhe utilizzate durante la traduzione
     public static final String OF = "Of";
     public static final String BY = "By";

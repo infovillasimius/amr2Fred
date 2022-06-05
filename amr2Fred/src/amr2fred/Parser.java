@@ -141,6 +141,9 @@ public class Parser {
                 this.rootCopy = new Node("Error", "Recursive");
                 return root;
             }
+
+            //metodo per controllo multi sentence
+            root = multi_sentence(root);
             //richiama il metodo che effettua la traduzione delle relazioni e dei valori
             root = fredTranslate(root);
             //richiama il metodo che disambigua i verbi ed esplicita i ruoli dei predicati anonimi
@@ -756,6 +759,13 @@ public class Parser {
                 n.relation = newRelation;
                 n.setStatus(OK);
 
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && this.getInstance(n.getNodeId()) != null && root.getInstance() != null
+                    && n.getChild(Glossary.AMR_WIKI) == null && n.list.isEmpty()) {
+
+                String newRelation = FRED + "attribute" + Glossary.OF;
+                n.relation = newRelation;
+                n.setStatus(OK);
+
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
                     || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER))) && n.getInstance() == null) {
 
@@ -869,6 +879,11 @@ public class Parser {
                     n.relation = Glossary.DUL_HAS_QUALITY;
                     n.var = FRED + firstUpper(n.var);
                 }
+            }
+            
+            if(n.relation.equalsIgnoreCase(Glossary.AMR_CONJ_AS_IF)){
+                n.relation = FRED+"as-if";
+                n.setStatus(OK);
             }
 
             if (n.var.contains(Glossary.AMR_ENTITY) && !this.altLabel) {
@@ -1080,32 +1095,32 @@ public class Parser {
                     String label = roles.get(0).get(Glossary.PropbankFrameFields.PB_FrameLabel.ordinal());
                     root.label = label;
                     root.list.add(new Node(label, Glossary.RDFS_LABEL, OK));
-                    
+
                     ArrayList<String> newNodesVars = new ArrayList<>();
                     for (ArrayList<String> l : roles) {
-                        
+
                         String fnFrame = l.get(Glossary.PropbankFrameFields.FN_Frame.ordinal());
-                        if ( fnFrame != null && !newNodesVars.contains(fnFrame)) {
+                        if (fnFrame != null && !newNodesVars.contains(fnFrame)) {
                             newNodesVars.add(fnFrame);
                         }
-                        
+
                         String vaFrame = l.get(Glossary.PropbankFrameFields.VA_Frame.ordinal());
-                        if ( vaFrame != null && !newNodesVars.contains(vaFrame)) {
+                        if (vaFrame != null && !newNodesVars.contains(vaFrame)) {
                             newNodesVars.add(vaFrame);
                         }
                     }
-                    
-                    for(String var : newNodesVars){
+
+                    for (String var : newNodesVars) {
                         root.list.add(new Node(var, Glossary.FS_SCHEMA_SUBSUMED_UNDER, OK));
                     }
-                    
+
                     for (Node n : root.getArgs()) {
                         String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
                         ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
                         //System.out.println(pbroles);
                         if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal()) != null) {
                             n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
-                        } 
+                        }
                         /*if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal()) != null) {
                             n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.VA_Role.ordinal());
                         } else {
@@ -1116,7 +1131,7 @@ public class Parser {
 
                 }
 
-                if (false && acr.find(lemma2)) {
+                if (lemma2.endsWith("-91") && acr.find(lemma2)) {
 
                     //Elabora i nodi argomento esplicitando i relativi nodi
                     for (Node n : root.getArgs()) {
@@ -2558,5 +2573,21 @@ public class Parser {
         if (root.getInstance() != null) {
             root.list.remove(root.getInstance());
         }
+    }
+
+    private Node multi_sentence(Node root) {
+        if (root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.AMR_MULTI_SENTENCE)) {
+            ArrayList<Node> sentences = root.getSnt();
+            Node newRoot = sentences.remove(0);
+            newRoot.relation = TOP;
+            newRoot.parent = null;
+            newRoot.list.addAll(sentences);
+            for (Node n : sentences) {
+                n.parent = newRoot;
+                n.relation = TOP;
+            }
+            return newRoot;
+        }
+        return root;
     }
 }

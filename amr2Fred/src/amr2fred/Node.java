@@ -479,4 +479,14 @@ public class Node {
     public void setParent(Node parent) {
         this.parent = parent;
     }
+
+    ArrayList<Node> getSnt() {
+        ArrayList<Node> snt = new ArrayList<>();
+        for(Node n : this.list){
+            if (n.relation.matches(Glossary.AMR_SENTENCE)){
+                snt.add(n);
+            }
+        }
+        return snt;
+    }
 }
