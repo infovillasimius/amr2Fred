@@ -48,29 +48,13 @@ public class Handler implements HttpHandler {
     public void handle(HttpExchange he) throws IOException {
         String amr = "";
         File tmp = null;
-        boolean cb = false, cb1 = true, proMode = false, png = false, svg = false, altLabel = false;
+        boolean cb = false, proMode = false, png = false, svg = false;
         int check = 0, writerMode = 0;
 
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
 
         String par = request;
-
-        //controllo per alternate label
-        if (!par.contains(ALT_LABEL)) {
-            altLabel = false;
-        } else {
-            par = par.replace(ALT_LABEL, "");
-            altLabel = true;
-        }
         
-        //controllo per object as resources
-        if (!par.contains(RES_OBJ)) {
-            cb1 = false;
-        } else {
-            par = par.replace(RES_OBJ, "");
-            cb1 = true;
-        }
-
         //controllo per promode
         if (par.contains(PROMODE)) {
             par = par.replace(PROMODE, "");
@@ -126,9 +110,10 @@ public class Handler implements HttpHandler {
             }
             
             if (png) {
-                tmp = amr2fred.goPng(amr, altLabel);
+                tmp = amr2fred.goPng(amr);
+            } else {
+            amr = amr2fred.go(amr, writerMode, check, cb, proMode);
             }
-            amr = amr2fred.go(amr, writerMode, check, cb, cb1, proMode, altLabel);
         } else {
             amr = "No AMR";
         }

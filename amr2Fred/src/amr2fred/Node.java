@@ -54,6 +54,9 @@ public class Node {
     
     // Nodo genitore
     Node parent;
+    
+    // visibilità in modalità grafica
+    boolean visibility = true;
 
     //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
     private NodeStatus status;

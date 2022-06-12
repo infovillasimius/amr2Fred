@@ -14,15 +14,6 @@ $(document).ready(function () {
         checkFred();
     });
     
-    $("#altLabel").change(function (event) {
-        if ($('#altLabel')[0].checked === true){
-            if ($('#fred')[0].checked === true){
-                $('#fred')[0].checked = false
-            }
-        }
-        checkFred();
-    });
-
     $('#amr2fred').click(function (event) {
         event.preventDefault();
         var urlo = "amr2fred";
@@ -31,15 +22,7 @@ $(document).ready(function () {
         if ($('#rid')[0].checked === true) {
             urlo += "&?rid_err=ON";
         }
-
-        if ($('#res')[0].checked === true) {
-            urlo += "&?objAsRes";
-        }
         
-        if ($('#altLabel')[0].checked === true && !fred) {
-            urlo += "&?alt_label";
-        }
-
         var urlControl = urlo;
         var output = $('select#outMode option:selected').attr('value');
         var amr = $('#amr').val();
@@ -239,7 +222,6 @@ $(document).ready(function () {
     function checkFred() {
         if ($('#fred')[0].checked === true) {
             fred = true;
-            $('#altLabel')[0].checked = false
             $("div.Fred").show();
         } else {
             fred = false;

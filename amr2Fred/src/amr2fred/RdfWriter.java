@@ -47,7 +47,7 @@ public class RdfWriter {
     private String mode = Glossary.RDF_MODE[Glossary.RdfWriteMode.TURTLE.ordinal()];
 
     //Controllo per inserimento elemento object come stringa o come resource
-    private boolean objectAsResource = false;
+    private boolean objectAsResource = true;
 
     private RdfWriter() {
 
@@ -87,7 +87,7 @@ public class RdfWriter {
      * resource, false if we want literals
      */
     public void setObjectAsResource(boolean objectAsResource) {
-        this.objectAsResource = objectAsResource;
+        this.objectAsResource = true; 
     }
 
     /**
@@ -131,7 +131,7 @@ public class RdfWriter {
 
                 Resource r = model.createResource(this.getUri(n.var));
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
-
+                    objectAsResource=false;
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
                     if (objectAsResource) {
                         if (n1.var.matches(Glossary.NN_INTEGER2)) {
@@ -139,6 +139,9 @@ public class RdfWriter {
                             model.add(model.createStatement(r, p, o));
                         } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
                             Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
+                            model.add(model.createStatement(r, p, o));
+                        } else if (n1.relation.equalsIgnoreCase(Glossary.RDFS_LABEL)) {
+                            Literal o = model.createTypedLiteral(n1.var, Glossary.STRING_SCHEMA_NS);
                             model.add(model.createStatement(r, p, o));
                         } else {
                             Resource o = model.createResource(getUri(n1.var));
@@ -197,6 +200,7 @@ public class RdfWriter {
         int dp = s.indexOf(':');
         if (dp < 0) {
             pref = "";
+            //return pref;
         } else {
             pref = s.substring(0, dp + 1);
         }

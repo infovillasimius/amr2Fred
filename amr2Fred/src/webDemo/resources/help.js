@@ -16,15 +16,7 @@ $(document).ready(function () {
             if ($('#rid')[0].checked === true) {
                 urlo += "&?rid_err=ON";
             }
-
-            if ($('#res')[0].checked === true) {
-                urlo += "&?objAsRes";
-            }
             
-            if ($('#altLabel')[0].checked === true) {
-                urlo += "&?alt_label";
-            }
-
             var amr = $('#amr').val();
             
             while(amr.indexOf("  ")!==-1){
@@ -57,7 +49,6 @@ $(document).ready(function () {
                     urlo += "&?proMode=on" + "&?amr=" + amr;
             }
         } else {
-            $('#altLabel')[0].checked = false;
             var amr = $('#amr').val();
             urlo += "&?amr=" + amr + "&?sentence=" + $('#text').val();
             if(output==7){
@@ -93,7 +84,6 @@ $(document).ready(function () {
             $("#ppres").show();
             $('#description').html("<p id=\"description\">What you get is the translated amr in the chosen format.</p>");
         } else if (output >= 6) {
-            $('#altLabel')[0].checked = false;
             baseURL = "http://" + host + "/compare";
             $('#parameters').html("<thead><tr><th>Parameter</th><th>Explanation</th></tr></thead>" +
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
@@ -122,12 +112,5 @@ $(document).ready(function () {
 
     }
 
-
-
-
-
-    //$(".tooltip").tooltip();
-    //$('#text').tooltip();
-    //$('#amr').tooltip();
 });
 

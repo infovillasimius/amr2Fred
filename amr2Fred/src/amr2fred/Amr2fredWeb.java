@@ -30,12 +30,12 @@ public class Amr2fredWeb {
     PredMatrix pred = PredMatrix.getPredMatrix();
     RdfWriter rdfWriter = RdfWriter.getWriter();
 
-    public String go(String amr, int writerMode, int check, boolean cb, boolean cb1, boolean proMode, boolean altLabel) {
+    public String go(String amr, int writerMode, int check, boolean cb, boolean proMode) {
         String fred = "";
         if (amr.length() > 3) {
 
             Parser instance = Parser.getInstance();
-            Node result = parse(amr, instance, altLabel);
+            Node result = parse(amr, instance);
 
             /*
                     se il risultato dell'elaborazione del parser non è nullo avvia la visualizzazione dei risultati
@@ -64,8 +64,8 @@ public class Amr2fredWeb {
                     result = instance.check(result);
                     RdfWriter writer = RdfWriter.getWriter();
                     writer.setMode(Glossary.RdfWriteMode.values()[writerMode]);
-                    writer.setObjectAsResource(cb1);
-                    fred = (writer.writeRdf(result,cb1));
+                    writer.setObjectAsResource(true);
+                    fred = (writer.writeRdf(result,true));
                 } else {
 
                     if (result.getTreStatus() == 0) {
@@ -101,10 +101,10 @@ public class Amr2fredWeb {
         return fred;
     }
 
-    public File goPng(String amr, boolean altLabel) {
+    public File goPng(String amr) {
         if (amr.length() > 3) {
             Parser instance = Parser.getInstance();
-            Node result = parse(amr, instance, altLabel);
+            Node result = parse(amr, instance);
             if(result!=null){
                 return DigraphWriter.toPng(instance.check(result));
             }
@@ -113,7 +113,7 @@ public class Amr2fredWeb {
         return null;
     }
 
-    private Node parse(String amr, Parser instance, boolean altLabel) {
+    private Node parse(String amr, Parser instance) {
 
         Node result = null;
 
@@ -125,7 +125,7 @@ public class Amr2fredWeb {
             if (!amr.startsWith("(")) {
                 amr = "(" + amr + ")";
             }
-            result = instance.parse(amr, altLabel);
+            result = instance.parse(amr);
         }
 
         return result;
