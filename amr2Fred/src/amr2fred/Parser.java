@@ -392,7 +392,8 @@ public class Parser {
                 root.setVerb(Glossary.ID + instance.var.replace('-', '.'));
 
                 args(root);
-                instance.var = FRED + firstUpper(instance.var.substring(0, instance.var.length() - 3));
+                instance.var = Glossary.PB_DATA + instance.var;
+                //System.out.println(instance.var);
 
                 if (!instance.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instance.setStatus(OK);
@@ -579,7 +580,7 @@ public class Parser {
                 //n.list.remove(n.getInstance());
 
             } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_UNKNOWN)) {
-                n.var = Glossary.BOXING_UNKNOWN;
+                n.var = Glossary.OWL_THING; //Glossary.BOXING_UNKNOWN;
                 this.removeInstance(n);
                 //n.list.remove(n.getInstance());
 
@@ -806,7 +807,7 @@ public class Parser {
                 n.relation = n.relation.replace(Glossary.AMR_PREP, FRED);
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
                     || n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)) && root.getInstance() != null) {
-                n.relation = FRED + root.getInstance().var + Glossary.OF;
+                n.relation = n.relation.replace(":", Glossary.AMR);
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_EXTENT) && n.getInstance() != null) {
                 n.var = FRED + firstUpper(n.getInstance().var);
                 this.removeInstance(n);
@@ -1860,7 +1861,7 @@ public class Parser {
             root.var = root.var.replace("fred:Fred:", "");
             root.var = FRED + this.firstUpper(root.var);
         }
-        if (root.var.matches(Glossary.AMR_VERB2)) { // && this.isVerb(root.var)
+        if (root.var.matches(Glossary.AMR_VERB2 )&& root.getStatus()!=OK) { // && this.isVerb(root.var)
             root.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
             ArrayList<Node> l = root.getArgs();
 
@@ -1877,7 +1878,7 @@ public class Parser {
             root.var = root.var.substring(0, root.var.length() - 3);
             root.setType(VERB);
 
-        } else if (root.var.matches(Glossary.AMR_VERB2)) {
+        } else if (root.var.matches(Glossary.AMR_VERB2)&& root.getStatus()!=OK) {
             String newVar;
             if (root.var.contains(":")) {
                 newVar = root.var.substring(root.var.indexOf(":") + 1).toLowerCase();

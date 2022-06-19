@@ -408,6 +408,9 @@ public class Glossary {
 
     public static final String PB_DATA_NS = "https://w3id.org/framester/pb/data/";
     public static final String PB_DATA = "pbdata:";
+    
+    public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/pb/localrole/";
+    public static final String PB_LOCALROLE = "pblocalrole:";
 
     public static final String PB_SCHEMA_NS = "https://w3id.org/framester/pb/schema/";
     public static final String PB_SCHEMA = "pbschema:";
@@ -422,20 +425,20 @@ public class Glossary {
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
-        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME};
+        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME,PB_LOCALROLE};
 
     /**
      * Array of fred elements name space
      */
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
-        SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS,
-        WN30_INSTANCES_NS, FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS};
+        SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS, 
+        FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 21;
+    public static final int PREFIX_NUM = 22;
 
     /**
      * Jena's writers output modes
@@ -460,7 +463,7 @@ public class Glossary {
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_TRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_PREDICATE, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
-        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, VN_ROLE_LOCATION, FRED_ALTHOUGH,
+        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, AMR+AMR_MEDIUM.substring(1), FRED_ALTHOUGH,
         FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF, DUL_ASSOCIATED_WITH, FRED_WITH};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",

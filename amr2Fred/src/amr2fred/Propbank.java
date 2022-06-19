@@ -178,7 +178,7 @@ public class Propbank {
 
     public ArrayList<ArrayList<String>> find(String word, Glossary.PropbankRoleFields field) {
         ArrayList<ArrayList<String>> list = new ArrayList<>();
-        this.role_matrix.stream().filter((l) -> (l.get(field.ordinal()).equalsIgnoreCase(word))).forEach((l) -> {
+        this.role_matrix.stream().filter((l) -> (l.get(field.ordinal()) != null && l.get(field.ordinal()).equalsIgnoreCase(word))).forEach((l) -> {
             list.add(l);
         });
         //System.out.println(list);
@@ -187,7 +187,7 @@ public class Propbank {
     
     public ArrayList<ArrayList<String>> find(String word, Glossary.PropbankRoleFields field, String value, Glossary.PropbankRoleFields field2) {
         ArrayList<ArrayList<String>> list = new ArrayList<>();
-        this.role_matrix.stream().filter((l) -> (l.get(field.ordinal()).equalsIgnoreCase(word))
+        this.role_matrix.stream().filter((l) -> (l.get(field.ordinal()) != null && l.get(field.ordinal()).equalsIgnoreCase(word))
                 && l.get(field2.ordinal()).equalsIgnoreCase(value)).forEach((l) -> {
             list.add(l);
         });
