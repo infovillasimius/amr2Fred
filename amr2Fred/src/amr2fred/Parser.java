@@ -743,7 +743,7 @@ public class Parser {
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
                 //caso :mod
-                boolean contains = Arrays.stream(Glossary.ADJECTIVE).anyMatch(n.getInstance().var::equals);
+                boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
 
                 if (contains) {
                     n.relation = Glossary.DUL_HAS_QUALITY;
