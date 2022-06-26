@@ -64,8 +64,7 @@ public class Amr2fredWeb {
                     result = instance.check(result);
                     RdfWriter writer = RdfWriter.getWriter();
                     writer.setMode(Glossary.RdfWriteMode.values()[writerMode]);
-                    writer.setObjectAsResource(true);
-                    fred = (writer.writeRdf(result,true));
+                    fred = (writer.writeRdf(result));
                 } else {
 
                     if (result.getTreStatus() == 0) {

@@ -88,8 +88,8 @@ public class Amr2Fred extends Application {
         cb.setOpacity(0);
 
         //Controlla il metodo di inserimento dell'elemento object negli statement in Jena
-        CheckBox cb1 = new CheckBox("Statement Objects as Resources");
-        grid.add(cb1, 4, 7);
+        //CheckBox cb1 = new CheckBox("Statement Objects as Resources");
+        //grid.add(cb1, 4, 7);
 
         //Controlla la scelta del metodo di output del writer Jena. Se variato aggiorna automaticamente il campo writerMode
         ChoiceBox chBox = new javafx.scene.control.ChoiceBox<>(FXCollections.observableArrayList(Glossary.RdfWriteMode.RDF_XML,
@@ -173,8 +173,7 @@ public class Amr2Fred extends Application {
                             result = instance.check(result);
                             RdfWriter writer = RdfWriter.getWriter();
                             writer.setMode(Glossary.RdfWriteMode.values()[writerMode]);
-                            writer.setObjectAsResource(cb1.isSelected());
-                            fred.setText(writer.writeRdf(result,cb1.isSelected()));
+                            fred.setText(writer.writeRdf(result));
                         } else {
                             fred.setText(result.toString());
                         }

@@ -744,7 +744,7 @@ public class Parser {
                     && !isVerb(n.getInstance().var)) {
                 //caso :mod
                 boolean contains = Arrays.stream(Glossary.ADJECTIVE).anyMatch(n.getInstance().var::equals);
-                
+
                 if (contains) {
                     n.relation = Glossary.DUL_HAS_QUALITY;
                 } else {
@@ -952,19 +952,20 @@ public class Parser {
             ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_DATA + lemma2, Glossary.PropbankFrameFields.PB_Frame);
             if (!roles.isEmpty()) {
                 String label = roles.get(0).get(Glossary.PropbankFrameFields.PB_FrameLabel.ordinal());
-
-                root.getChild(Glossary.RDF_TYPE).list.add(new Node(label, Glossary.RDFS_LABEL, OK));
+                if (label.length() > 0) {
+                    root.getChild(Glossary.RDF_TYPE).list.add(new Node(label, Glossary.RDFS_LABEL, OK));
+                }
 
                 ArrayList<String> newNodesVars = new ArrayList<>();
                 for (ArrayList<String> l : roles) {
 
                     String fnFrame = l.get(Glossary.PropbankFrameFields.FN_Frame.ordinal());
-                    if (fnFrame != null && !newNodesVars.contains(fnFrame)) {
+                    if (fnFrame != null && fnFrame.length()>0 && !newNodesVars.contains(fnFrame)) {
                         newNodesVars.add(fnFrame);
                     }
 
                     String vaFrame = l.get(Glossary.PropbankFrameFields.VA_Frame.ordinal());
-                    if (vaFrame != null && !newNodesVars.contains(vaFrame)) {
+                    if (vaFrame != null && vaFrame.length()>0 && !newNodesVars.contains(vaFrame)) {
                         newNodesVars.add(vaFrame);
                     }
                     //break;
@@ -989,6 +990,7 @@ public class Parser {
 
             }
             //TODO eliminare quando arriva nuovo file ruoli
+            /*
             if (lemma2.endsWith("-91") && acr.find(lemma2)) {
 
                 //Elabora i nodi argomento esplicitando i relativi nodi
@@ -1001,7 +1003,7 @@ public class Parser {
                         root.setStatus(OK);
                     }
                 }
-            }
+            }*/
 
         }
 
@@ -1861,7 +1863,7 @@ public class Parser {
             root.var = root.var.replace("fred:Fred:", "");
             root.var = FRED + this.firstUpper(root.var);
         }
-        if (root.var.matches(Glossary.AMR_VERB2 )&& root.getStatus()!=OK) { // && this.isVerb(root.var)
+        if (root.var.matches(Glossary.AMR_VERB2) && root.getStatus() != OK) { // && this.isVerb(root.var)
             root.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
             ArrayList<Node> l = root.getArgs();
 
@@ -1878,7 +1880,7 @@ public class Parser {
             root.var = root.var.substring(0, root.var.length() - 3);
             root.setType(VERB);
 
-        } else if (root.var.matches(Glossary.AMR_VERB2)&& root.getStatus()!=OK) {
+        } else if (root.var.matches(Glossary.AMR_VERB2) && root.getStatus() != OK) {
             String newVar;
             if (root.var.contains(":")) {
                 newVar = root.var.substring(root.var.indexOf(":") + 1).toLowerCase();

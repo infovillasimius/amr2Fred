@@ -97,8 +97,8 @@ public class RdfWriter {
      * @param objectAsResource Boolean if true object in the triples are resources  if false they are strings
      * @return The tree in the chosen format
      */
-    public String writeRdf(Node root, boolean objectAsResource ) {
-        toRdf(root,objectAsResource);
+    public String writeRdf(Node root) {
+        toRdf(root);
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         model.write(b, mode);
         String rdf = b.toString();
@@ -109,8 +109,8 @@ public class RdfWriter {
     Effettua la traduzione aggiungendo al modello Jena i nodi, a partire da quello radice,
     con una visita per livello. 
      */
-    private void toRdf(Node root, boolean objectAsResource) {
-
+    private void toRdf(Node root) {
+        objectAsResource = true;
         try {
             this.list.put(root);
         } catch (InterruptedException ex) {
@@ -131,7 +131,7 @@ public class RdfWriter {
 
                 Resource r = model.createResource(this.getUri(n.var));
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
-                    objectAsResource=false;
+                    
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
                     if (objectAsResource) {
                         if (n1.var.matches(Glossary.NN_INTEGER2)) {
