@@ -729,11 +729,11 @@ public class Parser {
                     }
                 }
 
-                n.relation = Glossary.DUL_HAS_QUALITY;
+                n.relation = Glossary.DUL_HAS_AMOUNT;
                 n.var = FRED + firstUpper(n.getInstance().var.replaceAll(FRED, ""));
                 this.removeInstance(n);
                 //n.list.remove(n.getInstance());
-                toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                //toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF) && n.getInstance() != null) {
@@ -827,6 +827,10 @@ public class Parser {
                 n.relation = FRED + "as-if";
                 n.setStatus(OK);
             }
+            
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_CONDITION)){
+                n.relation = Glossary.DUL_HAS_PRECONDITION;
+            } 
 
             if (n.getStatus() != REMOVE) {
 
@@ -1210,7 +1214,7 @@ public class Parser {
             }
         }
 
-        if (root.getChild(Glossary.AMR_CONCESSION) != null || root.getChild(Glossary.AMR_CONDITION) != null) {
+        if (root.getChild(Glossary.AMR_CONCESSION) != null) {
             Node concession = root.getChild(Glossary.AMR_CONCESSION);
             Node condition = root.getChild(Glossary.AMR_CONDITION);
             Node swap = new Node("", "");
@@ -1897,6 +1901,13 @@ public class Parser {
             root.relation = Glossary.VN_ROLE_PREDICATE;
             root.setStatus(OK);
         }
+        
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
+
+                String newRelation = FRED + "attribute" + Glossary.OF;
+                root.relation = newRelation;
+                root.setStatus(OK);
+            }
 
         for (Node n : root.getList()) {
             n = residual(n);

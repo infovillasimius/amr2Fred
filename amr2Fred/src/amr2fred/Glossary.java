@@ -78,6 +78,8 @@ public class Glossary {
     public static final String DUL_HAS_DATA_VALUE = DUL + "hasDataValue";
     public static final String DUL_ASSOCIATED_WITH = DUL + "associatedWith";
     public static final String DUL_HAS_MEMBER = DUL + "hasMember";
+    public static final String DUL_HAS_PRECONDITION = DUL + "hasPrecondition";
+    public static final String DUL_HAS_AMOUNT = DUL + "hasAmount";
 
     /**
      * Local name for boxer
