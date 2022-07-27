@@ -33,8 +33,7 @@ import webDemo.FredHandler;
 import webDemo.Glossary;
 
 /**
- * Class Amr2File
- * Static class containing algorithms for converting amrs in a file
+ *
  * @author anto
  */
 public class Amr2File {
@@ -150,13 +149,13 @@ public class Amr2File {
                     if (sentence.endsWith(".")) {
                         sentence = sentence.substring(0, sentence.length() - 1);
                     }
-                    
+                    //System.out.println(sentence);
                     amr = getAmr(l);
                     while (amr.contains("  ")) {
                         amr = amr.replaceAll("  ", " ");
                     }
 
-                    
+                    //System.out.println(amr);
                     Amr2File.amr.add(amr);
                     Amr2File.sentence.add(sentence);
                     l = new ArrayList<>();
@@ -193,7 +192,7 @@ public class Amr2File {
                 int i = s.indexOf(">");
                 int i2 = s.indexOf("</sentence>");
                 temp = s.substring(i + 1, i2);
-                
+                //System.out.println(temp);
                 return temp;
             }
 
@@ -213,7 +212,7 @@ public class Amr2File {
 
             if (flag) {
                 temp += s;
-                
+                //System.out.println(temp);
             }
 
             if (s.contains("<amr")) {

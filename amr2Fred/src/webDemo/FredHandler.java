@@ -48,7 +48,7 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import resultsComparator.Amr2File;
+import resultsComparator.Amr2File2;
 import resultsComparator.Converter;
 import static webDemo.Glossary.*;
 
@@ -316,10 +316,10 @@ public class FredHandler implements HttpHandler {
             }
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
-            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return map;
@@ -372,10 +372,10 @@ public class FredHandler implements HttpHandler {
             }
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
-            Logger.getLogger(Amr2File.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;

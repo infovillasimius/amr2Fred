@@ -583,6 +583,9 @@ public class Parser {
                 n.var = Glossary.OWL_THING; //Glossary.BOXING_UNKNOWN;
                 this.removeInstance(n);
                 //n.list.remove(n.getInstance());
+                if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)) {
+                    n.relation = Glossary.AMR + Glossary.AMR_QUANT.substring(1);
+                }
 
                 //n.setStatus(REMOVE);
             } else if (Glossary.MALE.contains(" " + n.var + " ")) {
@@ -769,7 +772,8 @@ public class Parser {
                 n = listElaboration(n);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
-                    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)) && n.getInstance() != null
+                //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
+                    ) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
 
                 //casi :degree :time con instance
@@ -827,10 +831,10 @@ public class Parser {
                 n.relation = FRED + "as-if";
                 n.setStatus(OK);
             }
-            
-            if (n.relation.equalsIgnoreCase(Glossary.AMR_CONDITION)){
+
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_CONDITION)) {
                 n.relation = Glossary.DUL_HAS_PRECONDITION;
-            } 
+            }
 
             if (n.getStatus() != REMOVE) {
 
@@ -964,12 +968,12 @@ public class Parser {
                 for (ArrayList<String> l : roles) {
 
                     String fnFrame = l.get(Glossary.PropbankFrameFields.FN_Frame.ordinal());
-                    if (fnFrame != null && fnFrame.length()>0 && !newNodesVars.contains(fnFrame)) {
+                    if (fnFrame != null && fnFrame.length() > 0 && !newNodesVars.contains(fnFrame)) {
                         newNodesVars.add(fnFrame);
                     }
 
                     String vaFrame = l.get(Glossary.PropbankFrameFields.VA_Frame.ordinal());
-                    if (vaFrame != null && vaFrame.length()>0 && !newNodesVars.contains(vaFrame)) {
+                    if (vaFrame != null && vaFrame.length() > 0 && !newNodesVars.contains(vaFrame)) {
                         newNodesVars.add(vaFrame);
                     }
                     //break;
@@ -1705,14 +1709,14 @@ public class Parser {
             }
         }
 
-        Node time = root.getChild(Glossary.AMR_TIME);
+        /*Node time = root.getChild(Glossary.AMR_TIME);
         if (time != null) {
             root.var = FRED + time.var;
             root.list.remove(time);
             root.addAll(time.list);
             root.relation = Glossary.VN_ROLE_TIME;
 
-        }
+        }*/
 
         return root;
     }
@@ -1901,13 +1905,33 @@ public class Parser {
             root.relation = Glossary.VN_ROLE_PREDICATE;
             root.setStatus(OK);
         }
-        
+
         if (root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
 
-                String newRelation = FRED + "attribute" + Glossary.OF;
-                root.relation = newRelation;
-                root.setStatus(OK);
-            }
+            String newRelation = FRED + "attribute" + Glossary.OF;
+            root.relation = newRelation;
+            root.setStatus(OK);
+        }
+
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_COMPARED_TO)) {
+            String newRelation = Glossary.AMR + Glossary.AMR_COMPARED_TO;
+            root.relation = newRelation;
+            root.setStatus(OK);
+        }
+
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_MODE)
+                && (root.var.equalsIgnoreCase(Glossary.AMR_IMPERATIVE)
+                || root.var.equalsIgnoreCase(Glossary.AMR_EXPRESSIVE))
+                || root.var.equalsIgnoreCase(Glossary.AMR_INTERROGATIVE)) {
+            root.relation = Glossary.AMR + root.relation.substring(1);
+            root.var = Glossary.AMR + root.var.replace(":", "");
+            root.setStatus(OK);
+        }
+
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) || root.relation.equalsIgnoreCase(Glossary.AMR_UNIT)) {
+            root.relation = root.relation.replace(":", Glossary.AMR);
+            root.setStatus(OK);
+        }
 
         for (Node n : root.getList()) {
             n = residual(n);
@@ -1956,6 +1980,15 @@ public class Parser {
             }
             return newRoot;
         }
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
+            root.relation = Glossary.AMR + Glossary.AMR_DOMAIN.substring(1);
+            root.setStatus(OK);
+        }
+
+        for (Node n : root.list) {
+            n = multi_sentence(n);
+        }
+
         return root;
     }
 }
