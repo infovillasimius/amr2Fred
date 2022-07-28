@@ -291,6 +291,13 @@ public class Parser {
                     break;
                 case "/":
                     //aggiunge il nodo instance
+
+                    for (Node find : this.nodes) {
+                        // verifica esistenza di nodo "uguale" senza istanza, inserito precedentemente
+                        if (find.var.equalsIgnoreCase(root.var) && find.getInstance() == null) {
+                            find.makeEquals(root.getNodeId());
+                        }
+                    }
                     root.add(new Node(amrList.get(++i), Glossary.INSTANCE));
                     break;
                 default:
@@ -309,7 +316,9 @@ public class Parser {
 
                         if (flag == false) {
                             //aggiunta di un nuovo nodo in caso di verifica negativa
-                            root.add(new Node(amrList.get(i + 1), word));
+                            Node newNode = new Node(amrList.get(i + 1), word);
+                            root.add(newNode);
+                            nodes.add(newNode);
                         }
                     }
             }
@@ -771,8 +780,7 @@ public class Parser {
                 n.add(new Node(age, AMR_ARG2));
                 n = listElaboration(n);
 
-            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
-                //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE) //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
                     ) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
 
@@ -1717,7 +1725,6 @@ public class Parser {
             root.relation = Glossary.VN_ROLE_TIME;
 
         }*/
-
         return root;
     }
 
