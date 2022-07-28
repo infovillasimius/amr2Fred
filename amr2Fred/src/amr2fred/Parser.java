@@ -291,6 +291,13 @@ public class Parser {
                     break;
                 case "/":
                     //aggiunge il nodo instance
+
+                    for (Node find : this.nodes) {
+                        // verifica esistenza di nodo "uguale" senza istanza, inserito precedentemente
+                        if (find.var.equalsIgnoreCase(root.var) && find.getInstance() == null) {
+                            find.makeEquals(root.getNodeId());
+                        }
+                    }
                     root.add(new Node(amrList.get(++i), Glossary.INSTANCE));
                     break;
                 default:
@@ -309,7 +316,9 @@ public class Parser {
 
                         if (flag == false) {
                             //aggiunta di un nuovo nodo in caso di verifica negativa
-                            root.add(new Node(amrList.get(i + 1), word));
+                            Node newNode = new Node(amrList.get(i + 1), word);
+                            root.add(newNode);
+                            nodes.add(newNode);
                         }
                     }
             }
@@ -345,6 +354,8 @@ public class Parser {
 
         //Elaborazione della lista dei nodi contenuti nel nodo attualmente in lavorazione
         root = this.listElaboration(root);
+
+        root = add_parent_list(root);
 
         //elaborazione del nodo figlio denominato instance in amr
         root = this.instanceElaboration(root);
@@ -771,8 +782,7 @@ public class Parser {
                 n.add(new Node(age, AMR_ARG2));
                 n = listElaboration(n);
 
-            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE)
-                //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE) //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
                     ) && n.getInstance() != null
                     && !isVerb(n.getInstance().var)) {
 
@@ -800,7 +810,7 @@ public class Parser {
                 } else {
 
                     //caso :manner non verbale
-                    n.relation = Glossary.VN_ROLE_LOCATION;
+                    n.relation = Glossary.AMR + Glossary.AMR_MANNER.substring(1);
                 }
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MANNER) && n.getInstance() != null && root.getInstance() != null
                     && isVerb(n.getInstance().var)) {
@@ -1204,7 +1214,7 @@ public class Parser {
         }
 
         // casi "and" e "or" su nodo senza istanza, riferito al nodo principale
-        if (root.getInstance() == null
+        /*if (root.getInstance() == null
                 && (instance.var.equalsIgnoreCase(Glossary.AND) || instance.var.equalsIgnoreCase(Glossary.OR))) {
             Node and = this.getOriginal(root.getNodeId());
             root.add(instance);
@@ -1216,6 +1226,23 @@ public class Parser {
                 n2.makeEquals(n1);
                 root.add(n2);
             }
+        }*/
+        // casi "and" e "or" su nodo senza istanza, riferito al nodo principale
+        if (root.getInstance() == null && root.list.isEmpty()
+                && (instance.var.equalsIgnoreCase(Glossary.AND) || instance.var.equalsIgnoreCase(Glossary.OR))) {
+
+            Node and = this.getOriginal(root.getNodeId());
+
+            //root.add(instance);
+            ArrayList<Node> ops = and.getOps();
+
+            for (Node n1 : ops) {
+                Node n2 = new Node(n1.var, root.relation, n1.getStatus());
+                this.nodes.add(n2);
+                n2.makeEquals(n1);
+                root.parent_list.add(n2);
+            }
+
         }
 
         if (root.getChild(Glossary.AMR_CONCESSION) != null) {
@@ -1298,7 +1325,7 @@ public class Parser {
             }
         }
 
-// caso "and" seguito da :opx
+// caso "and" seguito da :opx solo per nodo iniziale 0
         if (root.getNodeId() == 0 && root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.AND) && !root.getOps().isEmpty()) {
             ArrayList<Node> ops = root.getOps();
             for (Node n1 : ops) {
@@ -1717,7 +1744,6 @@ public class Parser {
             root.relation = Glossary.VN_ROLE_TIME;
 
         }*/
-
         return root;
     }
 
@@ -1866,7 +1892,7 @@ public class Parser {
     }
 
     private Node residual(Node root) {
-        Propbank p = Propbank.getPropbank();
+
         if (root.var.contains("fred:Fred:")) {
             root.var = root.var.replace("fred:Fred:", "");
             root.var = FRED + this.firstUpper(root.var);
@@ -1934,6 +1960,7 @@ public class Parser {
         }
 
         for (Node n : root.getList()) {
+
             n = residual(n);
         }
         return root;
@@ -1989,6 +2016,35 @@ public class Parser {
             n = multi_sentence(n);
         }
 
+        return root;
+    }
+
+    private Node add_parent_list(Node root) {
+        ArrayList<Node> to_add = root.get_nodes_with_parent_list_not_empty();
+        if (!to_add.isEmpty()) {
+
+            for (Node n : to_add) {
+                for (Node n1 : n.parent_list) {
+                    boolean flag = false;
+                    for (Node n2 : root.list) {
+                        if (n1.relation.equalsIgnoreCase(n2.relation)
+                                && n1.var.equalsIgnoreCase(n2.var)) {
+                            flag = true;
+                        }
+                    }
+                    if (!flag) {
+                        root.list.add(n1);
+                    }
+                }
+                root.list.remove(n);
+            }
+
+        }
+        //System.out.println(to_add);
+
+        for (Node n : root.list) {
+            n = add_parent_list(n);
+        }
         return root;
     }
 }

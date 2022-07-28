@@ -55,6 +55,9 @@ public class Node {
     // Nodo genitore
     Node parent;
     
+    //nodi da portare sulla lista del parent
+    ArrayList<Node> parent_list;
+    
     // visibilità in modalità grafica
     boolean visibility = true;
 
@@ -74,6 +77,7 @@ public class Node {
         this.var = var;
         this.relation = relation;
         this.list = new ArrayList<>();
+        this.parent_list = new ArrayList<>();
         this.status = AMR;
         this.type = OTHER;
         this.nodeId = id;
@@ -85,6 +89,7 @@ public class Node {
         this.var = var;
         this.status = status;
         this.list = new ArrayList<>();
+        this.parent_list = new ArrayList<>();
         this.type = OTHER;
         this.nodeId = id;
         Node.id += 1;
@@ -492,4 +497,16 @@ public class Node {
         }
         return snt;
     }
+    
+    ArrayList<Node> get_nodes_with_parent_list_not_empty() {
+        ArrayList<Node> snt = new ArrayList<>();
+        for(Node n : this.list){
+            if (!n.parent_list.isEmpty()){
+                snt.add(n);
+            }
+        }
+        return snt;
+    }
+    
+    
 }
