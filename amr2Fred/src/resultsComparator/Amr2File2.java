@@ -108,7 +108,9 @@ public class Amr2File2 {
                 }
 
                 rdf1.add(amrS);
-                System.out.println("Sentence " + (counter + 1) + " out of " + amr.size());
+                if (counter % 50 == 0) {
+                    System.out.println("Sentence " + (counter + 1) + " out of " + amr.size());
+                }
                 counter++;
             }
             doNewConvert(o, data);
@@ -220,24 +222,22 @@ public class Amr2File2 {
                     dataWriter.append(rdf1.get(x));   //.replaceAll("\r\n|\r|\n", " ")
                     dataWriter.append("</s>");
                     dataWriter.newLine();
-
                 }
                 dataWriter.flush();
             }
-
             if (mode == 1) {
                 Comparator c;
                 BufferedWriter writer = new BufferedWriter(new FileWriter(result.getAbsolutePath()));
                 int dim = min(rdf1.size(), rdf2.size());
+                boolean flag = false;
                 for (int x = 0; x < dim; x++) {
                     c = new Comparator(rdf2.get(x), rdf1.get(x), false);
                     if (c.getFma() < 1 || c.getAmf() < 1) {
+                        flag = true;
                         writer.append("Sentence " + (x + 1));
-
                         writer.newLine();
                         writer.newLine();
                         writer.append("previous \\ current = " + c.getFma() * 100 + "%");
-
                         writer.newLine();
 
                         for (Triple t : c.getfMinusA()) {
@@ -257,6 +257,10 @@ public class Amr2File2 {
                         writer.newLine();
                         writer.newLine();
                     }
+                }
+                if (!flag) {
+                    writer.append("No difference on " + dim + " sentences");
+                    writer.newLine();
                 }
                 writer.flush();
             }
