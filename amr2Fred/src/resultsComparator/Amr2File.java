@@ -47,7 +47,7 @@ public class Amr2File {
     public static File o = null;
     private static File data = null;
     private static int from = 0;
-    private static int numberOfSenteces;
+    private static int numberOfSentences;
     private static int time = 30;
 
     public static void main(String[] args) {
@@ -68,7 +68,7 @@ public class Amr2File {
                 data = new File("data" + args[2] + ".txt");
                 from = Integer.parseInt(args[2]);
 
-                numberOfSenteces = Integer.parseInt(args[3]);
+                numberOfSentences = Integer.parseInt(args[3]);
                 if (f.isFile()) {
                     doConvert(f);
 
@@ -117,7 +117,7 @@ public class Amr2File {
                             counter++;
                         }
                     }
-                    if (from + counter >= amr.size() || counter >= numberOfSenteces) {
+                    if (from + counter >= amr.size() || counter >= numberOfSentences) {
                         this.cancel();
                         if (o != null) {
                             doNewConvert(o, data);
@@ -238,7 +238,7 @@ public class Amr2File {
 
             for (int x = 0; x < rdf2.size(); x++) {
 
-                c = new Comparator(rdf2.get(x), rdf1.get(x));
+                c = new Comparator(rdf2.get(x), rdf1.get(x), true);
 
                 writer.append(sentence.get(from + x));
                 writer.newLine();

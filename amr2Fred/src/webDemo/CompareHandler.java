@@ -99,7 +99,7 @@ public class CompareHandler implements HttpHandler {
         rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
         //System.out.println(rdf2);
         if (!rdf2.contains("FRED is not Reachable!")) {
-            Comparator c = new Comparator(rdf2, rdf1);
+            Comparator c = new Comparator(rdf2, rdf1, true);
             Headers responseHeaders = he.getResponseHeaders();
             switch (commonsType) {
                 case 0: {

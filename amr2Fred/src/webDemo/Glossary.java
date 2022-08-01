@@ -98,11 +98,6 @@ public class Glossary {
     public static final String TMP_FILE_NAME = "amr2fred";
     public static final String TMP_FILE_EXT = "tmp";
     
-    //for windows
-    public static final String IMG_FILE_PATH = "c:\\imgs\\img";
-    //for linux
-    //public static final String IMG_FILE_PATH = "~/imgs/img";
-    
     public static final String TYPE = "content-type";
     public static final String CSS = "text/css";
     public static final String GIF = "image/gif";

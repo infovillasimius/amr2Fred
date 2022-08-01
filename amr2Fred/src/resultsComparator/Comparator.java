@@ -35,7 +35,7 @@ public class Comparator {
     private double amf;
     private static int correct = 0;
 
-    public Comparator(String fred, String a2f) {
+    public Comparator(String fred, String a2f, boolean flag) {
         //System.out.println(fred+"\n"+a2f);
         fredResult = Converter.getList(fred);
         a2fResult = Converter.getList(a2f);
@@ -44,7 +44,9 @@ public class Comparator {
         commons = new ArrayList<>();
         subtract();
         calculate();
-        root=Converter.toNode(commons);
+        if (flag) {
+            root = Converter.toNode(commons);
+        }
     }
 
     private void subtract() {

@@ -94,7 +94,6 @@ public class RdfWriter {
      * Traslate nodes from internal format to the chosen one
      *
      * @param root Node in internel language
-     * @param objectAsResource Boolean if true object in the triples are resources  if false they are strings
      * @return The tree in the chosen format
      */
     public String writeRdf(Node root) {

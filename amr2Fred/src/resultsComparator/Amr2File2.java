@@ -24,13 +24,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import static java.lang.Math.min;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import webDemo.FredHandler;
 import webDemo.Glossary;
 
 /**
@@ -48,77 +51,86 @@ public class Amr2File2 {
     public static int counter = 0;
     public static Amr2fredWeb amr2fred = new Amr2fredWeb();
     public static File o = null;
+    public static File result = null;
     private static File data = null;
-    private static int from = 0;
-    private static int numberOfSenteces;
+    private static File datafile = null;
+    private static Path folder;
+    private static boolean imgs = false;
+    private static int mode = 0;
 
     public static void main(String[] args) {
+        mode = 0;
         File f;
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        o = new File(date.format(formatter) + "-amr2fred_test.html");
+        result = new File(date.format(formatter) + "-amr2fred_test_results.txt");
+        data = new File(date.format(formatter) + "-data.txt");
+        folder = Paths.get(o.getAbsolutePath()).getParent();
 
-        if (args != null) {
+        if (args != null && args.length > 0) {
             int l = args.length;
 
-            if (l < 3) {
+            f = new File(args[0]);
+            if (f.isFile()) {
+                doConvert(f);
+            } else {
                 System.exit(1);
-            } else if (l > 3) {
-                f = new File(args[0]);
-                o = new File(args[1] + args[2] + ".html");
-                data = new File("data" + args[2] + ".txt");
-                from = Integer.parseInt(args[2]);
-
-                numberOfSenteces = Integer.parseInt(args[3]);
-                if (f.isFile()) {
-                    doConvert(f);
-
+            }
+            for (int i = 1; i < l; i++) {
+                if (args[i].equalsIgnoreCase("-imgs")) {
+                    imgs = true;
+                }
+                if (args[i].equalsIgnoreCase("-datafile")) {
+                    mode = 1;
+                    datafile = new File(args[++i]);
+                    Amr2File2.get_datafile(datafile);
                 }
             }
- 
-            while (true) {
-                String amrS, fred;
-                if (from + counter < amr.size()) {
-                    try {
-                        amrS = amr2fred.go(amr.get(from + counter), 2, 1, false, true);
-                        File img = amr2fred.goPng(amr.get(from + counter));
-                        Files.copy(img.toPath(), new File(Glossary.IMG_FILE_PATH + counter + ".png").toPath());
-                        System.out.println(amrS);
-                    } catch (Exception e) {
-                        amrS = "";
-                    }
 
-                    fred = "Server Error"; //FredHandler.getFredString(sentence.get(from + counter), webDemo.Glossary.FRED_N_TRIPLES);
-
-                    if (!fred.contains("FRED is not Reachable!")) {
-                        rdf1.add(amrS);
-                        if (fred.contains("Server Error")) {
-                            rdf2.add("");
-                        } else {
-                            rdf2.add(fred);
+            for (String _amr : Amr2File2.amr) {
+                String amrS;
+                try {
+                    amrS = amr2fred.go(_amr, 2, 1, false, true);
+                    if (imgs) {
+                        File img = amr2fred.goPng(_amr);
+                        File imgdir = new File(folder + "/amr2fred_test");
+                        if (!imgdir.isFile()) {
+                            imgdir.mkdir();
                         }
-
-                        System.out.println();
-                        System.out.println("Sentence n. " + (from + counter + 1));
-                        System.out.println(amr.get(from + counter));
-                        //System.out.println(rdf1.get(counter));
-                        System.out.println(sentence.get(from + counter));
-                        //System.out.println(rdf2.get(counter));
-                        counter++;
+                        Files.copy(img.toPath(), new File(folder + "/amr2fred_test" + "/img" + counter + ".png").toPath(), StandardCopyOption.REPLACE_EXISTING);
                     }
+                    //System.out.println(amrS);
+                } catch (Exception e) {
+                    System.out.println("Error in Sentence " + counter + " out of " + amr.size());
+                    System.out.println(_amr);
+                    amrS = "";
                 }
-                if (from + counter >= amr.size() || counter >= numberOfSenteces) {
 
-                    if (o != null) {
-                        doNewConvert(o, data);
-                        break;
-                    }
-                }
+                rdf1.add(amrS);
+                System.out.println("Sentence " + (counter + 1) + " out of " + amr.size());
+                counter++;
+            }
+            doNewConvert(o, data);
+        }
+        if (o.isFile()) {
+            try {
+                Files.copy(o.toPath(), new File(folder + "/amr2fred_test/amr2fred_test.html").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception e) {
+                System.out.println("Error copying file");
             }
         }
     }
 
+    /**
+     * get data from the file
+     *
+     * @param f
+     */
     private static void doConvert(File f) {
 
         boolean flag = false;
-        String line, sentence, amr;
+        String line, sentenceS, amrS;
 
         try {
             ArrayList<String> l = new ArrayList<>();
@@ -130,18 +142,18 @@ public class Amr2File2 {
                 if (line.contains("</sntamr>")) {
                     flag = false;
 
-                    sentence = getSentence(l);
-                    if (sentence.endsWith(".")) {
-                        sentence = sentence.substring(0, sentence.length() - 1);
+                    sentenceS = getSentence(l);
+                    if (sentenceS.endsWith(".")) {
+                        sentenceS = sentenceS.substring(0, sentenceS.length() - 1);
                     }
 
-                    amr = getAmr(l);
-                    while (amr.contains("  ")) {
-                        amr = amr.replaceAll("  ", " ");
+                    amrS = getAmr(l);
+                    while (amrS.contains("  ")) {
+                        amrS = amrS.replaceAll("  ", " ");
                     }
 
-                    Amr2File2.amr.add(amr);
-                    Amr2File2.sentence.add(sentence);
+                    Amr2File2.amr.add(amrS);
+                    Amr2File2.sentence.add(sentenceS);
                     l = new ArrayList<>();
                 }
 
@@ -155,31 +167,27 @@ public class Amr2File2 {
 
                 line = reader.readLine();
             }
-
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class
+                    .getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
-            Logger.getLogger(Amr2File2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Amr2File2.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     private static String getSentence(ArrayList<String> l) {
 
-        String temp = "";
-        boolean flag = false;
-
+        String temp;
         for (String s : l) {
-
             if (s.contains("<sentence")) {
                 int i = s.indexOf(">");
                 int i2 = s.indexOf("</sentence>");
                 temp = s.substring(i + 1, i2);
-
                 return temp;
             }
-
         }
         return null;
     }
@@ -189,60 +197,89 @@ public class Amr2File2 {
         boolean flag = false;
 
         for (String s : l) {
-
             if (s.contains("</amr>")) {
                 return temp;
             }
-
             if (flag) {
                 temp += s;
-
             }
-
             if (s.contains("<amr")) {
                 flag = true;
             }
-
         }
-
         return null;
     }
 
     private static void doNewConvert(File o, File data) {
 
-        //Comparator c;
         try {
+            if (mode == 0) {
+                BufferedWriter dataWriter = new BufferedWriter(new FileWriter(data.getAbsolutePath()));
+                for (int x = 0; x < rdf1.size(); x++) {
+                    dataWriter.append("<s>");
+                    dataWriter.append(rdf1.get(x));   //.replaceAll("\r\n|\r|\n", " ")
+                    dataWriter.append("</s>");
+                    dataWriter.newLine();
 
-            //BufferedWriter dataWriter = new BufferedWriter(new FileWriter(data.getAbsolutePath()));
-            //dataWriter.append("Triple_Fred,Triple_amr2fred,Triple_Fred-amr2fred,Triple_amr2fred-Fred,_triple_comuni");
-            //dataWriter.newLine();
+                }
+                dataWriter.flush();
+            }
+
+            if (mode == 1) {
+                Comparator c;
+                BufferedWriter writer = new BufferedWriter(new FileWriter(result.getAbsolutePath()));
+                int dim = min(rdf1.size(), rdf2.size());
+                for (int x = 0; x < dim; x++) {
+                    c = new Comparator(rdf2.get(x), rdf1.get(x), false);
+                    if (c.getFma() < 1 || c.getAmf() < 1) {
+                        writer.append("Sentence " + (x + 1));
+
+                        writer.newLine();
+                        writer.newLine();
+                        writer.append("previous \\ current = " + c.getFma() * 100 + "%");
+
+                        writer.newLine();
+
+                        for (Triple t : c.getfMinusA()) {
+                            writer.append(t.toString());
+                            //writer.newLine();
+                        }
+                        writer.newLine();
+                        writer.newLine();
+
+                        writer.append("current \\ previous = " + c.getAmf() * 100 + "%");
+                        writer.newLine();
+
+                        for (Triple t : c.getaMinusF()) {
+                            writer.append(t.toString());
+                            //writer.newLine();
+                        }
+                        writer.newLine();
+                        writer.newLine();
+                    }
+                }
+                writer.flush();
+            }
+
             BufferedWriter writer = new BufferedWriter(new FileWriter(o.getAbsolutePath()));
-            System.out.println();
-            for (int x = 0; x < rdf1.size(); x++) {
 
-                //c = new Comparator(rdf2.get(x), rdf1.get(x));
+            for (int x = 0; x < rdf1.size(); x++) {
                 writer.append("<p><b>SENTENCE ");
                 writer.append(x + 1 + "</b><br/><br/>");
-                writer.append(sentence.get(from + x));
+                writer.append(sentence.get(x));
                 writer.append("</p>");
                 writer.newLine();
                 writer.newLine();
                 writer.append("<p><br/><b>AMR</b><br/>");
-                writer.append(amr.get(from + x));
+                writer.append(amr.get(x));
                 writer.append("</p>");
                 writer.newLine();
                 writer.newLine();
                 writer.append("<p>");
                 writer.append("<img src=\"" + "img" + x + ".png\"/>");
                 writer.append("</p>");
-
                 writer.newLine();
                 writer.newLine();
-                //writer.append("Fred");
-                //writer.newLine();
-                //writer.append(rdf2.get(x));
-                //writer.newLine();
-                //writer.newLine();
                 writer.append("<p>");
                 writer.append("<b>amr2fred</b>");
                 writer.append("</p>");
@@ -252,49 +289,46 @@ public class Amr2File2 {
                 writer.append("<br/><br/></p>");
                 writer.newLine();
                 writer.newLine();
-
-                /*
-                writer.append("Fred \\ amr2fred = " + c.getFma() * 100 + "%");
-
-                writer.newLine();
-
-                for (Triple t : c.getfMinusA()) {
-                    writer.append(t.toString());
-                    //writer.newLine();
-                }
-                writer.newLine();
-                writer.newLine();
-
-                writer.append("amr2fred \\ Fred = " + c.getAmf() * 100 + "%");
-                writer.newLine();
-                for (Triple t : c.getaMinusF()) {
-                    writer.append(t.toString());
-                    //writer.newLine();
-                }
-                writer.newLine();
-                writer.newLine();
-
-                dataWriter.append("" + c.getFredResult().size() + "," + c.getA2fResult().size() + "," + c.getfMinusA().size() + "," + c.getaMinusF().size() + "," + c.getCommons().size());
-                dataWriter.newLine();*/
             }
-            /*
-            writer.newLine();
-
-            writer.append(
-                    "Total generated triples = " + Triple.gettNum());
-            writer.newLine();
-            
-            writer.append(
-                    "Total correct triples = " + Comparator.getCorrect());
-            writer.newLine();
-
-            writer.append(
-                    "Average = " + Comparator.getAverage());
-            
-             */
             writer.flush();
 
-            //dataWriter.flush();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Amr2File2.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException ex) {
+            Logger.getLogger(Amr2File2.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    /**
+     * get data from the file
+     *
+     * @param f
+     */
+    private static void get_datafile(File f) {
+        String line, rdf = "";
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(f.getAbsolutePath()));
+            line = reader.readLine();
+
+            while (line != null) {
+                if (!line.contains("</s>")) {
+                    rdf += line.replace("<s>", "");
+                } else {
+                    rdf += line.replace("</s>", "");
+                    rdf2.add(rdf);
+
+                    rdf = "";
+                }
+                line = reader.readLine();
+            }
+
+            System.out.println(rdf2.size());
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Amr2File2.class
                     .getName()).log(Level.SEVERE, null, ex);

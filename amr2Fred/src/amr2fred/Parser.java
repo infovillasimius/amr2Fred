@@ -1452,6 +1452,12 @@ public class Parser {
             //root.list.remove(root.getInstance());
             unit.addAll(root.list);
             unit.relation = root.relation;
+            ArrayList<Node> eq = this.getEquals(root);
+            for (Node n : eq) {
+                if (n.list.isEmpty()) {
+                    n.makeEquals(unit);
+                }
+            }
             root.substitute(unit);
         }
 
@@ -1476,10 +1482,15 @@ public class Parser {
                 newNode.relation = FRED + unit.getInstance().var + Glossary.OF;
                 quant.add(newNode);
                 quant.relation = root.relation;
+
+                ArrayList<Node> eq = this.getEquals(root);
+                for (Node n : eq) {
+                    if (n.list.isEmpty()) {
+                        n.makeEquals(quant);
+                    }
+                }
                 root.substitute(quant);
-
             }
-
         }
 
         if (root.getChild(Glossary.AMR_SCALE) != null && root.getChild(Glossary.AMR_SCALE).getInstance() != null) {
