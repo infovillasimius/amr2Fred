@@ -231,6 +231,7 @@ public class Node {
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY_OF)
                     && n.status != REMOVE) {
                 nodes.add(n);
             }
@@ -494,6 +495,9 @@ public class Node {
             if (n.relation.matches(Glossary.AMR_SENTENCE)){
                 snt.add(n);
             }
+        }
+        for(Node n : this.list){
+            snt.addAll(n.getSnt());
         }
         return snt;
     }

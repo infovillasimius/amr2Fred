@@ -30,7 +30,6 @@ import static amr2fred.Glossary.AMR_ARG0;
 import static amr2fred.Glossary.AMR_ARG1;
 import static amr2fred.Glossary.AMR_ARG2;
 import java.math.BigInteger;
-import java.util.Arrays;
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -301,8 +300,10 @@ public class Parser {
                     root.add(new Node(amrList.get(++i), Glossary.INSTANCE));
                     break;
                 default:
+                    
                     //verifica riutilizzo variabili
-                    if (word.charAt(0) == ':' && amrList.get(i + 1).charAt(0) != '(') {
+                try {
+                    if (word.charAt(0) == ':' && amrList.size() > i + 1 && amrList.get(i + 1).charAt(0) != '(') {
                         flag = false;
                         for (Node find : this.nodes) {
                             if (find.var.equalsIgnoreCase(amrList.get(i + 1))) {
@@ -321,6 +322,12 @@ public class Parser {
                             nodes.add(newNode);
                         }
                     }
+                } catch (Exception e) {
+                    //System.out.println(word + " " + amrList.get(i + 1));
+                    Node newNode = new Node(amrList.get(i + 1), word);
+                    root.add(newNode);
+                    nodes.add(newNode);
+                }
             }
         }
 
@@ -348,6 +355,9 @@ public class Parser {
         if (endless > Glossary.ENDLESS) {
             return root;
         }
+
+        //verifica punti elenco
+        root = this.li_verify(root);
 
         //verifica inversi
         root = this.inverseChecker(root);
@@ -474,6 +484,10 @@ public class Parser {
             if (n.relation.equals(Glossary.PREP_SUBSTITUTION)) {
                 n.setStatus(REMOVE);
                 toAdd.addAll(n.list);
+            }
+
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY_OF)) {
+                n.relation = Glossary.AMR + Glossary.AMR_POLARITY_OF.substring(1);
             }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
@@ -1576,9 +1590,13 @@ public class Parser {
 
         if (era != null) {
             era.relation = Glossary.FRED_OF;
-            era.var = firstUpper(era.getInstance().var + "_era");
-            this.removeInstance(era);
-            //era.list.remove(era.getInstance());
+            if (era.getInstance() != null) {
+                era.var = FRED + firstUpper(era.getInstance().var + "_era");
+                this.removeInstance(era);
+                //era.list.remove(era.getInstance());
+            } else {
+                era.var = FRED + firstUpper(era.var + "_era");
+            }
         }
 
         Node decade = root.getChild(Glossary.AMR_DATE_DECADE);
@@ -1908,7 +1926,7 @@ public class Parser {
             root.var = root.var.replace("fred:Fred:", "");
             root.var = FRED + this.firstUpper(root.var);
         }
-        if (root.var.matches(Glossary.AMR_VERB2) && root.getStatus() != OK) { // && this.isVerb(root.var)
+        if (root.var.matches(Glossary.AMR_VERB2) && root.getStatus() != OK && root.var.length() > 3) { // && this.isVerb(root.var)
             root.add(new Node(Glossary.DUL_EVENT, Glossary.RDFS_SUBCLASS_OF, OK));
             ArrayList<Node> l = root.getArgs();
 
@@ -1966,6 +1984,11 @@ public class Parser {
         }
 
         if (root.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF) || root.relation.equalsIgnoreCase(Glossary.AMR_UNIT)) {
+            root.relation = root.relation.replace(":", Glossary.AMR);
+            root.setStatus(OK);
+        }
+        
+        if(root.relation.startsWith(":")){
             root.relation = root.relation.replace(":", Glossary.AMR);
             root.setStatus(OK);
         }
@@ -2055,6 +2078,31 @@ public class Parser {
 
         for (Node n : root.list) {
             n = add_parent_list(n);
+        }
+        return root;
+    }
+
+    private Node li_verify(Node root) {
+
+        if (root.relation.equalsIgnoreCase(Glossary.AMR_LI)) {
+            root.relation = TOP;
+            String var = root.parent.var;
+            Node new_instance = new Node(Glossary.REIFI_HAVE_LI, Glossary.INSTANCE);
+            this.nodes.add(new_instance);
+
+            Node arg1 = new Node(root.var, Glossary.AMR_ARG1);
+            this.nodes.add(arg1);
+            Node arg2 = new Node(var, Glossary.AMR_ARG2);
+            this.nodes.add(arg2);
+            arg2.makeEquals(root.parent);
+            root.var = "li_" + root.getNodeId();
+            root.list.add(new_instance);
+            root.list.add(arg1);
+            root.list.add(arg2);
+        }
+
+        for (Node n : root.list) {
+            n = li_verify(n);
         }
         return root;
     }

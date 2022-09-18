@@ -203,7 +203,7 @@ public class Glossary {
     public static final String REIFI_INCLUDE = "include-91";
     public static final String REIFI_BE_TEMPORALLY_AT = "be-temporally-at-91";
     public static final String REIFI_HAVE_DEGREE = "have-degree-91";
-
+    public static final String REIFI_HAVE_LI = "have-li-91";
     public static final String RATE_ENTITY = "rate-entity-91";
 
     /**
@@ -249,6 +249,7 @@ public class Glossary {
 
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
+    public static final String AMR_POLARITY_OF = ":polarity-of";
     public static final String AMR_MINUS = "-";
     public static final String AMR_PLUS = "+";
     public static final String AMR_MODE = ":mode";
@@ -290,6 +291,7 @@ public class Glossary {
     public static final String AMR_EXTENT = ":extent";
     public static final String AMR_FREQUENCY = ":frequency";
     public static final String AMR_INSTRUMENT = ":instrument";
+    public static final String AMR_LI = ":li";
     public static final String AMR_MEDIUM = ":medium";
     public static final String AMR_ORD = ":ord";
     public static final String AMR_PART = ":part";
