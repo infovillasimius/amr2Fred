@@ -30,6 +30,9 @@ import static amr2fred.Glossary.AMR_ARG0;
 import static amr2fred.Glossary.AMR_ARG1;
 import static amr2fred.Glossary.AMR_ARG2;
 import java.math.BigInteger;
+import org.apache.commons.lang3.StringUtils;
+
+
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -115,7 +118,8 @@ public class Parser {
      * @param amr String in amr format
      * @return Node Fred root node
      */
-    public Node parse(String amr) {
+    public Node parse(String amr) {     
+        amr = StringUtils.stripAccents(amr);
         /*
         Il nodo root contiene la struttura dati che si ottiene
         passando la stringa amr al metodo string2Array e passando 
