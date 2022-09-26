@@ -430,13 +430,18 @@ public class Glossary {
     public static final String FN_FRAME = "fnframe:";
 
     public static final String FS_SCHEMA_SUBSUMED_UNDER = FS_SCHEMA + "subsumedUnder";
+    
+    public static final String AMR_WIKIDATA = ":wikidata";
+    public static final String WIKIDATA = "wikidata:";
+    public static final String WIKIDATA_NS = "https://www.wikidata.org/wiki/";
 
     /**
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
-        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE};
+        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
+        WIKIDATA};
 
     /**
      * Array of fred elements name space
@@ -444,12 +449,13 @@ public class Glossary {
     public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
-        FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS};
+        FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
+        WIKIDATA_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 22;
+    public static final int PREFIX_NUM = 23;
 
     /**
      * Jena's writers output modes

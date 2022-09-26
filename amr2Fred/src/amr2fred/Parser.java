@@ -485,6 +485,16 @@ public class Parser {
 
             n = prepControl(n);
 
+            if(n.relation.equalsIgnoreCase(Glossary.AMR_WIKIDATA)){
+                if (n.var.equalsIgnoreCase(Glossary.AMR_MINUS)) {
+                    n.setStatus(REMOVE);
+                } else {
+                    n.relation = Glossary.OWL_SAME_AS;
+                    n.var = Glossary.WIKIDATA + n.var;
+                    n.setStatus(OK);
+                }
+            }
+            
             if (n.relation.equals(Glossary.PREP_SUBSTITUTION)) {
                 n.setStatus(REMOVE);
                 toAdd.addAll(n.list);
@@ -1996,6 +2006,12 @@ public class Parser {
             root.relation = root.relation.replace(":", Glossary.AMR);
             root.setStatus(OK);
         }
+        
+        if(!root.var.contains(":")){
+            root.var = Glossary.FRED + root.var;
+            root.setStatus(OK);
+        }
+        
 
         for (Node n : root.getList()) {
 
