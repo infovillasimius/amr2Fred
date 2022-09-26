@@ -32,8 +32,6 @@ import static amr2fred.Glossary.AMR_ARG2;
 import java.math.BigInteger;
 import org.apache.commons.lang3.StringUtils;
 
-
-
 /**
  * Contains methods for parsing and translating from AMR to FRED
  *
@@ -118,7 +116,7 @@ public class Parser {
      * @param amr String in amr format
      * @return Node Fred root node
      */
-    public Node parse(String amr) {     
+    public Node parse(String amr) {
         amr = StringUtils.stripAccents(amr);
         /*
         Il nodo root contiene la struttura dati che si ottiene
@@ -485,7 +483,7 @@ public class Parser {
 
             n = prepControl(n);
 
-            if(n.relation.equalsIgnoreCase(Glossary.AMR_WIKIDATA)){
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKIDATA)) {
                 if (n.var.equalsIgnoreCase(Glossary.AMR_MINUS)) {
                     n.setStatus(REMOVE);
                 } else {
@@ -494,7 +492,7 @@ public class Parser {
                     n.setStatus(OK);
                 }
             }
-            
+
             if (n.relation.equals(Glossary.PREP_SUBSTITUTION)) {
                 n.setStatus(REMOVE);
                 toAdd.addAll(n.list);
@@ -2001,17 +1999,14 @@ public class Parser {
             root.relation = root.relation.replace(":", Glossary.AMR);
             root.setStatus(OK);
         }
-        
-        if(root.relation.startsWith(":")){
+
+        if (root.relation.startsWith(":")) {
             root.relation = root.relation.replace(":", Glossary.AMR);
+            if (!root.var.contains(":") && root.getStatus() != OK) {
+                root.var = Glossary.FRED + root.var;
+            }
             root.setStatus(OK);
         }
-        
-        if(!root.var.contains(":")){
-            root.var = Glossary.FRED + root.var;
-            root.setStatus(OK);
-        }
-        
 
         for (Node n : root.getList()) {
 
