@@ -63,6 +63,7 @@ public class Parser {
 
     //flag per l'aggiunta del valore topic al nodo radice
     private boolean topic;
+    private String specid;
 
     private Parser() {
         this.nodes = new ArrayList<>();
@@ -114,10 +115,17 @@ public class Parser {
      * Parse AMR string and returns Fred root node
      *
      * @param amr String in amr format
+     * @param specid String specid
      * @return Node Fred root node
      */
-    public Node parse(String amr) {
+    public Node parse(String amr, String specid) {
         amr = StringUtils.stripAccents(amr);
+        if (!specid.equalsIgnoreCase("")) {
+            this.specid = "_" + specid;
+        } else {
+            this.specid = "";
+        }
+        //System.out.println(specid);
         /*
         Il nodo root contiene la struttura dati che si ottiene
         passando la stringa amr al metodo string2Array e passando 
@@ -410,7 +418,7 @@ public class Parser {
                 }
 
                 //Elaborazione della instance e trasferimento verbo nella root, seguito dal numero di occorrenza
-                root.var = FRED + instance.var.substring(0, instance.var.length() - 3) + "_" + occurrence(instance.var.substring(0, instance.var.length() - 3));
+                root.var = FRED + instance.var.substring(0, instance.var.length() - 3) + "_" + occurrence(instance.var.substring(0, instance.var.length() - 3)) + specid;
                 instance.relation = Glossary.RDF_TYPE;
                 root.setVerb(Glossary.ID + instance.var.replace('-', '.'));
 
@@ -2007,6 +2015,10 @@ public class Parser {
             }
             root.setStatus(OK);
         }
+        
+        if (!root.var.contains(":") && root.var.startsWith("z")) {
+                root.var = "_:" + root.var;
+            }
 
         for (Node n : root.getList()) {
 

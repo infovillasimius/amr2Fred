@@ -110,9 +110,9 @@ public class Handler implements HttpHandler {
             }
             
             if (png) {
-                tmp = amr2fred.goPng(amr);
+                tmp = amr2fred.goPng(amr, "");
             } else {
-            amr = amr2fred.go(amr, writerMode, check, cb, proMode);
+            amr = amr2fred.go(amr, writerMode, check, cb, proMode, "");
             }
         } else {
             amr = "No AMR";

@@ -87,7 +87,7 @@ public class RdfWriter {
      * resource, false if we want literals
      */
     public void setObjectAsResource(boolean objectAsResource) {
-        this.objectAsResource = true; 
+        this.objectAsResource = true;
     }
 
     /**
@@ -130,7 +130,7 @@ public class RdfWriter {
 
                 Resource r = model.createResource(this.getUri(n.var));
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
-                    
+
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
                     if (objectAsResource) {
                         if (n1.var.matches(Glossary.NN_INTEGER2)) {
@@ -185,6 +185,9 @@ public class RdfWriter {
                 //System.out.println(Glossary.PREFIX[n]+" <-> "+ pref);
                 return Glossary.NAMESPACE[n] + name;
             }
+        }
+        if (pref.equalsIgnoreCase("_:")) {
+            return s;
         }
         return FRED_NS + "notFound/" + name;
     }
