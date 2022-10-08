@@ -16,6 +16,7 @@
  */
 package amr2fred;
 
+import static amr2fred.Glossary.NodeStatus.REMOVE;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,9 +26,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static webDemo.Glossary.*;
+import resultsComparator.Converter;
 
 /**
  * Returns graphic representation of translated root
@@ -44,15 +47,27 @@ public class DigraphWriter {
      */
     static public String nodeToDigraph(Node root) {
 
+        /*
+        RdfWriter writer = RdfWriter.getWriter();
+        writer.setMode(Glossary.RdfWriteMode.N_TRIPLES);
+        Node new_root = check_visibility(root);
+        String rdf = writer.writeRdf(new_root);
+        new_root = Converter.toNode(rdf);
+         */
+        Node new_root = root;
+
         String digraph = Glossary.DIGRAPH_INI;
-        digraph += toDigraph(root);
+        digraph += toDigraph(new_root);
         return digraph + Glossary.DIGRAPH_END;
     }
 
     static private String toDigraph(Node root) {
-
+        String shape = "box";
+        if (root.isMalformed()) {
+            shape = "ellipse";
+        }
         String digraph = "";
-        digraph += "\"" + root.var /*getNodeId()*/ + "\" [label=\"" + root.var + "\", shape=box,";
+        digraph += "\"" + root.var /*getNodeId()*/ + "\" [label=\"" + root.var + "\", shape=" + shape + ",";
         if (root.var.startsWith(amr2fred.Glossary.FRED)) {
             digraph += " color=\"0.5 0.3 0.5\" ];\n";
         } else {
@@ -62,7 +77,10 @@ public class DigraphWriter {
         if (!root.list.isEmpty() && root.getTreStatus() == 0) {
             for (Node a : root.list) {
                 if (a.visibility) {
-                    digraph += "\"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.var + "\", shape=box,";
+                    if (a.isMalformed()) {
+                        shape = "ellipse";
+                    }
+                    digraph += "\"" + a.var /*getNodeId()*/ + "\" [label=\"" + a.var + "\", shape="+ shape + ",";
                     if (a.var.startsWith(amr2fred.Glossary.FRED)) {
                         digraph += " color=\"0.5 0.3 0.5\" ];\n";
                     } else {
@@ -139,5 +157,29 @@ public class DigraphWriter {
         }
 
         return output.toString();
+    }
+
+    static private Node check_visibility(Node root) {
+
+        for (Node n : root.getList()) {
+
+            if (!n.visibility) {
+                n.setStatus(REMOVE);
+            }
+        }
+
+        for (Iterator<Node> it = root.list.iterator(); it.hasNext();) {
+            Node n = it.next();
+            if (n.getStatus() == REMOVE) {
+                it.remove();
+            }
+        }
+
+        for (Node n : root.getList()) {
+
+            n = check_visibility(n);
+        }
+
+        return root;
     }
 }

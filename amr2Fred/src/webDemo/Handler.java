@@ -47,6 +47,7 @@ public class Handler implements HttpHandler {
     @Override
     public void handle(HttpExchange he) throws IOException {
         String amr = "";
+        String altFredUri = "";
         File tmp = null;
         boolean cb = false, proMode = false, png = false, svg = false;
         int check = 0, writerMode = 0;
@@ -54,7 +55,22 @@ public class Handler implements HttpHandler {
         String request = URLDecoder.decode(he.getRequestURI().toASCIIString(), ENC);
 
         String par = request;
-        
+
+        // controllo alternate Fred Uri
+        if (par.contains(ALT_FRED_URI)) {
+            int pos = par.indexOf(ALT_FRED_URI);
+            int pos1 = par.indexOf("&", pos + 13);
+            altFredUri = par.substring(pos + 13, pos1);
+            par = par.replace(ALT_FRED_URI + altFredUri, "");
+            System.out.println(altFredUri);
+            System.out.println(pos1);
+            Glossary.FRED_NS = altFredUri;
+            Glossary.NAMESPACE[0] = altFredUri;
+        } else {
+            Glossary.FRED_NS = Glossary.DEFAULT_FRED_NS;
+            Glossary.NAMESPACE[0] = Glossary.DEFAULT_FRED_NS;
+        }
+
         //controllo per promode
         if (par.contains(PROMODE)) {
             par = par.replace(PROMODE, "");
@@ -104,15 +120,15 @@ public class Handler implements HttpHandler {
             int pos = request.indexOf(AMR);
 
             amr = request.substring(pos + 6);
-            
-            if (amr.startsWith("\n")){
+
+            if (amr.startsWith("\n")) {
                 amr = amr.replace("\n", "");
             }
-            
+
             if (png) {
-                tmp = amr2fred.goPng(amr, "");
+                tmp = amr2fred.goPng(amr);
             } else {
-            amr = amr2fred.go(amr, writerMode, check, cb, proMode, "");
+                amr = amr2fred.go(amr, writerMode, check, cb, proMode);
             }
         } else {
             amr = "No AMR";

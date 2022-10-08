@@ -24,18 +24,14 @@ import java.io.File;
  */
 public class Amr2fredWeb {
 
-    /**
-     * Get Predmatrix table singleton instance loaded in memory
-     */
-    PredMatrix pred = PredMatrix.getPredMatrix();
     RdfWriter rdfWriter = RdfWriter.getWriter();
 
-    public String go(String amr, int writerMode, int check, boolean cb, boolean proMode, String specid) {
+    public String go(String amr, int writerMode, int check, boolean cb, boolean proMode) {
         String fred = "";
         if (amr.length() > 3) {
 
             Parser instance = Parser.getInstance();
-            Node result = parse(amr, instance, specid);
+            Node result = parse(amr, instance);
 
             /*
                     se il risultato dell'elaborazione del parser non è nullo avvia la visualizzazione dei risultati
@@ -100,10 +96,10 @@ public class Amr2fredWeb {
         return fred;
     }
 
-    public File goPng(String amr, String specid) {
+    public File goPng(String amr) {
         if (amr.length() > 3) {
             Parser instance = Parser.getInstance();
-            Node result = parse(amr, instance, specid);
+            Node result = parse(amr, instance);
             if(result!=null){
                 return DigraphWriter.toPng(instance.check(result));
             }
@@ -112,7 +108,7 @@ public class Amr2fredWeb {
         return null;
     }
 
-    private Node parse(String amr, Parser instance, String specid) {
+    private Node parse(String amr, Parser instance) {
 
         Node result = null;
 
@@ -124,7 +120,7 @@ public class Amr2fredWeb {
             if (!amr.startsWith("(")) {
                 amr = "(" + amr + ")";
             }
-            result = instance.parse(amr, specid);
+            result = instance.parse(amr);
         }
 
         return result;

@@ -95,9 +95,8 @@ public class CompareHandler implements HttpHandler {
             sentence = "No sentence";
         }
 
-        rdf1 = amr2fred.go(amr, 2, 1, true, true, "");
+        rdf1 = amr2fred.go(amr, 2, 1, true, true);
         rdf2 = FredHandler.getFredString(sentence, webDemo.Glossary.FRED_N_TRIPLES);
-        //System.out.println(rdf2);
         if (!rdf2.contains("FRED is not Reachable!")) {
             Comparator c = new Comparator(rdf2, rdf1, true);
             Headers responseHeaders = he.getResponseHeaders();

@@ -45,7 +45,7 @@ public class Amr2Fred extends Application {
     /**
      * Get Predmatrix table singleton instance loaded in memory
      */
-    PredMatrix pred = PredMatrix.getPredMatrix();
+    // pred = PredMatrix.getPredMatrix();
     RdfWriter rdfWriter = RdfWriter.getWriter();
 
     /**
@@ -141,7 +141,7 @@ public class Amr2Fred extends Application {
                     if (!amr.startsWith("(")) {
                         amr = "(" + amr + ")";
                     }
-                    Node result = instance.parse(amr, "");
+                    Node result = instance.parse(amr);
 
                     //cancella il contenuto rel riquadro a dx in alto
                     removed.setText("");

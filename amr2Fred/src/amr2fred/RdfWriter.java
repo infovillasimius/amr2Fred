@@ -47,7 +47,6 @@ public class RdfWriter {
     private String mode = Glossary.RDF_MODE[Glossary.RdfWriteMode.TURTLE.ordinal()];
 
     //Controllo per inserimento elemento object come stringa o come resource
-    private boolean objectAsResource = true;
 
     private RdfWriter() {
 
@@ -80,17 +79,6 @@ public class RdfWriter {
     }
 
     /**
-     * Set the parameter for input objects in statemente as resource or as
-     * literal
-     *
-     * @param objectAsResource - True if we want statement object input as
-     * resource, false if we want literals
-     */
-    public void setObjectAsResource(boolean objectAsResource) {
-        this.objectAsResource = true;
-    }
-
-    /**
      * Traslate nodes from internal format to the chosen one
      *
      * @param root Node in internel language
@@ -109,7 +97,7 @@ public class RdfWriter {
     con una visita per livello. 
      */
     private void toRdf(Node root) {
-        objectAsResource = true;
+
         try {
             this.list.put(root);
         } catch (InterruptedException ex) {
@@ -132,29 +120,18 @@ public class RdfWriter {
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
 
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
-                    if (objectAsResource) {
-                        if (n1.var.matches(Glossary.NN_INTEGER2)) {
-                            Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
-                            model.add(model.createStatement(r, p, o));
-                        } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
-                            Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
-                            model.add(model.createStatement(r, p, o));
-                        } else if (n1.relation.equalsIgnoreCase(Glossary.RDFS_LABEL)) {
-                            Literal o = model.createTypedLiteral(n1.var, Glossary.STRING_SCHEMA_NS);
-                            model.add(model.createStatement(r, p, o));
-                        } else {
-                            Resource o = model.createResource(getUri(n1.var));
-                            model.add(model.createStatement(r, p, o));
-                        }
-                    } else if (n1.var.matches(Glossary.NN_INTEGER2)) {
 
+                    if (n1.var.matches(Glossary.NN_INTEGER2)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
                         model.add(model.createStatement(r, p, o));
                     } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
                         model.add(model.createStatement(r, p, o));
+                    } else if (n1.relation.equalsIgnoreCase(Glossary.RDFS_LABEL) || n1.var.matches(Glossary.NN_RATIONAL)) {
+                        Literal o = model.createTypedLiteral(n1.var, Glossary.STRING_SCHEMA_NS);
+                        model.add(model.createStatement(r, p, o));
                     } else {
-                        String o = getUri(n1.var);
+                        Resource o = model.createResource(getUri(n1.var));
                         model.add(model.createStatement(r, p, o));
                     }
                 }
@@ -180,9 +157,7 @@ public class RdfWriter {
             name = s.substring(dp + 1);
         }
         for (int n = 0; n < PREFIX_NUM; n++) {
-            //System.out.println(Glossary.PREFIX[n]+" - "+ pref);
             if (pref.equalsIgnoreCase(Glossary.PREFIX[n])) {
-                //System.out.println(Glossary.PREFIX[n]+" <-> "+ pref);
                 return Glossary.NAMESPACE[n] + name;
             }
         }

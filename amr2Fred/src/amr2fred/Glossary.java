@@ -58,7 +58,8 @@ public class Glossary {
     /**
      * Name space for fred
      */
-    public static final String FRED_NS = "http://www.ontologydesignpatterns.org/ont/fred/domain.owl#";
+    public static String FRED_NS = "http://www.ontologydesignpatterns.org/ont/fred/domain.owl#";
+    public static final String DEFAULT_FRED_NS = "http://www.ontologydesignpatterns.org/ont/fred/domain.owl#";
 
     public static final String FRED_TOPIC = "fred:Topic";
     public static final String FRED_ABOUT = "fred:about";
@@ -212,9 +213,10 @@ public class Glossary {
     public static final String VN_DATA = "vn.data:";
     public static final String VN_DATA_NS = "http://www.ontologydesignpatterns.org/ont/vn/data/";
 
-    public static final String NN_INTEGER_NS = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
+    public static final String NN_INTEGER_NS = "http://www.w3.org/2001/XMLSchema#decimal";
     public static final String NN_INTEGER = "^[0-9]+$";
     public static final String NN_INTEGER2 = "^[0-9]+[.]*[0-9]*$";
+    public static final String NN_RATIONAL = "^[1-9][0-9]*/[1-9][0-9]*$";
 
     public static final String DATE_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#date";
     public static final String DATE_SCHEMA = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";
@@ -246,6 +248,8 @@ public class Glossary {
     public static final String AMR_OP = ":op[0-9]+";
     public static final String ALL = ".+";
     public static final String AMR_SENTENCE = ":snt[0-9]$";
+    public static final String AMR_VAR = "^[a-zA-Z][a-zA-Z]*[0-9][0-9]*$";
+    
 
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
@@ -433,7 +437,7 @@ public class Glossary {
     
     public static final String AMR_WIKIDATA = ":wikidata";
     public static final String WIKIDATA = "wikidata:";
-    public static final String WIKIDATA_NS = "https://www.wikidata.org/wiki/";
+    public static final String WIKIDATA_NS = "http://www.wikidata.org/entity/";
 
     /**
      * Array of Fred elements local names
@@ -446,7 +450,7 @@ public class Glossary {
     /**
      * Array of fred elements name space
      */
-    public static final String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
+    public static String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
         FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
@@ -700,10 +704,10 @@ public class Glossary {
             return l;
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Glossary.class.getName()).log(Level.SEVERE, null, ex);
             
         } catch (IOException ex) {
-            Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Glossary.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

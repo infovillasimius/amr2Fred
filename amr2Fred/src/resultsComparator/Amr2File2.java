@@ -34,7 +34,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import webDemo.Glossary;
 
 /**
  * Class Amr2File Static class containing algorithms for converting amrs in a
@@ -46,7 +45,6 @@ public class Amr2File2 {
 
     public static ArrayList<String> amr = new ArrayList<>();
     public static ArrayList<String> sentence = new ArrayList<>();
-    public static ArrayList<String> specid = new ArrayList<>();
     public static ArrayList<String> rdf1 = new ArrayList<>();
     public static ArrayList<String> rdf2 = new ArrayList<>();
     public static int counter = 0;
@@ -58,7 +56,6 @@ public class Amr2File2 {
     private static Path folder;
     private static boolean imgs = false;
     private static int mode = 0;
-    
 
     public static void main(String[] args) {
         mode = 0;
@@ -92,19 +89,18 @@ public class Amr2File2 {
             int _counter = 0;
             for (String _amr : Amr2File2.amr) {
                 String amrS;
-                String _specid = specid.get(_counter);
                 try {
-                    amrS = amr2fred.go(_amr, 2, 1, false, true, _specid);
+                    amrS = amr2fred.go(_amr, 2, 1, false, true);
                     if (imgs) {
-                        
-                        File img = amr2fred.goPng(_amr, _specid);
+
+                        File img = amr2fred.goPng(_amr);
                         File imgdir = new File(folder + "/amr2fred_test");
                         if (!imgdir.isFile()) {
                             imgdir.mkdir();
                         }
                         Files.copy(img.toPath(), new File(folder + "/amr2fred_test" + "/img" + counter + ".png").toPath(), StandardCopyOption.REPLACE_EXISTING);
                     }
-                    //System.out.println(amrS);
+
                 } catch (Exception e) {
                     System.out.println("Error in Sentence " + counter + " out of " + amr.size());
                     System.out.println(_amr);
@@ -161,7 +157,6 @@ public class Amr2File2 {
 
                     Amr2File2.amr.add(amrS);
                     Amr2File2.sentence.add(sentenceS);
-                    Amr2File2.specid.add(get_specid(l));
                     l = new ArrayList<>();
                 }
 
@@ -195,18 +190,6 @@ public class Amr2File2 {
                 int i2 = s.indexOf("</sentence>");
                 temp = s.substring(i + 1, i2);
                 return temp;
-            }
-        }
-        return null;
-    }
-    
-        private static String get_specid(ArrayList<String> l) {
-        String t;
-        for (String s : l) {
-            if (s.contains("<sentence") && s.contains(" specid=\"")) {
-                t = s.substring(s.indexOf(" specid=\"")+9);
-                t = t.substring(0, t.indexOf("\""));
-                return t;
             }
         }
         return null;

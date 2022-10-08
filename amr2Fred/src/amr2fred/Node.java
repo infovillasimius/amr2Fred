@@ -72,6 +72,8 @@ public class Node {
 
     //memorizza la var originale nel caso sia un verbo, per l'uso con la predmatrix
     private String verb;
+    
+    private boolean malformed = false;
 
     public Node(String var, String relation) {
         this.var = var;
@@ -511,6 +513,13 @@ public class Node {
         }
         return snt;
     }
-    
+
+    public boolean isMalformed() {
+        return malformed;
+    }
+
+    public void setMalformed(boolean malformed) {
+        this.malformed = malformed;
+    }
     
 }

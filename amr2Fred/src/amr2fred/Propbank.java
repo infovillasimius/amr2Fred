@@ -97,10 +97,10 @@ public class Propbank {
             return l;
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Propbank.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
-            Logger.getLogger(PredMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Propbank.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

@@ -28,13 +28,6 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.commons.io.FileUtils;
-import static resultsComparator.Amr2File2.amr;
-import static resultsComparator.Amr2File2.amr2fred;
-import static resultsComparator.Amr2File2.counter;
-import static resultsComparator.Amr2File2.o;
-import static resultsComparator.Amr2File2.rdf1;
-import static resultsComparator.Amr2File2.rdf2;
-import static resultsComparator.Amr2File2.sentence;
 import static webDemo.Glossary.*;
 
 /**
@@ -45,7 +38,7 @@ import static webDemo.Glossary.*;
  */
 public class Amr2FredWebDemo {
 
-    private static Amr2fredWeb amr2fred = new Amr2fredWeb();
+    private static final Amr2fredWeb amr2fred = new Amr2fredWeb();
 
     /**
      * @param args the command line arguments

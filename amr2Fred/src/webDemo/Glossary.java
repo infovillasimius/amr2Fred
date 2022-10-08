@@ -80,6 +80,7 @@ public class Glossary {
      * AMR2FRED parameters
      */
     public static final String AMR = "&?amr=";
+    public static final String ALT_FRED_URI = "&?altFredUri=";
     public static final String MODE = "&?format=";
     public static final String PROMODE = "&?proMode=ON";
     public static final String RDF_XML = "RDF_XML";
@@ -93,7 +94,6 @@ public class Glossary {
     public static final String ENC = "UTF-8";
     public static final String SENTENCE = "&?sentence=";
     public static final String COMMONS = "&?commons=";
-    public static final String ALT_LABEL = "&?alt_label";
 
     public static final String TMP_FILE_NAME = "amr2fred";
     public static final String TMP_FILE_EXT = "tmp";

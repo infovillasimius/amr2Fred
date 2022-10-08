@@ -17,6 +17,13 @@ $(document).ready(function () {
                 urlo += "&?rid_err=ON";
             }
             
+            if ($('#altFredUri')[0].checked === true) {
+                var altUri = $('#fredUri').val();
+                urlo += "&?altFredUri=" +encodeURIComponent(altUri);
+            }
+            
+            
+            
             var amr = $('#amr').val();
             
             while(amr.indexOf("  ")!==-1){
@@ -75,8 +82,7 @@ $(document).ready(function () {
                     "<tbody><tr><td>&?amr=(x)</td><td>(x) is the AMR encoded with UTF-8</td></tr>" +
                     "<tr><td>&?format=(f)</td><td>(f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )</td></tr>" +
                     "<tr><td>&?rid_err=ON</td><td>if present it tells amr2fred to remove nodes with translation errors</td></tr>" +
-                    "<tr><td>&?objAsRes</td><td >if present it tells amr2fred to insert third parts of rdf statements as resources instead of as strings</td></tr>"+
-                    "<tr><td>&?alt_label</td><td >if present, tell amr2fred to use alternate AMR labels for core roles</td></tr>"+
+                    "<tr><td>&?altFredUri=(u)</td><td >if present it tells amr2fred to use the alternate namespace u instead of Fred default</td></tr>"+
                     "</tbody>");
             fred = false;
             $(".text2").hide();
