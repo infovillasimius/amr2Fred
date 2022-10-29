@@ -563,7 +563,7 @@ public class Parser {
 
             } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
                 //casi speciali con pronomi personali e aggettivi dimostrativi
-                n.var = Glossary.FRED_PERSON;
+                n.var = Glossary.DUL_PERSON;
                 this.setEquals(root);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
@@ -1027,11 +1027,8 @@ public class Parser {
         }
         String lemma = root.getVerb();
         if (root.getType() == VERB) {
-            //PredMatrix pred = PredMatrix.getPredMatrix();
-            //Pb2vn pb = Pb2vn.getPb2vn();
-            //AmrCoreRoles acr = AmrCoreRoles.getAmrCoreRoles();
-            Propbank pb = Propbank.getPropbank();
 
+            Propbank pb = Propbank.getPropbank();
             String lemma2 = lemma.substring(3).replace(".", "-");
             ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_DATA + lemma2, Glossary.PropbankFrameFields.PB_Frame);
             if (!roles.isEmpty()) {
@@ -1229,8 +1226,10 @@ public class Parser {
             Node instanceInList = n.getInstance();
             if (instanceInList != null) {
                 n.var = nVar;
+                String name=disamb(instance.var);
+                
                 instanceInList.relation = Glossary.RDF_TYPE;
-                instanceInList.var = FRED + firstUpper(instance.var);
+                instanceInList.var = name + firstUpper(instance.var);
                 if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instanceInList.setStatus(OK);
                 }
@@ -1240,6 +1239,20 @@ public class Parser {
             }
         }
         return root;
+    }
+    
+    /**
+     * Disambigua per ora solo DUL
+     * @param var
+     * @return 
+     */
+    private String disamb(String var){
+        for (String DULS_CHECK : Glossary.DULS_CHECK) {
+            if (DULS_CHECK.equalsIgnoreCase(var)){
+                return Glossary.DUL;
+            }
+        }
+        return FRED;
     }
 
     /*
@@ -1748,6 +1761,7 @@ public class Parser {
                     month.var = "0" + month.var;
                 }
                 newVar += month.var + "-";
+                
             } else {
                 newVar += "01-";
             }
@@ -1787,6 +1801,7 @@ public class Parser {
                 root.var = newVar;
                 //root.list.clear();
                 root.setStatus(OK);
+                //System.out.println(root);
             }
         }
 
@@ -2029,8 +2044,9 @@ public class Parser {
         for (Node n : root.getList()) {
 
             if (!n.var.contains(":") && this.vars.contains(n.var)) {
-                n.setStatus(REMOVE);
-                n.var = "_:" + n.var;
+                //n.setStatus(REMOVE);
+                n.var = FRED + "malformed_amr/" + n.var;
+                n.setMalformed(true);
             }
         }
 

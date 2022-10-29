@@ -82,6 +82,17 @@ public class Glossary {
     public static final String DUL_HAS_PRECONDITION = DUL + "hasPrecondition";
     public static final String DUL_HAS_AMOUNT = DUL + "hasAmount";
 
+    public static final String DUL_AGENT = DUL + "Agent";
+    public static final String DUL_CONCEPT = DUL + "Concept";
+    public static final String DUL_INFORMATION_ENTITY = DUL + "InformationEntity";
+    public static final String DUL_ORGANISM = DUL + "Organism";
+    public static final String DUL_ORGANIZATION = DUL + "Organization";
+    public static final String DUL_PERSON = DUL + "Person";
+    public static final String DUL_SUBSTANCE = DUL + "Substance";
+
+    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_PERSON, DUL_SUBSTANCE};
+    public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "person", "substance"};
+
     /**
      * Local name for boxer
      */
@@ -249,7 +260,6 @@ public class Glossary {
     public static final String ALL = ".+";
     public static final String AMR_SENTENCE = ":snt[0-9]$";
     public static final String AMR_VAR = "^[a-zA-Z][a-zA-Z]*[0-9][0-9]*$";
-    
 
     //Stringhe pattern AMR tradotti   
     public static final String AMR_POLARITY = ":polarity";
@@ -434,7 +444,7 @@ public class Glossary {
     public static final String FN_FRAME = "fnframe:";
 
     public static final String FS_SCHEMA_SUBSUMED_UNDER = FS_SCHEMA + "subsumedUnder";
-    
+
     public static final String AMR_WIKIDATA = ":wikidata";
     public static final String WIKIDATA = "wikidata:";
     public static final String WIKIDATA_NS = "http://www.wikidata.org/entity/";
@@ -494,8 +504,8 @@ public class Glossary {
 
     public static final String QUOTE = "\"";
 
-    public static final ArrayList<String> ADJECTIVE= readAdjectives();
-        
+    public static final ArrayList<String> ADJECTIVE = readAdjectives();
+
     public static final String MANNER_ADVERBS[] = {"accidentally", "angrily", "anxiously",
         "awkwardly", "badly", "beautifully", "blindly", "boldly", "bravely", "brightly",
         "busily", "calmly", "carefully", "carelessly", "cautiously", "cheerfully",
@@ -684,20 +694,21 @@ public class Glossary {
 
     private Glossary() {
     }
-    
+
     /**
      * read adjective file
-     * @return  ArrayList
+     *
+     * @return ArrayList
      */
     private static ArrayList<String> readAdjectives() {
         try {
             ArrayList<String> l = new ArrayList<>();
-            String FILE4="allmostlyadjectives.tsv";
+            String FILE4 = "allmostlyadjectives.tsv";
             BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(Glossary.class.getResourceAsStream(FILE4)));
 
             String line = reader.readLine();
             while (line != null) {
-                
+
                 l.add(line);
                 line = reader.readLine();
             }
@@ -705,7 +716,7 @@ public class Glossary {
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Glossary.class.getName()).log(Level.SEVERE, null, ex);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Glossary.class.getName()).log(Level.SEVERE, null, ex);
         }
