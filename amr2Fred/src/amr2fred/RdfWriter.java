@@ -157,6 +157,7 @@ public class RdfWriter {
             name = s.substring(dp + 1);
         }
         for (int n = 0; n < PREFIX_NUM; n++) {
+            //System.out.println(pref + " - " + Glossary.PREFIX[n]);
             if (pref.equalsIgnoreCase(Glossary.PREFIX[n])) {
                 return Glossary.NAMESPACE[n] + name;
             }

@@ -1226,8 +1226,8 @@ public class Parser {
             Node instanceInList = n.getInstance();
             if (instanceInList != null) {
                 n.var = nVar;
-                String name=disamb(instance.var);
-                
+                String name = disamb(instance.var);
+
                 instanceInList.relation = Glossary.RDF_TYPE;
                 instanceInList.var = name + firstUpper(instance.var);
                 if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
@@ -1240,19 +1240,20 @@ public class Parser {
         }
         return root;
     }
-    
+
     /**
      * Disambigua per ora solo DUL
+     *
      * @param var
-     * @return 
+     * @return
      */
-    private String disamb(String var){
-        for (String DULS_CHECK : Glossary.DULS_CHECK) {
-            if (DULS_CHECK.equalsIgnoreCase(var)){
-                return Glossary.DUL;
+    private String disamb(String var) {
+        for (int i = 0; i < Glossary.DULS_CHECK.length; i++) {
+            if (Glossary.DULS_CHECK[i].equalsIgnoreCase(var)) {
+                return Glossary.DULS[i];
             }
         }
-        return FRED;
+        return FRED+firstUpper(var);
     }
 
     /*
@@ -1761,7 +1762,7 @@ public class Parser {
                     month.var = "0" + month.var;
                 }
                 newVar += month.var + "-";
-                
+
             } else {
                 newVar += "01-";
             }
@@ -1961,6 +1962,11 @@ public class Parser {
     }
 
     private Node residual(Node root) {
+        if (root.var.contains("fred:")) {
+            String temp = root.var.replace("fred:", "");
+            temp = this.disamb(temp);
+            root.var = temp;
+        }
 
         if (root.var.contains("fred:Fred:")) {
             root.var = root.var.replace("fred:Fred:", "");
@@ -2057,7 +2063,7 @@ public class Parser {
                 it.remove();
             }
         }
-        
+
         if (!root.var.contains(":") && root.var.matches(Glossary.AMR_VAR)) {
             //System.out.println(root.var);
             root.var = FRED + "Undefined";

@@ -70,9 +70,15 @@ public class Glossary {
     public static final String DUL = "dul:";
 
     /**
-     * Name space for dul
+     * Local name for d0:
+     */
+    public static final String D0 = "d0:";
+
+    /**
+     * Name space for dul and d0
      */
     public static final String DUL_NS = "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#";
+    public static final String D0_NS = "http://www.ontologydesignpatterns.org/ont/d0.owl#";
 
     public static final String DUL_EVENT = DUL + "Event";
     public static final String DUL_HAS_QUALITY = DUL + "hasQuality";
@@ -90,8 +96,11 @@ public class Glossary {
     public static final String DUL_PERSON = DUL + "Person";
     public static final String DUL_SUBSTANCE = DUL + "Substance";
 
-    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_PERSON, DUL_SUBSTANCE};
-    public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "person", "substance"};
+    public static final String D0_LOCATION = D0 + "Location";
+    public static final String D0_TOPIC = D0 + "Topic";
+
+    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_PERSON, DUL_SUBSTANCE, D0_TOPIC, D0_LOCATION};
+    public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "person", "substance", "topic", "location"};
 
     /**
      * Local name for boxer
@@ -455,7 +464,7 @@ public class Glossary {
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
         WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
-        WIKIDATA};
+        WIKIDATA, D0};
 
     /**
      * Array of fred elements name space
@@ -464,12 +473,12 @@ public class Glossary {
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
         FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
-        WIKIDATA_NS};
+        WIKIDATA_NS, D0_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 23;
+    public static final int PREFIX_NUM = 24;
 
     /**
      * Jena's writers output modes
