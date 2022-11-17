@@ -563,7 +563,7 @@ public class Parser {
 
             } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
                 //casi speciali con pronomi personali e aggettivi dimostrativi
-                n.var = Glossary.DUL_PERSON;
+                n.var = "person";
                 this.setEquals(root);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
@@ -1226,10 +1226,8 @@ public class Parser {
             Node instanceInList = n.getInstance();
             if (instanceInList != null) {
                 n.var = nVar;
-                String name = disamb(instance.var);
-
                 instanceInList.relation = Glossary.RDF_TYPE;
-                instanceInList.var = name + firstUpper(instance.var);
+                instanceInList.var = FRED + firstUpper(instance.var);
                 if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instanceInList.setStatus(OK);
                 }
@@ -1253,7 +1251,7 @@ public class Parser {
                 return Glossary.DULS[i];
             }
         }
-        return FRED+firstUpper(var);
+        return FRED+var;
     }
 
     /*
@@ -1962,6 +1960,7 @@ public class Parser {
     }
 
     private Node residual(Node root) {
+        
         if (root.var.contains("fred:")) {
             String temp = root.var.replace("fred:", "");
             temp = this.disamb(temp);

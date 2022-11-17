@@ -94,12 +94,13 @@ public class Glossary {
     public static final String DUL_ORGANISM = DUL + "Organism";
     public static final String DUL_ORGANIZATION = DUL + "Organization";
     public static final String DUL_PERSON = DUL + "Person";
+    public static final String DUL_NATURAL_PERSON = DUL + "NaturalPerson";
     public static final String DUL_SUBSTANCE = DUL + "Substance";
 
     public static final String D0_LOCATION = D0 + "Location";
     public static final String D0_TOPIC = D0 + "Topic";
 
-    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_PERSON, DUL_SUBSTANCE, D0_TOPIC, D0_LOCATION};
+    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_NATURAL_PERSON, DUL_SUBSTANCE, D0_TOPIC, D0_LOCATION};
     public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "person", "substance", "topic", "location"};
 
     /**
