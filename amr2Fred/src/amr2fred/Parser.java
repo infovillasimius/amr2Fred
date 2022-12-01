@@ -612,15 +612,16 @@ public class Parser {
 
                 //caso :wiki + schemaorg su nodo wiki
                 //TODO da implementare verifica sul sito dell'esistenza della parola
-                n.add(new Node(Glossary.SCHEMA_ORG + firstUpper(root.getInstance().var), Glossary.RDF_TYPE, OK));
+                //n.add(new Node(Glossary.SCHEMA_ORG + firstUpper(root.getInstance().var), Glossary.RDF_TYPE, OK));
 
             } else if (n.getInstance() != null && n.getChild(Glossary.AMR_WIKI) != null) {
                 //caso :wiki + schemaorg su nodo root
                 //TODO da implementare verifica sul sito dell'esistenza della parola
+                /*
                 if (n.getChild(Glossary.AMR_WIKI).getChild(Glossary.RDF_TYPE) == null) {
                     n.getChild(Glossary.AMR_WIKI).list
                             .add(new Node(Glossary.SCHEMA_ORG + firstUpper(n.getInstance().var), Glossary.RDF_TYPE, OK));
-                }
+                }*/
             }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_WIKI)) {
