@@ -512,6 +512,11 @@ public class Glossary {
 
     public static final int PATTERNS_NUMBER = 27;
 
+    public static final String DISJUNCT = "disjunct";
+
+    public static final String SPECIAL_INSTANCES[] = {DISJUNCT};
+    public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING};
+
     public static final String QUOTE = "\"";
 
     public static final ArrayList<String> ADJECTIVE = readAdjectives();

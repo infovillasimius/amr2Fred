@@ -534,7 +534,7 @@ public class Parser {
             // caso "or" seguito da :op in lista
             if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.OR)) {
 
-                n.getInstance().var = "disjunct";
+                n.getInstance().var = Glossary.DISJUNCT;
                 //n.list.remove(n.getInstance());
 
                 ArrayList<Node> ops = n.getOps();
@@ -821,7 +821,7 @@ public class Parser {
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
-                    && !isVerb(n.getInstance().var)) {
+                    && !isVerb(n.getInstance().var) && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)) {
                 //caso :mod
                 boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
 
@@ -1228,7 +1228,12 @@ public class Parser {
             if (instanceInList != null) {
                 n.var = nVar;
                 instanceInList.relation = Glossary.RDF_TYPE;
-                instanceInList.var = FRED + firstUpper(instance.var);
+                if(instance.var.equalsIgnoreCase(Glossary.DISJUNCT)){
+                    instanceInList.var = Glossary.BOXING + firstUpper(instance.var);
+                }
+                else{
+                    instanceInList.var = FRED + firstUpper(instance.var);
+                }
                 if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instanceInList.setStatus(OK);
                 }
@@ -1402,7 +1407,7 @@ public class Parser {
         // caso "or" seguito da :opx
         if (root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.OR)) {
 
-            root.getInstance().var = "disjunct";
+            root.getInstance().var = Glossary.DISJUNCT;
             //n.list.remove(n.getInstance());
 
             ArrayList<Node> ops = root.getOps();

@@ -95,7 +95,7 @@ public class Amr2File2 {
 
                         File img = amr2fred.goPng(_amr);
                         File imgdir = new File(folder + "/amr2fred_test");
-                        if (!imgdir.isFile()) {
+                        if (!imgdir.isDirectory()) {
                             imgdir.mkdir();
                         }
                         Files.copy(img.toPath(), new File(folder + "/amr2fred_test" + "/img" + counter + ".png").toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -116,7 +116,7 @@ public class Amr2File2 {
             }
             doNewConvert(o, data);
         }
-        if (o.isFile()) {
+        if (o.isFile() && imgs) {
             try {
                 Files.copy(o.toPath(), new File(folder + "/amr2fred_test/amr2fred_test.html").toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
