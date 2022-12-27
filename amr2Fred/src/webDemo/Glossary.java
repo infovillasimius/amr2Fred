@@ -110,5 +110,11 @@ public class Glossary {
 
     public static final String[] MIME = {"css", "gif", "html", "ico", "js", "png", "txt"};
     public static final String[] MIME_TYPE = {CSS, GIF, HTML, ICO, JS, PNG, TXT};
-
+    
+    public static final String JSON_AMR = "amr";
+    public static final String JSON_RID = "rid";
+    public static final String JSON_ALT = "alt";
+    public static final String JSON_FORMAT = "format";
+    
+    public static final String[] MODES = {RDF_XML, RDF_XML_ABBREV, N_TRIPLES, TURTLE, GRAPHIC, IMG};
 }

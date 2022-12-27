@@ -37,8 +37,6 @@ public class Amr2fredWeb {
                     se il risultato dell'elaborazione del parser non è nullo avvia la visualizzazione dei risultati
                     a seconda dello stato delle flag cb e cb1, in particolare se cb è true manderà il risultato dell'elaborazione
                     del parser al controllo e rimozione degli errori.
-                    Se è selezionata anche cb1 il writer inserirà gli elementi object (terzo elemento delle triple) come resource
-                    e non come literal
                     Se cb è false per l'output verrà usato il metodo toString() implementato su Node, che prevede 
                     un output testuale non standard realizzato ad hoc per evidenziare la struttura dell'albero reso dall'eleborazione
              */

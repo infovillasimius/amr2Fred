@@ -165,7 +165,7 @@ public class RdfWriter {
         if (pref.equalsIgnoreCase("_:")) {
             return s;
         }
-        return FRED_NS + "notFound/" + name;
+        return FRED_NS + s;
     }
 
     /*
@@ -188,7 +188,7 @@ public class RdfWriter {
                 return Glossary.NAMESPACE[n];
             }
         }
-        return "http://notFound/";
+        return s;
     }
 
     /*Restituisce il local name a partire dal nome usato nel formato interno

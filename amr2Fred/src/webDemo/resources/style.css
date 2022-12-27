@@ -136,7 +136,7 @@ body {
     max-width: 650px;
 }
 
-#amr {
+#amr, #post {
     background-color: ivory; 
     font-family: "calibri", sans-serif;
     font-size: 13px;
@@ -450,4 +450,10 @@ table{
     background-color: white;
     height: 100px;
     width: 100%;
+}
+
+#submit{
+    clear: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

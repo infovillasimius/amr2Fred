@@ -255,3 +255,4 @@ var HttpClient = function () {
         anHttpRequest.send(null);
     };
 };
+

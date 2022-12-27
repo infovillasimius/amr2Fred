@@ -16,160 +16,181 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html>
-    <head>
-        <link rel="stylesheet" href="style.css" type="text/css"/>
-        <title>amr2fred</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="jquery.js"></script>
-        <script type="text/javascript" src="jquery-ui.min.js"></script>
-        <script type="text/javascript" src="help.js"></script>
 
-    </head>
-    <body>
-        <div class="page">
-            <div class="contenuti">
-                <div class="header">
+<head>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <title>amr2fred</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="jquery-ui.min.js"></script>
+    <script type="text/javascript" src="help.js"></script>
 
-                    <h1>AMR2FRED REST Service</h1>
+</head>
 
-                    <h3>A paper describing AMR2FRED has been accepted for publication to the 
-                        <a href="http://2017.eswc-conferences.org/" target="_blank">ESWC Conference</a> 
-                        where it won the best demo award. A standalone application can be extracted from 
-                        <a href="https://github.com/infovillasimius/amr2Fred" target="_blank">here</a>.</h3>
-                    <p>
-                        Select output type option to get proper help.
-                    </p>
+<body>
+    <div class="page">
+        <div class="contenuti">
+            <div class="header">
+
+                <h1>AMR2FRED REST Service</h1>
+
+                <h3>A paper describing AMR2FRED has been accepted for publication to the
+                    <a href="http://2017.eswc-conferences.org/" target="_blank">ESWC Conference</a>
+                    where it won the best demo award. A standalone application can be extracted from
+                    <a href="https://github.com/infovillasimius/amr2Fred" target="_blank">here</a>.
+                </h3>
+                <p>
+                    Select output type option to get proper help.
+                </p>
+            </div>
+
+            <div class="help">
+
+                <h3 id="base">Base URI:</h3>
+
+
+                <table id="parameters">
+                    <thead>
+                        <tr>
+                            <th>
+                                Parameter
+                            </th>
+                            <th>
+                                Explanation
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                &?amr=(x)
+                            </td>
+                            <td>
+                                (x) is the AMR encoded with UTF-8
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                &?format=(f)
+                            </td>
+                            <td>
+                                (f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES |
+                                TURTLE | DIGRAPH | png )
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                &?rid_err=ON
+                            </td>
+                            <td>
+                                if present it tells amr2fred to remove nodes with translation errors
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&?altFredUri=(u)
+                            </td>
+                            <td>
+                                if present it tells amr2fred to use the alternate namespace u instead of Fred default.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="URI_constructor">
+
+                    <h3>URI constructor:</h3>
+
+                    <fieldset class="options-help">
+                        <legend>Options</legend>
+
+                        Output type:
+                        <select id="outMode" name="outMode">
+                            <option value="0">Graphic (PNG)</option>
+                            <option value="5">Graphic (SVG)</option>
+                            <option value="1">RDF_XML</option>
+                            <option value="2">RDF_XML_ABBREV</option>
+                            <option value="3">N_TRIPLES</option>
+                            <option value="4">TURTLE</option>
+                            <option value="6">Results Compare</option>
+                            <option value="7">Common triples (PNG)</option>
+                            <option value="8">Common triples (SVG)</option>
+                        </select>
+                        <p id="prid" class="tooltip" title="Remove errors in the data structure ang get linked data!">
+                            Get rid of errors... <input type="checkbox" name="errors" id="rid"></p>
+
+                        <p id="altUri" class="tooltip" title="Use alternate Fred URI!">
+                            Alternate Fred URI... <input type="checkbox" name="altUri" id="altFredUri">
+                            <input type="text" name="altFredUri" id="fredUri">
+                        </p>
+
+                    </fieldset>
+                    <fieldset class="amr2">
+                        <legend>Input AMR: </legend>
+                        <textarea id="amr" name="amr" cols="100"
+                            title="Input an AMR in its textual form">(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))</textarea>
+                    </fieldset>
+
+
+                    <fieldset class="text2">
+                        <legend>Input TEXT:</legend>
+                        <textarea id="text" name="text" cols="100"
+                            title="Input the text you want to send to FRED">Four boys making pies</textarea>
+                    </fieldset>
+
+
+
                 </div>
+                <div class="getIt">
+                    <p id="description"></p>
+                </div>
+                <!--
+                <div class="getIt">
+                    <button id="getIt">Get it</button>
+                </div> -->
 
-                <div class="help">
+                <h3>Complete URI:</h3>
+                <p id="path"></p>
+                <br>
 
-                    <h3 id="base">Base URI:</h3>
-
-
-                    <table id="parameters">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Parameter 
-                                </th>
-                                <th >
-                                    Explanation
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    &?amr=(x)
-                                </td>
-                                <td>
-                                    (x) is the AMR encoded with UTF-8
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    &?format=(f)
-                                </td>
-                                <td>
-                                    (f)select the output format - it is one from ( RDF_XML | RDF_XML_ABBREV | N_TRIPLES | TURTLE | DIGRAPH | png )
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    &?rid_err=ON
-                                </td>
-                                <td>
-                                    if present it tells amr2fred to remove nodes with translation errors
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>&?altFredUri=(u)
-                                </td>
-                                <td >
-                                    if present it tells amr2fred to use the alternate namespace u instead of Fred default.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="URI_constructor">
-
-                        <h3>URI constructor:</h3>
-                        
-                        <fieldset class="options-help">
-                            <legend>Options</legend>
-
-                            Output type:  
-                            <select id="outMode" name="outMode">
-                                <option value="0">Graphic (PNG)</option>
-                                <option value="5">Graphic (SVG)</option>
-                                <option value="1">RDF_XML</option>
-                                <option value="2">RDF_XML_ABBREV</option>
-                                <option value="3">N_TRIPLES</option>
-                                <option value="4">TURTLE</option>
-                                <option value="6">Results Compare</option>
-                                <option value="7">Common triples (PNG)</option>
-                                <option value="8">Common triples (SVG)</option>
-                            </select>
-                            <p id="prid" class="tooltip" title="Remove errors in the data structure ang get linked data!">
-                                Get rid of errors... <input type="checkbox" name="errors" id="rid" ></p>
-                            
-                            <p id="altUri" class="tooltip" title="Use alternate Fred URI!">
-                                Alternate Fred URI... <input type="checkbox" name="altUri" id="altFredUri">
-                                <input type="text" name="altFredUri" id="fredUri" >
-                            </p>
-                            
-                        </fieldset>
+                <div id="post_div">
+                    <form action="/amr2fred" method="post" target="_blank">
                         <fieldset class="amr2">
-                            <legend>Input AMR: </legend>
-                            <textarea id="amr" name="amr" cols="100" title="Input an AMR in its textual form">(b / boy :quant 4 :ARG0-of (m / make-01 :ARG1 (p / pie)))</textarea>                     
+                            <legend id="post_legend">JSON to send to amr2fred with a Post request:</legend>
+                            <textarea id="post" name="post" cols="100"
+                                title="JSON to send to amr2fred"></textarea>
                         </fieldset>
-
-
-                        <fieldset class="text2">
-                            <legend>Input TEXT:</legend> 
-                            <textarea id="text" name="text" cols="100" title="Input the text you want to send to FRED">Four boys making pies</textarea>
-                        </fieldset>
-
-
-
-                    </div>
-                     <div class="getIt">
-                         <p id="description"></p>
-                    </div>
-                    <div class="getIt">
-                        <button id="getIt">Get it</button>
-                    </div>
-
-                    <h3>Complete URI:</h3>
-                    <p id="path"></p>
+                        <button id="submit" type="submit">Submit</button>
+                    </form>
                 </div>
 
-                <div class="spacer">
-                    <p>Credits</p>
-                </div>
+            </div>
 
-                <div class="footer">
-                    <div class="logo">
-                        <br>
-                        <a href="http://www.cnr.it/" target="_blank">
-                            <img class="loghi" src="cnr-logo.png" alt="">
-                        </a>
-                    </div>
-                    <div class="logo1">
-                        <a href="http://stlab.istc.cnr.it/" target="_blank">
-                            <img class="loghi" src="logoSTLABISTCCNR.gif" alt="">
-                        </a>
-                    </div>
-                    <div class="logo">
-                        <a href="http://www.unica.it" target="_blank">
-                            <img class="loghi" src="Logo_UniCa.png" alt="">
-                        </a>
-                    </div>
+            <div class="spacer">
+                <p>Credits</p>
+            </div>
+
+            <div class="footer">
+                <div class="logo">
+                    <br>
+                    <a href="http://www.cnr.it/" target="_blank">
+                        <img class="loghi" src="cnr-logo.png" alt="">
+                    </a>
+                </div>
+                <div class="logo1">
+                    <a href="http://stlab.istc.cnr.it/" target="_blank">
+                        <img class="loghi" src="logoSTLABISTCCNR.gif" alt="">
+                    </a>
+                </div>
+                <div class="logo">
+                    <a href="http://www.unica.it" target="_blank">
+                        <img class="loghi" src="Logo_UniCa.png" alt="">
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 
-    </body>
+</body>
+
 </html>

@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static webDemo.Glossary.*;
-import resultsComparator.Converter;
 
 /**
  * Returns graphic representation of translated root

@@ -241,6 +241,9 @@ public class Glossary {
 
     public static final String DATE_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#date";
     public static final String DATE_SCHEMA = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";
+    
+    public static final String TIME_SCHEMA2_NS = "https://www.w3.org/TR/xmlschema-2/#time";
+    public static final String TIME_SCHEMA2 = "time:";
 
     public static final String STRING_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#string";
 
@@ -465,7 +468,7 @@ public class Glossary {
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
         WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
-        WIKIDATA, D0};
+        WIKIDATA, D0, TIME_SCHEMA2};
 
     /**
      * Array of fred elements name space
@@ -474,12 +477,12 @@ public class Glossary {
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
         FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
-        WIKIDATA_NS, D0_NS};
+        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 24;
+    public static final int PREFIX_NUM = 25;
 
     /**
      * Jena's writers output modes
@@ -511,11 +514,6 @@ public class Glossary {
         "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
 
     public static final int PATTERNS_NUMBER = 27;
-
-    public static final String DISJUNCT = "disjunct";
-
-    public static final String SPECIAL_INSTANCES[] = {DISJUNCT};
-    public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING};
 
     public static final String QUOTE = "\"";
 
@@ -615,6 +613,7 @@ public class Glossary {
     public static final String AMR_DATE_WEEKDAY = ":weekday";
     public static final String AMR_DATE_YEAR = ":year";
     public static final String AMR_DATE_YEAR2 = ":year2";
+    public static final String AMR_DATE_INTERVAL = "date-interval";
 
     public static final String PREP_SUBSTITUTION = ":x->y";
 
@@ -737,5 +736,8 @@ public class Glossary {
         }
         return null;
     }
+    public static final String DISJUNCT = "disjunct";
+    public static final String SPECIAL_INSTANCES[] = {DISJUNCT, AMR_DATE_ENTITY, AMR_DATE_INTERVAL};
+    public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING, AMR, AMR};
 
 }

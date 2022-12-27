@@ -543,6 +543,16 @@ public class Parser {
                 }
 
             }
+            
+            // caso "date-interval" seguito da :op in lista
+            if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_DATE_INTERVAL)) {
+
+                ArrayList<Node> ops = n.getOps();
+                for (Node n1 : ops) {
+                    n1.relation = Glossary.DUL_HAS_MEMBER;
+                }
+
+            }
 
             // caso "and" seguito da :op in lista
             if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
@@ -613,7 +623,6 @@ public class Parser {
                 //caso :wiki + schemaorg su nodo wiki
                 //TODO da implementare verifica sul sito dell'esistenza della parola
                 //n.add(new Node(Glossary.SCHEMA_ORG + firstUpper(root.getInstance().var), Glossary.RDF_TYPE, OK));
-
             } else if (n.getInstance() != null && n.getChild(Glossary.AMR_WIKI) != null) {
                 //caso :wiki + schemaorg su nodo root
                 //TODO da implementare verifica sul sito dell'esistenza della parola
@@ -1228,12 +1237,20 @@ public class Parser {
             if (instanceInList != null) {
                 n.var = nVar;
                 instanceInList.relation = Glossary.RDF_TYPE;
-                if(instance.var.equalsIgnoreCase(Glossary.DISJUNCT)){
-                    instanceInList.var = Glossary.BOXING + firstUpper(instance.var);
+                boolean flag = true;
+
+                for (int i = 0; i < Glossary.SPECIAL_INSTANCES.length; i++) {
+                    if (instance.var.equalsIgnoreCase(Glossary.SPECIAL_INSTANCES[i])) {
+                        instanceInList.var = Glossary.SPECIAL_INSTANCES_PREFIX[i] + firstUpper(instance.var);
+                        flag = false;
+                        break;
+                    }
                 }
-                else{
+
+                if (flag) {
                     instanceInList.var = FRED + firstUpper(instance.var);
                 }
+
                 if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instanceInList.setStatus(OK);
                 }
@@ -1257,7 +1274,7 @@ public class Parser {
                 return Glossary.DULS[i];
             }
         }
-        return FRED+var;
+        return FRED + var;
     }
 
     /*
@@ -1617,7 +1634,7 @@ public class Parser {
     }
 
     private Node dateEntity(Node root) {
-
+        /*
         if (root.list.isEmpty() || (root.getInstance() != null
                 && !root.getInstance().var.equalsIgnoreCase(Glossary.AMR_DATE_ENTITY))) {
             return root;
@@ -1626,7 +1643,7 @@ public class Parser {
         boolean top = true;
 
         Node instance = root.getInstance();
-        this.removeInstance(root);
+        //this.removeInstance(root);
         //root.list.remove(instance);
 
         Node era = root.getChild(Glossary.AMR_DATE_ERA);
@@ -1810,12 +1827,12 @@ public class Parser {
             }
         }
 
-        /*Node time = root.getChild(Glossary.AMR_TIME);
+        Node time = root.getChild(Glossary.AMR_TIME);
         if (time != null) {
-            root.var = FRED + time.var;
+            root.var = Glossary.TIME_SCHEMA2 + time.var;
             root.list.remove(time);
             root.addAll(time.list);
-            root.relation = Glossary.VN_ROLE_TIME;
+            //root.relation = Glossary.VN_ROLE_TIME;
 
         }*/
         return root;
@@ -1966,7 +1983,7 @@ public class Parser {
     }
 
     private Node residual(Node root) {
-        
+
         if (root.var.contains("fred:")) {
             String temp = root.var.replace("fred:", "");
             temp = this.disamb(temp);
