@@ -214,7 +214,7 @@ public class Parser {
                     while (word.contains("\"")) {
                         word = word.replace("\"", "");
                     }
-                    list.add(word.replaceAll(Glossary.QUOTE, ""));
+                    list.add("literal:" + word.replaceAll(Glossary.QUOTE, ""));
                 }
                 amr = amr.substring(fine);
 
@@ -543,7 +543,7 @@ public class Parser {
                 }
 
             }
-            
+
             // caso "date-interval" seguito da :op in lista
             if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.AMR_DATE_INTERVAL)) {
 
@@ -582,7 +582,7 @@ public class Parser {
 
                     // caso :poss
                     root.getPoss().relation = FRED + (root.getInstance().var.replaceAll(FRED, "") + Glossary.OF);
-
+                    //n.setStatus(REMOVE);
                 }
 
                 //caso :name
@@ -590,19 +590,17 @@ public class Parser {
                 if (!ops.isEmpty()) {
                     String name = "";
                     for (Node n1 : ops) {
-                        name += "_" + n1.var;
+                        name += "_" + n1.var.replace(Glossary.LITERAL, "");
                     }
-                    name = FRED + name.substring(1);
-                    root.var = name;
-                    if (root.getInstance() != null) {
-                        root.getInstance().var = FRED + firstUpper(root.getInstance().var);
-                        root.getInstance().setStatus(OK);
-                        root.getInstance().relation = Glossary.RDF_TYPE;
-                        root.setStatus(OK);
-                        setEquals(root);
+                    name = Glossary.LITERAL + name.substring(1);
+                    n.list.removeAll(ops);
+                    n.relation = Glossary.AMR + n.relation.substring(1);
+                    n.var = name;
+                    if (n.getInstance() != null) {
+                        n.list.remove(n.getInstance());
                     }
+  
                 }
-                n.setStatus(REMOVE);
 
             } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase("name") && !n.getOps().isEmpty()) {
                 ArrayList<Node> ops = n.getOps();
@@ -821,8 +819,6 @@ public class Parser {
                 n.relation = Glossary.DUL_HAS_AMOUNT;
                 n.var = FRED + firstUpper(n.getInstance().var.replaceAll(FRED, ""));
                 this.removeInstance(n);
-                //n.list.remove(n.getInstance());
-                //toAdd.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF) && n.getInstance() != null) {
@@ -1262,6 +1258,46 @@ public class Parser {
         return root;
     }
 
+    /*
+    Effettua le elaborazioni necessarie per l'eliminazioni delle istanze dei nodi non verbo
+     */
+    private Node otherInstanceElaboration(Node root, String prefix) {
+        Node instance = root.getInstance();
+        if (instance == null) {
+            return root;
+        }
+        String nVar = FRED + instance.var + "_" + occurrence(instance.var);
+        for (Node n : getEquals(root)) {
+
+            Node instanceInList = n.getInstance();
+            if (instanceInList != null) {
+                n.var = nVar;
+                instanceInList.relation = Glossary.RDF_TYPE;
+                boolean flag = true;
+
+                for (int i = 0; i < Glossary.SPECIAL_INSTANCES.length; i++) {
+                    if (instance.var.equalsIgnoreCase(Glossary.SPECIAL_INSTANCES[i])) {
+                        instanceInList.var = Glossary.SPECIAL_INSTANCES_PREFIX[i] + firstUpper(instance.var);
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if (flag) {
+                    instanceInList.var = prefix + firstUpper(instance.var);
+                }
+
+                if (!instanceInList.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
+                    instanceInList.setStatus(OK);
+                }
+
+            } else {
+                n.var = nVar;
+            }
+        }
+        return root;
+    }
+
     /**
      * Disambigua per ora solo DUL
      *
@@ -1287,20 +1323,7 @@ public class Parser {
             return root;
         }
 
-        // casi "and" e "or" su nodo senza istanza, riferito al nodo principale
-        /*if (root.getInstance() == null
-                && (instance.var.equalsIgnoreCase(Glossary.AND) || instance.var.equalsIgnoreCase(Glossary.OR))) {
-            Node and = this.getOriginal(root.getNodeId());
-            root.add(instance);
-            ArrayList<Node> ops = and.getOps();
 
-            for (Node n1 : ops) {
-                Node n2 = new Node(n1.var, n1.relation, n1.getStatus());
-                this.nodes.add(n2);
-                n2.makeEquals(n1);
-                root.add(n2);
-            }
-        }*/
         // casi "and" e "or" su nodo senza istanza, riferito al nodo principale
         if (root.getInstance() == null && root.list.isEmpty()
                 && (instance.var.equalsIgnoreCase(Glossary.AND) || instance.var.equalsIgnoreCase(Glossary.OR))) {
@@ -1634,208 +1657,32 @@ public class Parser {
     }
 
     private Node dateEntity(Node root) {
-        /*
         if (root.list.isEmpty() || (root.getInstance() != null
                 && !root.getInstance().var.equalsIgnoreCase(Glossary.AMR_DATE_ENTITY))) {
             return root;
         }
-
-        boolean top = true;
-
-        Node instance = root.getInstance();
-        //this.removeInstance(root);
-        //root.list.remove(instance);
-
-        Node era = root.getChild(Glossary.AMR_DATE_ERA);
-
-        if (era != null) {
-            era.relation = Glossary.FRED_OF;
-            if (era.getInstance() != null) {
-                era.var = FRED + firstUpper(era.getInstance().var + "_era");
-                this.removeInstance(era);
-                //era.list.remove(era.getInstance());
-            } else {
-                era.var = FRED + firstUpper(era.var + "_era");
-            }
-        }
-
-        Node decade = root.getChild(Glossary.AMR_DATE_DECADE);
-        Node century = root.getChild(Glossary.AMR_DATE_CENTURY);
-
-        if (decade != null) {
-            top = false;
-            root.add(new Node("decade", "instance"));
-            decade.relation = Glossary.DUL_HAS_QUALITY;
-            decade.var = FRED + ordinal(decade.var);
-        }
-
-        if (century != null) {
-            top = false;
-            root.add(new Node("century", "instance"));
-            century.relation = Glossary.DUL_HAS_QUALITY;
-            century.var = FRED + ordinal(century.var);
-        }
-
-        Node calendar = root.getChild(Glossary.AMR_DATE_CALENDAR);
-
-        if (calendar != null) {
-            if (calendar.getInstance() != null && calendar.getInstance().var.equalsIgnoreCase("year")) {
-                root.list.remove(calendar);
-                top = false;
-                root.var = firstUpper(calendar.getInstance().var);
-                root.addAll(calendar.list);
-                this.removeInstance(root);
-                //root.list.remove(root.getInstance());
-            } else {
-                calendar.relation = Glossary.FRED_OF;
-            }
-
-            if (era != null) {
-                root.list.remove(calendar);
-                era.add(calendar);
-                top = true;
-            }
-        }
-
-        Node weekDay = root.getChild(Glossary.AMR_DATE_WEEKDAY);
-        Node dayperiod = root.getChild(Glossary.AMR_DATE_DAY_PERIOD);
-
-        if (weekDay != null && dayperiod == null) {
-            root.var = FRED + firstUpper(weekDay.getInstance().var);
-            root.list.remove(weekDay);
-            root.addAll(weekDay.list);
-        } else if (dayperiod != null && weekDay == null) {
-            root.var = FRED + firstUpper(dayperiod.getInstance().var);
-            root.list.remove(dayperiod);
-            root.addAll(dayperiod.list);
-            top = false;
-        } else if (dayperiod != null && weekDay != null) {
-            root.var = FRED + firstUpper(dayperiod.getInstance().var);
-            root.list.remove(dayperiod);
-            root.addAll(dayperiod.list);
-            top = false;
-            weekDay.relation = Glossary.DUL_ASSOCIATED_WITH;
-            if (weekDay.getInstance() != null) {
-                instance = weekDay.getInstance();
-                this.removeInstance(weekDay);
-                //weekDay.list.remove(instance);
-                weekDay.var = FRED + firstUpper(instance.var);
-            }
-        }
-
-        Node quarter = root.getChild(Glossary.AMR_DATE_QUARTER);
-
-        if (quarter != null) {
-            top = false;
-            root.add(new Node("quarter", "instance"));
-            quarter.relation = Glossary.DUL_HAS_QUALITY;
-            quarter.var = FRED + ordinal(quarter.var);
-        }
-
-        Node season = root.getChild(Glossary.AMR_DATE_SEASON);
-        if (season != null) {
-            top = false;
-            root.var = FRED + firstUpper(season.getInstance().var);
-            root.list.remove(season);
-
-        }
-
-        Node timezone = root.getChild(Glossary.AMR_DATE_TIMEZONE);
-        if (timezone != null) {
-            root.list.remove(timezone);
-        }
-
-        String newVar = "";
-        String newVar2 = "";
-
-        if (root.getChild(Glossary.AMR_DATE_YEAR) != null
-                || root.getChild(Glossary.AMR_DATE_MONTH) != null
-                || root.getChild(Glossary.AMR_DATE_DAY) != null) {
-
-            Node year = root.getChild(Glossary.AMR_DATE_YEAR);
-            Node month = root.getChild(Glossary.AMR_DATE_MONTH);
-            Node day = root.getChild(Glossary.AMR_DATE_DAY);
-            Node year2 = root.getChild(Glossary.AMR_DATE_YEAR2);
-
-            if (year2 != null) {
-                root.list.remove(year2);
-                while (year2.var.length() < 4) {
-                    year2.var = "0" + year2.var;
-                }
-
-                newVar2 += year2.var + "-01-01";
-            }
-
-            if (year != null) {
-                root.list.remove(year);
-                while (year.var.length() < 4) {
-                    year.var = "0" + year.var;
-                }
-
-                newVar += year.var + "-";
-            } else {
-                newVar += "0001-";
-            }
-
-            if (month != null) {
-                root.list.remove(month);
-                while (month.var.length() < 2) {
-                    month.var = "0" + month.var;
-                }
-                newVar += month.var + "-";
-
-            } else {
-                newVar += "01-";
-            }
-
-            if (day != null) {
-                root.list.remove(day);
-                while (day.var.length() < 2) {
-                    day.var = "0" + day.var;
-                }
-                newVar += day.var;
-            } else {
-                newVar += "01";
-            }
-
-            if (root.relation.equalsIgnoreCase(TOP) || weekDay != null) {
-
-                topic = false;
-
-                if (weekDay != null && top) {
-
-                    root.var = FRED + firstUpper(weekDay.getInstance().var);
-                    root.setStatus(OK);
-                } else if (top) {
-
-                    instance.var = "date";
-                    root.add(instance);
-                }
-
-                Node date = new Node(newVar, Glossary.FRED_AT, OK);
-                Node date2 = new Node(newVar2, Glossary.FRED_AT, OK);
-                root.add(date);
-                if (year2 != null) {
-                    root.add(date2);
-                }
-
-            } else if (top) {
-                root.var = newVar;
-                //root.list.clear();
-                root.setStatus(OK);
-                //System.out.println(root);
-            }
-        }
-
-        Node time = root.getChild(Glossary.AMR_TIME);
-        if (time != null) {
-            root.var = Glossary.TIME_SCHEMA2 + time.var;
-            root.list.remove(time);
-            root.addAll(time.list);
-            //root.relation = Glossary.VN_ROLE_TIME;
-
-        }*/
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_ERA));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_DECADE));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_CENTURY));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_CALENDAR));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_WEEKDAY));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_DAY_PERIOD));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_QUARTER));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_SEASON));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_TIMEZONE));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_YEAR));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_MONTH));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_DAY));
+        date_child_elaboration(root.getChild(Glossary.AMR_DATE_YEAR2));
         return root;
+    }
+
+    private void date_child_elaboration(Node child) {
+        if (child != null) {
+
+            child.relation = Glossary.AMRB + child.relation.substring(1);
+            child = this.otherInstanceElaboration(child, Glossary.AMRB);
+        }
     }
 
     private String mannerAdverb(String var) {
@@ -1891,7 +1738,6 @@ public class Parser {
                 root.substitute(first);
             }
         }
-
         return root;
     }
 
@@ -1904,7 +1750,6 @@ public class Parser {
                 return i + "th";
             default:
                 return i + sufixes[i % 10];
-
         }
     }
 
@@ -1983,6 +1828,10 @@ public class Parser {
     }
 
     private Node residual(Node root) {
+        if (root.var.contains(Glossary.LITERAL)) {
+            root.var = root.var.replaceAll(Glossary.LITERAL, ""); 
+            root.setStatus(OK);
+        }
 
         if (root.var.contains("fred:")) {
             String temp = root.var.replace("fred:", "");
@@ -2070,9 +1919,7 @@ public class Parser {
         }
 
         for (Node n : root.getList()) {
-
             if (!n.var.contains(":") && this.vars.contains(n.var)) {
-                //n.setStatus(REMOVE);
                 n.var = FRED + "malformed_amr/" + n.var;
                 n.setMalformed(true);
             }
@@ -2087,7 +1934,6 @@ public class Parser {
         }
 
         if (!root.var.contains(":") && root.var.matches(Glossary.AMR_VAR)) {
-            //System.out.println(root.var);
             root.var = FRED + "Undefined";
             root.setMalformed(true);
         }
@@ -2173,7 +2019,6 @@ public class Parser {
             }
 
         }
-        //System.out.println(to_add);
 
         for (Node n : root.list) {
             n = add_parent_list(n);

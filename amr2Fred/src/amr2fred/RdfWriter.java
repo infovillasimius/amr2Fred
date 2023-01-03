@@ -127,7 +127,10 @@ public class RdfWriter {
                     } else if (n1.var.matches(Glossary.DATE_SCHEMA)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.DATE_SCHEMA_NS);
                         model.add(model.createStatement(r, p, o));
-                    } else if (n1.relation.equalsIgnoreCase(Glossary.RDFS_LABEL) || n1.var.matches(Glossary.NN_RATIONAL)) {
+                    } else if (n1.var.matches(Glossary.TIME_SCHEMA)) {
+                        Literal o = model.createTypedLiteral(n1.var, Glossary.TIME_SCHEMA2_NS);
+                        model.add(model.createStatement(r, p, o));
+                    } else if (n1.relation.equalsIgnoreCase(Glossary.RDFS_LABEL) || n1.var.matches(Glossary.NN_RATIONAL) || !n1.var.contains(Glossary.AMR_RELATION_BEGIN)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.STRING_SCHEMA_NS);
                         model.add(model.createStatement(r, p, o));
                     } else {
@@ -179,7 +182,7 @@ public class RdfWriter {
         int dp = s.indexOf(':');
         if (dp < 0) {
             pref = "";
-            //return pref;
+            return pref;
         } else {
             pref = s.substring(0, dp + 1);
         }

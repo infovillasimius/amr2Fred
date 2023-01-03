@@ -244,6 +244,7 @@ public class Glossary {
     
     public static final String TIME_SCHEMA2_NS = "https://www.w3.org/TR/xmlschema-2/#time";
     public static final String TIME_SCHEMA2 = "time:";
+    public static final String TIME_SCHEMA = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
 
     public static final String STRING_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#string";
 
@@ -426,8 +427,11 @@ public class Glossary {
     public static final String DIGRAPH_END = "}";
 
     //Nuovi prefissi e nuovi Spazi Nomi
-    public static final String AMR_NS = "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#";
+    public static final String AMR_NS = "http://www.ontologydesignpatterns.org/ont/amr/";
     public static final String AMR = "amr:";
+    
+    public static final String AMRB_NS = "http://www.ontologydesignpatterns.org/ont/amrb/";
+    public static final String AMRB = "amrb:";
 
     public static final String VA_NS = "http://verbatlas.org/";
     public static final String VA = "va:";
@@ -461,6 +465,9 @@ public class Glossary {
     public static final String AMR_WIKIDATA = ":wikidata";
     public static final String WIKIDATA = "wikidata:";
     public static final String WIKIDATA_NS = "http://www.wikidata.org/entity/";
+    
+    public static final String LITERAL = "literal:";
+    public static final String LITERAL_NS = "";
 
     /**
      * Array of Fred elements local names
@@ -468,7 +475,7 @@ public class Glossary {
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
         WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
-        WIKIDATA, D0, TIME_SCHEMA2};
+        WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL};
 
     /**
      * Array of fred elements name space
@@ -477,12 +484,12 @@ public class Glossary {
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
         FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
-        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS};
+        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 25;
+    public static final int PREFIX_NUM = 27;
 
     /**
      * Jena's writers output modes
