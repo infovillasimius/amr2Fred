@@ -532,16 +532,18 @@ public class Parser {
             }
 
             // caso "or" seguito da :op in lista
-            if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.OR)) {
+            if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.OR) || n.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
 
-                n.getInstance().var = Glossary.DISJUNCT;
+                if (n.getInstance().var.equalsIgnoreCase(Glossary.AND)) {
+                    n.getInstance().var = Glossary.CONJUNCT;
+                } else {
+                    n.getInstance().var = Glossary.DISJUNCT;
+                }
                 //n.list.remove(n.getInstance());
-
                 ArrayList<Node> ops = n.getOps();
                 for (Node n1 : ops) {
                     n1.relation = Glossary.DUL_HAS_MEMBER;
                 }
-
             }
 
             // caso "date-interval" seguito da :op in lista
@@ -555,6 +557,7 @@ public class Parser {
             }
 
             // caso "and" seguito da :op in lista
+            /*
             if (n.getInstance() != null && (n.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
 
                 this.removeInstance(n);
@@ -571,7 +574,8 @@ public class Parser {
                 }
                 //n.setStatus(REMOVE);
 
-            } else if (Glossary.PERSON.contains(" " + n.var + " ")) {
+            } else */
+            if (Glossary.PERSON.contains(" " + n.var + " ")) {
                 //casi speciali con pronomi personali e aggettivi dimostrativi
                 n.var = "person";
                 this.setEquals(root);
@@ -599,7 +603,7 @@ public class Parser {
                     if (n.getInstance() != null) {
                         n.list.remove(n.getInstance());
                     }
-  
+
                 }
 
             } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase("name") && !n.getOps().isEmpty()) {
@@ -826,18 +830,20 @@ public class Parser {
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
-                    && !isVerb(n.getInstance().var) && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)) {
+                    && !isVerb(n.getInstance().var) && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
+                    && !n.getInstance().var.equalsIgnoreCase(Glossary.CONJUNCT)) {
                 //caso :mod
                 boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
 
                 if (contains) {
                     n.relation = Glossary.DUL_HAS_QUALITY;
+                    n.var = FRED + firstUpper(n.getInstance().var);
+                    this.removeInstance(n);
+                    //n.list.remove(n.getInstance());*/
                 } else {
                     n.relation = Glossary.DUL_ASSOCIATED_WITH;
                 }
-                n.var = FRED + firstUpper(n.getInstance().var);
-                this.removeInstance(n);
-                //n.list.remove(n.getInstance());
+
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null) {
@@ -1243,6 +1249,14 @@ public class Parser {
                     }
                 }
 
+                for (int i = 0; i < Glossary.AMR_INSTANCES.length; i++) {
+                    if (instance.var.equalsIgnoreCase(Glossary.AMR_INSTANCES[i])) {
+                        instanceInList.var = Glossary.AMR + firstUpper(instance.var);
+                        flag = false;
+                        break;
+                    }
+                }
+
                 if (flag) {
                     instanceInList.var = FRED + firstUpper(instance.var);
                 }
@@ -1318,12 +1332,31 @@ public class Parser {
      */
     private Node rootElaboration(Node root) {
         Node instance = this.getInstance(root.getNodeId()); //root.getInstance();
+        if (root.getInstance() != null) {
+
+        }
+        // casi "and" e "or" seguito da :opx
+        if (root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND) || root.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
+
+            if (root.getInstance().var.equalsIgnoreCase(Glossary.AND)) {
+                root.getInstance().var = Glossary.CONJUNCT;
+                System.out.println(root.getInstance().var);
+            } else {
+                root.getInstance().var = Glossary.DISJUNCT;
+            }
+
+            ArrayList<Node> ops = root.getOps();
+            for (Node n1 : ops) {
+                n1.relation = Glossary.DUL_HAS_MEMBER;
+            }
+
+        }
 
         if (instance == null) {
             return root;
         }
 
-
+        /*
         // casi "and" e "or" su nodo senza istanza, riferito al nodo principale
         if (root.getInstance() == null && root.list.isEmpty()
                 && (instance.var.equalsIgnoreCase(Glossary.AND) || instance.var.equalsIgnoreCase(Glossary.OR))) {
@@ -1340,8 +1373,7 @@ public class Parser {
                 root.parent_list.add(n2);
             }
 
-        }
-
+        }*/
         if (root.getChild(Glossary.AMR_CONCESSION) != null) {
             Node concession = root.getChild(Glossary.AMR_CONCESSION);
             Node condition = root.getChild(Glossary.AMR_CONDITION);
@@ -1421,7 +1453,7 @@ public class Parser {
                 root.getInstance().var = quant.getInstance().var.replace(Glossary.QUANTITY, "");
             }
         }
-
+        /*
 // caso "and" seguito da :opx solo per nodo iniziale 0
         if (root.getNodeId() == 0 && root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.AND) && !root.getOps().isEmpty()) {
             ArrayList<Node> ops = root.getOps();
@@ -1442,20 +1474,7 @@ public class Parser {
                 n1.addAll(rootList);
                 root.add(n1);
             }
-        }
-
-        // caso "or" seguito da :opx
-        if (root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.OR)) {
-
-            root.getInstance().var = Glossary.DISJUNCT;
-            //n.list.remove(n.getInstance());
-
-            ArrayList<Node> ops = root.getOps();
-            for (Node n1 : ops) {
-                n1.relation = Glossary.DUL_HAS_MEMBER;
-            }
-
-        }
+        }*/
 
         if (root.getChild(Glossary.AMR_MOD) != null
                 && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_DEGREE) != null
@@ -1829,7 +1848,7 @@ public class Parser {
 
     private Node residual(Node root) {
         if (root.var.contains(Glossary.LITERAL)) {
-            root.var = root.var.replaceAll(Glossary.LITERAL, ""); 
+            root.var = root.var.replaceAll(Glossary.LITERAL, "");
             root.setStatus(OK);
         }
 
@@ -1988,7 +2007,8 @@ public class Parser {
         }
         if (root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
             root.relation = Glossary.AMR + Glossary.AMR_DOMAIN.substring(1);
-            root.setStatus(OK);
+            //root.setStatus(OK);
+            System.out.println(root.getInstance().var);
         }
 
         for (Node n : root.list) {

@@ -241,7 +241,7 @@ public class Glossary {
 
     public static final String DATE_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema#date";
     public static final String DATE_SCHEMA = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";
-    
+
     public static final String TIME_SCHEMA2_NS = "https://www.w3.org/TR/xmlschema-2/#time";
     public static final String TIME_SCHEMA2 = "time:";
     public static final String TIME_SCHEMA = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
@@ -429,7 +429,7 @@ public class Glossary {
     //Nuovi prefissi e nuovi Spazi Nomi
     public static final String AMR_NS = "http://www.ontologydesignpatterns.org/ont/amr/";
     public static final String AMR = "amr:";
-    
+
     public static final String AMRB_NS = "http://www.ontologydesignpatterns.org/ont/amrb/";
     public static final String AMRB = "amrb:";
 
@@ -465,7 +465,7 @@ public class Glossary {
     public static final String AMR_WIKIDATA = ":wikidata";
     public static final String WIKIDATA = "wikidata:";
     public static final String WIKIDATA_NS = "http://www.wikidata.org/entity/";
-    
+
     public static final String LITERAL = "literal:";
     public static final String LITERAL_NS = "";
 
@@ -743,8 +743,27 @@ public class Glossary {
         }
         return null;
     }
+
     public static final String DISJUNCT = "disjunct";
-    public static final String SPECIAL_INSTANCES[] = {DISJUNCT, AMR_DATE_ENTITY, AMR_DATE_INTERVAL};
-    public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING, AMR, AMR};
+    public static final String CONJUNCT = "conjunct";
+    public static final String SPECIAL_INSTANCES[] = {DISJUNCT,CONJUNCT};
+    public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING, BOXING};
+
+    public static final String AMR_INSTANCES[] = {AMR_DATE_ENTITY, AMR_DATE_INTERVAL, "percentage-entity", "phone-number-entity",
+        "email-address-entity", "url-entity", "score-entity", "string-entity", "value-interval", "thing", "person", "family",
+        "animal", "language", "nationality", "ethnic-group", "regional-group", "religious-group", "political-movement",
+        "organization", "company", "government-organization", "military", "criminal-organization", "political-party",
+        "market-sector", "school", "university", "research-institute", "team", "league", "location", "city", "city-district",
+        "county", "state", "province", "territory", "country", "local-region", "country-region", "world-region", "continent", 
+        "ocean", "sea", "lake", "river", "gulf", "bay", "strait", "canal", "peninsula", "mountain", "volcano", "valley", "canyon", 
+        "island", "desert", "forest", "moon", "planet", "star", "constellation", "facility", "airport", "station", "port", "tunnel", 
+        "bridge", "road", "railway-line", "canal", "building", "theater", "museum", "palace", "hotel", "worship-place", "market", 
+        "sports-facility", "park", "zoo", "amusement-park", "event", "incident", "natural-disaster", "earthquake", "war", 
+        "conference", "game", "festival", "product", "vehicle", "ship", "aircraft", "aircraft-type", "spaceship", "car-make", 
+        "work-of-art", "picture", "music", "show", "broadcast-program", "publication", "book", "newspaper", "magazine", 
+        "journal", "natural-object", "award", "law", "court-decision", "treaty", "music-key", "musical-note", 
+        "food-dish", "writing-script", "variable", "program", "molecular-physical-entity", "small-molecule", 
+        "protein", "protein-family", "protein-segment", "amino-acid", "macro-molecular-complex", "enzyme", 
+        "nucleic-acid", "pathway", "gene", "dna-sequence", "cell", "cell-line", "species", "taxon", "disease", "medical-condition"};
 
 }
