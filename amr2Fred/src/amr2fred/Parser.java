@@ -527,8 +527,33 @@ public class Parser {
                 n.relation = Glossary.AMR + Glossary.AMR_POLARITY_OF.substring(1);
             }
 
+            if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && n.getInstance() != null && Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
+                topic = false;
+                // caso pronomi o aggettivi dimostrativi
+                n.relation = Glossary.QUANT_HAS_DETERMINER;
+                n.var = FRED + firstUpper(n.getInstance().var);
+                this.removeInstance(n);
+                n.setStatus(OK);
+            }
+
             if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
                 topic = false;
+                n.relation = TOP;
+
+                String rel = "";
+                if (root.getInstance() == null) {
+                    rel = Glossary.DUL_HAS_QUALITY;
+                } else if (root.getInstance() != null && Glossary.ADJECTIVE.contains(root.getInstance().var)) {
+                    rel = Glossary.DUL_HAS_QUALITY;
+                    root.var = FRED + firstUpper(root.getInstance().var);
+                    this.treatInstance(root);
+
+                } else {
+                    rel = Glossary.DUL_ASSOCIATED_WITH;
+                }
+                Node new_node = root.getCopy(rel);
+                n.list.add(new_node);
+                this.nodes.add(new_node);
             }
 
             // caso "or" seguito da :op in lista
@@ -560,9 +585,10 @@ public class Parser {
                 //casi speciali con pronomi personali e aggettivi dimostrativi
                 n.var = "person";
                 this.setEquals(root);
+                root.prefix = true;
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
-
+                root.prefix = true;
                 if (root.getPoss() != null && root.getInstance() != null) {
 
                     // caso :poss
@@ -667,99 +693,7 @@ public class Parser {
                 n.relation = FRED + (this.getInstance(root.getNodeId()).var.replaceAll(FRED, "") + Glossary.OF);
                 n.setStatus(OK);
 
-            }/* else if ((n.relation.equalsIgnoreCase(Glossary.AMR_MOD) || n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN))
-                    && n.getInstance() != null && Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ")) {
-                // caso pronomi o aggettivi dimostrativi
-                n.relation = Glossary.QUANT_HAS_DETERMINER;
-                n.var = FRED + firstUpper(n.getInstance().var);
-                this.removeInstance(n);
-                //n.list.remove(n.getInstance());
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && n.getInstance() != null && root.getInstance() != null
-                    && n.getChild(Glossary.AMR_WIKI) != null) {
-
-                //caso :domain+aggettivo o :domain+nome
-                boolean flag = false;
-                for (String s : Glossary.ADJECTIVE) {
-                    if (s.equalsIgnoreCase(root.getInstance().var)) {
-                        flag = true;
-                        break;
-                    }
-                }
-                if (flag) {
-                    String swap = root.getInstance().var;
-                    root.getInstance().var = n.getInstance().var;
-                    n.getInstance().var = swap;
-                    n.relation = Glossary.DUL_HAS_QUALITY;
-                    String nadd = FRED + firstUpper(n.getInstance().var);
-                    n.var = nadd;
-                    this.removeInstance(n);
-                    //n.list.remove(n.getInstance());
-                    toAdd.add(new Node(nadd, Glossary.DUL_HAS_QUALITY, OK));
-
-                } else {
-                    String swap = root.getInstance().var;
-                    root.getInstance().var = n.getInstance().var;
-                    n.getInstance().var = swap;
-                    n.relation = Glossary.RDF_TYPE;
-                    n.var = FRED + firstUpper(n.getInstance().var);
-                    this.removeInstance(n);
-                    //n.list.remove(n.getInstance());
-                    toAdd.add(new Node(FRED + firstUpper(swap), Glossary.RDF_TYPE, OK));
-                }
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && this.getInstance(n.getNodeId()) != null && root.getInstance() != null
-                    && n.getChild(Glossary.AMR_WIKI) == null && n.list.size() == 1) {
-                //caso :domain+aggettivo o :domain+nome
-                boolean flag = false;
-
-                for (String s : Glossary.ADJECTIVE) {
-                    if (s.equalsIgnoreCase(root.getInstance().var)) {
-                        flag = true;
-                        break;
-                    }
-                }
-
-                String swap = root.getInstance().var;
-                root.getInstance().var = this.getInstance(n.getNodeId()).var;
-
-                if (flag) {
-                    n.relation = Glossary.DUL_HAS_QUALITY;
-                    n.var = FRED + firstUpper(swap);
-                } else {
-                    root.getInstance().var = this.getInstance(n.getNodeId()).var;
-                    n.relation = Glossary.RDF_TYPE;
-                    n.var = FRED + firstUpper(swap);
-                }
-
-                if (n.getInstance() != null) {
-                    this.removeInstance(n);
-                    //n.list.remove(n.getInstance());
-                } else {
-                    root.list.remove(n);
-                    n = new Node(n.var, n.relation, OK);
-                    root.add(n);
-
-                }
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && this.getInstance(n.getNodeId()) != null && root.getInstance() != null
-                    && n.getChild(Glossary.AMR_WIKI) == null && n.list.size() > 1) {
-
-                String newRelation = FRED + root.getInstance().var + Glossary.OF;
-                n.relation = newRelation;
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN) && this.getInstance(n.getNodeId()) != null && root.getInstance() != null
-                    && n.getChild(Glossary.AMR_WIKI) == null && n.list.isEmpty()) {
-
-                String newRelation = FRED + "attribute" + Glossary.OF;
-                n.relation = newRelation;
-                n.setStatus(OK);
-
-            }*/ else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
                     || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER))) && n.getInstance() == null) {
 
                 //casi :quant  e :frequency con valore numerico 
@@ -794,10 +728,13 @@ public class Parser {
                 n.relation = Glossary.FRED + this.getInstance(root.getNodeId()).var + Glossary.OF;
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD) && n.getInstance() != null
-                    && !isVerb(n.getInstance().var) && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD)
+                    && n.getInstance() != null
+                    && !isVerb(n.getInstance().var)
+                    && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
                     && !n.getInstance().var.equalsIgnoreCase(Glossary.CONJUNCT)) {
                 //caso :mod
+
                 boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
 
                 if (contains) {
@@ -805,6 +742,25 @@ public class Parser {
                     n.var = FRED + firstUpper(n.getInstance().var);
                     this.removeInstance(n);
                     //n.list.remove(n.getInstance());*/
+                } else {
+                    n.relation = Glossary.DUL_ASSOCIATED_WITH;
+                }
+
+                n.setStatus(OK);
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD)
+                    && n.getInstance() == null
+                    && this.getInstance(n.getNodeId()) != null) {
+                //caso :mod
+                String var = this.getInstance(n.getNodeId()).var;
+
+                boolean contains = Glossary.ADJECTIVE.contains(var);
+
+                if (contains) {
+                    n.relation = Glossary.DUL_HAS_QUALITY;
+                    n.var = FRED + firstUpper(var);
+                    n.setStatus(OK);
+
                 } else {
                     n.relation = Glossary.DUL_ASSOCIATED_WITH;
                 }
@@ -1215,7 +1171,8 @@ public class Parser {
                 }
 
                 for (int i = 0; i < Glossary.AMR_INSTANCES.length; i++) {
-                    if (instance.var.equalsIgnoreCase(Glossary.AMR_INSTANCES[i])) {
+                    if (instance.var.equalsIgnoreCase(Glossary.AMR_INSTANCES[i])
+                            && root.prefix) {
                         instanceInList.var = Glossary.AMR + firstUpper(instance.var);
                         flag = false;
                         break;
@@ -1305,7 +1262,6 @@ public class Parser {
 
             if (root.getInstance().var.equalsIgnoreCase(Glossary.AND)) {
                 root.getInstance().var = Glossary.CONJUNCT;
-                System.out.println(root.getInstance().var);
             } else {
                 root.getInstance().var = Glossary.DISJUNCT;
             }
@@ -1399,7 +1355,7 @@ public class Parser {
                 root.getInstance().var = quant.getInstance().var.replace(Glossary.QUANTITY, "");
             }
         }
-        
+
         if (root.getChild(Glossary.AMR_MOD) != null
                 && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_DEGREE) != null
                 && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_COMPARED_TO) != null
@@ -1444,30 +1400,7 @@ public class Parser {
             root.makeEquals(argId);
             arg.setStatus(OK);
 
-        }/* else if (root.getChild(Glossary.AMR_DOMAIN) != null && root.getChild(Glossary.AMR_COMPARED_TO) != null
-                && root.getChild(Glossary.AMR_DEGREE) != null) {
-
-            //caso :degree + :domain + :compared-to
-            topic = false;
-            Node arg = root.getChild(Glossary.AMR_DOMAIN);
-            root.list.remove(arg);
-
-            if (root.getChild(Glossary.AMR_DEGREE) != null && root.getChild(Glossary.AMR_DEGREE).getInstance() != null) {
-                instance.var = root.getChild(Glossary.AMR_DEGREE).getInstance().var + firstUpper(instance.var);
-                root.list.remove(root.getChild(Glossary.AMR_DEGREE));
-            }
-
-            String parentVar = instance.var;
-            if (arg.getInstance() != null) {
-                instance.var = firstUpper(arg.getInstance().var);
-                this.removeInstance(arg);
-                //arg.list.remove(arg.getInstance());
-            }
-            arg.relation = Glossary.DUL_HAS_QUALITY;
-            root.getChild(Glossary.AMR_COMPARED_TO).relation = parentVar;
-            root.addAll(arg.list);
-
-        }*/
+        }
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)
                 && !isVerb(instance.var, root.getArgs())) {
@@ -1818,6 +1751,15 @@ public class Parser {
         }
     }
 
+    private void treatInstance(Node root) {
+        for (Node n : this.getEquals(root)) {
+            n.var = root.var;
+        }
+        if (root.getInstance() != null) {
+            root.getInstance().setStatus(REMOVE);
+        }
+    }
+
     private Node multi_sentence(Node root) {
         if (root.getInstance() != null && root.getInstance().var.equalsIgnoreCase(Glossary.AMR_MULTI_SENTENCE)) {
             ArrayList<Node> sentences = root.getSnt();
@@ -1830,9 +1772,6 @@ public class Parser {
                 n.relation = TOP;
             }
             return newRoot;
-        }
-        if (root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)){ // && root.getInstance() != null // && (root.getInstance().var.equalsIgnoreCase(Glossary.AND))) {
-            root.relation = Glossary.AMR + Glossary.AMR_DOMAIN.substring(1);
         }
 
         for (Node n : root.list) {

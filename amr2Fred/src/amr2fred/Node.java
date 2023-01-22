@@ -60,6 +60,9 @@ public class Node {
     
     // visibilità in modalità grafica
     boolean visibility = true;
+    
+    // Special prefix for instances
+    boolean prefix = false;
 
     //contiene lo stato di lavorazione del nodo - usato per verificare gli errori
     private NodeStatus status;

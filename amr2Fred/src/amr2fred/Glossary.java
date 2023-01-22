@@ -100,8 +100,8 @@ public class Glossary {
     public static final String D0_LOCATION = D0 + "Location";
     public static final String D0_TOPIC = D0 + "Topic";
 
-    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_NATURAL_PERSON, DUL_SUBSTANCE, D0_TOPIC, D0_LOCATION};
-    public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "person", "substance", "topic", "location"};
+    public static String[] DULS = {DUL_AGENT, DUL_CONCEPT, DUL_INFORMATION_ENTITY, DUL_ORGANISM, DUL_ORGANIZATION, DUL_SUBSTANCE, D0_TOPIC, D0_LOCATION};
+    public static String[] DULS_CHECK = {"agent", "concept", "informationentity", "organism", "organization", "substance", "topic", "location"};
 
     /**
      * Local name for boxer
