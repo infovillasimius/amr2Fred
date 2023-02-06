@@ -467,6 +467,7 @@ public class Glossary {
     public static final String WIKIDATA_NS = "http://www.wikidata.org/entity/";
 
     public static final String LITERAL = "literal:";
+    public static final String LITERAL2 = "Literal:";
     public static final String LITERAL_NS = "";
 
     /**
@@ -748,9 +749,10 @@ public class Glossary {
     public static final String CONJUNCT = "conjunct";
     public static final String SPECIAL_INSTANCES[] = {DISJUNCT,CONJUNCT};
     public static final String SPECIAL_INSTANCES_PREFIX[] = {BOXING, BOXING};
+    
+    public static final String AMR_VALUE_INTERVAL = "value-interval";
 
-    public static final String AMR_INSTANCES[] = {AMR_DATE_ENTITY, AMR_DATE_INTERVAL, "percentage-entity", "phone-number-entity",
-        "email-address-entity", "url-entity", "score-entity", "string-entity", "value-interval", "thing", "person", "family",
+    public static final String AMR_INSTANCES[] = {"thing", "person", "family",
         "animal", "language", "nationality", "ethnic-group", "regional-group", "religious-group", "political-movement",
         "organization", "company", "government-organization", "military", "criminal-organization", "political-party",
         "market-sector", "school", "university", "research-institute", "team", "league", "location", "city", "city-district",
@@ -765,5 +767,6 @@ public class Glossary {
         "food-dish", "writing-script", "variable", "program", "molecular-physical-entity", "small-molecule", 
         "protein", "protein-family", "protein-segment", "amino-acid", "macro-molecular-complex", "enzyme", 
         "nucleic-acid", "pathway", "gene", "dna-sequence", "cell", "cell-line", "species", "taxon", "disease", "medical-condition"};
-
+    public static final String AMR_ALWAYS_INSTANCES[] = {AMR_DATE_ENTITY, AMR_DATE_INTERVAL, "percentage-entity", "phone-number-entity",
+        "email-address-entity", "url-entity", "score-entity", "string-entity", AMR_VALUE_INTERVAL};
 }

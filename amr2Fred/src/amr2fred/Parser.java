@@ -385,6 +385,9 @@ public class Parser {
             }
         }
 
+        //verifica ops
+        root = control_ops(root);
+
         //verifica punti elenco
         root = this.li_verify(root);
 
@@ -1179,6 +1182,14 @@ public class Parser {
                     }
                 }
 
+                for (int i = 0; i < Glossary.AMR_ALWAYS_INSTANCES.length; i++) {
+                    if (instance.var.equalsIgnoreCase(Glossary.AMR_ALWAYS_INSTANCES[i])) {
+                        instanceInList.var = Glossary.AMR + firstUpper(instance.var);
+                        flag = false;
+                        break;
+                    }
+                }
+
                 if (flag) {
                     instanceInList.var = FRED + firstUpper(instance.var);
                 }
@@ -1620,6 +1631,11 @@ public class Parser {
             root.setStatus(OK);
         }
 
+        if (root.var.contains(FRED + Glossary.LITERAL2)) {
+            root.var = root.var.replaceAll(FRED + Glossary.LITERAL2, "");
+            root.setStatus(OK);
+        }
+
         if (root.var.contains("fred:")) {
             String temp = root.var.replace("fred:", "");
             temp = this.disamb(temp);
@@ -1830,6 +1846,31 @@ public class Parser {
 
         for (Node n : root.list) {
             n = li_verify(n);
+        }
+        return root;
+    }
+
+    Node control_ops(Node root) {
+        Node ins = root.getInstance();
+        if (!root.getOps().isEmpty()) {
+            for (Node n : root.getOps()) {
+                if (n.getInstance() == null) {
+                    if (n.var.matches(Glossary.NN_INTEGER)) {
+                        n.relation = Glossary.DUL_HAS_DATA_VALUE;
+                        if ((n.var.matches(Glossary.NN_INTEGER) 
+                                && !new BigInteger(n.var).equals(new BigInteger("1")))
+                                && root.getChild(Glossary.QUANT_HAS_QUANTIFIER)== null
+                                && (ins == null || !ins.var.equalsIgnoreCase(Glossary.AMR_VALUE_INTERVAL))) {
+                            root.list.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
+                        }
+                    } else {
+                        n.relation = Glossary.DUL_ASSOCIATED_WITH;
+                    }
+                }
+            }
+        }
+        for (Node n : root.list) {
+            n = control_ops(n);
         }
         return root;
     }
