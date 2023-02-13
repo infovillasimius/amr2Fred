@@ -769,4 +769,8 @@ public class Glossary {
         "nucleic-acid", "pathway", "gene", "dna-sequence", "cell", "cell-line", "species", "taxon", "disease", "medical-condition"};
     public static final String AMR_ALWAYS_INSTANCES[] = {AMR_DATE_ENTITY, AMR_DATE_INTERVAL, "percentage-entity", "phone-number-entity",
         "email-address-entity", "url-entity", "score-entity", "string-entity", AMR_VALUE_INTERVAL};
+    
+    public static final String OP_JOINER = " ";
+    public static final String OP_NAME = "name";
+    
 }

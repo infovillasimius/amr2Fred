@@ -604,7 +604,7 @@ public class Parser {
                 if (!ops.isEmpty()) {
                     String name = "";
                     for (Node n1 : ops) {
-                        name += "_" + n1.var.replace(Glossary.LITERAL, "");
+                        name += Glossary.OP_JOINER + n1.var.replace(Glossary.LITERAL, "");
                     }
                     name = Glossary.LITERAL + name.substring(1);
                     n.list.removeAll(ops);
@@ -616,11 +616,11 @@ public class Parser {
 
                 }
 
-            } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase("name") && !n.getOps().isEmpty()) {
+            } else if (n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.OP_NAME) && !n.getOps().isEmpty()) {
                 ArrayList<Node> ops = n.getOps();
                 String name = "";
                 for (Node n1 : ops) {
-                    name += "_" + n1.var;
+                    name += Glossary.OP_JOINER + n1.var;
                     n.list.remove(n1);
                 }
                 name = FRED + name.substring(1);
@@ -1852,7 +1852,7 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-        if (!root.getOps().isEmpty()) {
+        if (!root.getOps().isEmpty() && (ins==null || !ins.var.equalsIgnoreCase(Glossary.OP_NAME))) {
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
                     if (n.var.matches(Glossary.NN_INTEGER)) {
