@@ -623,7 +623,7 @@ public class Parser {
                     name += Glossary.OP_JOINER + n1.var;
                     n.list.remove(n1);
                 }
-                name = FRED + name.substring(1);
+                name = Glossary.LITERAL + name.substring(1);
                 n.var = name;
                 this.removeInstance(n);
 
@@ -1428,6 +1428,7 @@ public class Parser {
         }
 
         //TODO verificare perchè non funziona con instance
+        /*
         if (root.getInstance() != null && root.getInstance().var.matches(Glossary.AMR_QUANTITY) && root.getChild(Glossary.AMR_UNIT) != null) {
             //caso X-quantity + :unit
             Node unit = root.getChild(Glossary.AMR_UNIT);
@@ -1444,7 +1445,7 @@ public class Parser {
             }
             root.substitute(unit);
         }
-
+        
         if (root.getChild(Glossary.AMR_QUANT) != null) {
 
             Node quant = root.getChild(Glossary.AMR_QUANT);
@@ -1475,7 +1476,7 @@ public class Parser {
                 }
                 root.substitute(quant);
             }
-        }
+        }*/
 
         if (root.getChild(Glossary.AMR_SCALE) != null && root.getChild(Glossary.AMR_SCALE).getInstance() != null) {
             //caso :scale
