@@ -770,7 +770,7 @@ public class Glossary {
     public static final String AMR_ALWAYS_INSTANCES[] = {AMR_DATE_ENTITY, AMR_DATE_INTERVAL, "percentage-entity", "phone-number-entity",
         "email-address-entity", "url-entity", "score-entity", "string-entity", AMR_VALUE_INTERVAL};
     
-    public static final String OP_JOINER = " ";
+    public static final String OP_JOINER = "_";
     public static final String OP_NAME = "name";
     
 }

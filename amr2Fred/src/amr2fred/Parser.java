@@ -552,7 +552,7 @@ public class Parser {
                     this.treatInstance(root);
 
                 } else {
-                    rel = Glossary.DUL_ASSOCIATED_WITH;
+                    rel = Glossary.DUL_ASSOCIATED_WITH; //Glossary.RDFS_SUBCLASS_OF; //
                 }
                 Node new_node = root.getCopy(rel);
                 n.list.add(new_node);
@@ -606,12 +606,17 @@ public class Parser {
                     for (Node n1 : ops) {
                         name += Glossary.OP_JOINER + n1.var.replace(Glossary.LITERAL, "");
                     }
-                    name = Glossary.LITERAL + name.substring(1);
+                    name = Glossary.FRED + name.substring(1);
                     n.list.removeAll(ops);
                     n.relation = Glossary.AMR + n.relation.substring(1);
-                    n.var = name;
+                    root.var = name;
                     if (n.getInstance() != null) {
                         n.list.remove(n.getInstance());
+                    }
+                    if (root.getInstance() != null) {
+                        n.var = Glossary.AMR + this.firstUpper(root.getInstance().var);
+                        n.relation = Glossary.RDF_TYPE;
+                        this.treatInstance(root);
                     }
 
                 }
@@ -739,12 +744,17 @@ public class Parser {
                 //caso :mod
 
                 boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
+                boolean demonstratives = Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ");
 
                 if (contains) {
                     n.relation = Glossary.DUL_HAS_QUALITY;
                     n.var = FRED + firstUpper(n.getInstance().var);
                     this.removeInstance(n);
                     //n.list.remove(n.getInstance());*/
+                } else if(demonstratives){
+                    n.relation = Glossary.QUANT_HAS_DETERMINER;
+                    n.var = FRED + firstUpper(n.getInstance().var);
+                    this.removeInstance(n);
                 } else {
                     n.relation = Glossary.DUL_ASSOCIATED_WITH;
                 }
@@ -1477,7 +1487,6 @@ public class Parser {
                 root.substitute(quant);
             }
         }*/
-
         if (root.getChild(Glossary.AMR_SCALE) != null && root.getChild(Glossary.AMR_SCALE).getInstance() != null) {
             //caso :scale
             Node scale = root.getChild(Glossary.AMR_SCALE);
@@ -1853,14 +1862,14 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-        if (!root.getOps().isEmpty() && (ins==null || !ins.var.equalsIgnoreCase(Glossary.OP_NAME))) {
+        if (!root.getOps().isEmpty() && (ins == null || !ins.var.equalsIgnoreCase(Glossary.OP_NAME))) {
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
                     if (n.var.matches(Glossary.NN_INTEGER)) {
                         n.relation = Glossary.DUL_HAS_DATA_VALUE;
-                        if ((n.var.matches(Glossary.NN_INTEGER) 
+                        if ((n.var.matches(Glossary.NN_INTEGER)
                                 && !new BigInteger(n.var).equals(new BigInteger("1")))
-                                && root.getChild(Glossary.QUANT_HAS_QUANTIFIER)== null
+                                && root.getChild(Glossary.QUANT_HAS_QUANTIFIER) == null
                                 && (ins == null || !ins.var.equalsIgnoreCase(Glossary.AMR_VALUE_INTERVAL))) {
                             root.list.add(new Node(Glossary.QUANT + Glossary.FRED_MULTIPLE, Glossary.QUANT_HAS_QUANTIFIER, OK));
                         }
