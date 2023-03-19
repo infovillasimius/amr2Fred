@@ -411,6 +411,7 @@ public class Glossary {
     public static final String MALE = " he He HE ";
     public static final String FEMALE = " she She SHE ";
     public static final String THING = " It it IT that those this these ";
+    public static final String THING2 = " It it IT ";
     public static final String DEMONSTRATIVES = " that those this these ";
     public static final String AND = "and";
     public static final String OR = "or";
