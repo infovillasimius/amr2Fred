@@ -394,6 +394,9 @@ public class Parser {
         //verifica inversi
         root = this.inverseChecker(root);
 
+        //verifica :mod
+        root = mod_verify(root);
+
         //Elaborazione della lista dei nodi contenuti nel nodo attualmente in lavorazione
         root = this.listElaboration(root);
 
@@ -537,61 +540,6 @@ public class Parser {
                 n.var = FRED + firstUpper(n.getInstance().var);
                 this.removeInstance(n);
                 n.setStatus(OK);
-            }
-
-            if (n.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)) {
-                topic = false;
-                n.relation = TOP;
-                String n_var;
-                if (n.getInstance() == null
-                        && this.getInstance(n.getNodeId()) != null) {
-                    n_var = this.getInstance(n.getNodeId()).var;
-   
-                } else if (n.getInstance() != null) {
-                    n_var = n.getInstance().var;
-                } else {
-                    n_var = FRED+n.var.replace(Glossary.LITERAL, "");
-                    n.var = n_var;
-                    
-                }
-
-                String rel = "";
-                if (root.getInstance() == null) {
-                    rel = Glossary.DUL_HAS_QUALITY;
-                } else if (root.getInstance() != null && Glossary.ADJECTIVE.contains(root.getInstance().var)) {
-                    rel = Glossary.DUL_HAS_QUALITY;
-                    root.var = FRED + firstUpper(root.getInstance().var);
-                    this.treatInstance(root);
-
-                } else if (root.getInstance() != null
-                        && (n_var.equalsIgnoreCase(Glossary.FRED_PERSON)
-                        || n_var.equalsIgnoreCase(Glossary.FRED_MALE))
-                        || n_var.equalsIgnoreCase(Glossary.FRED_FEMALE)
-                        || Glossary.PERSON.contains(" " + n_var + " ")
-                        || Glossary.MALE.contains(" " + n_var + " ")
-                        || Glossary.FEMALE.contains(" " + n_var + " ")
-                        || Glossary.THING2.contains(" " + n_var + " ")
-                        ) {
-                    rel = Glossary.RDF_TYPE;
-                    root.var = FRED + firstUpper(root.getInstance().var);
-                    this.treatInstance(root);
-
-                } else if (root.getInstance() != null
-                        && n.getChild(Glossary.AMR_MOD) != null
-                        && n.getChild(Glossary.AMR_MOD).getInstance() != null
-                        && Glossary.DEMONSTRATIVES.contains(" " + n.getChild(Glossary.AMR_MOD).getInstance().var + " ")) {
-                    rel = Glossary.RDF_TYPE;
-                    root.var = FRED + firstUpper(root.getInstance().var);
-                    this.treatInstance(root);
-
-                } else {
-                    rel = Glossary.RDFS_SUBCLASS_OF; //Glossary.DUL_ASSOCIATED_WITH; //
-                    root.var = FRED + firstUpper(root.getInstance().var);
-                    this.treatInstance(root);
-                }
-                Node new_node = root.getCopy(rel);
-                n.list.add(new_node);
-                this.nodes.add(new_node);
             }
 
             // caso "or" seguito da :op in lista
@@ -769,55 +717,6 @@ public class Parser {
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF) && n.getInstance() != null) {
                 n.relation = Glossary.FRED + this.getInstance(root.getNodeId()).var + Glossary.OF;
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD)
-                    && n.getInstance() != null
-                    && !isVerb(n.getInstance().var)
-                    && !n.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
-                    && !n.getInstance().var.equalsIgnoreCase(Glossary.CONJUNCT)) {
-                //caso :mod
-
-                boolean contains = Glossary.ADJECTIVE.contains(n.getInstance().var);
-                boolean demonstratives = Glossary.DEMONSTRATIVES.contains(" " + n.getInstance().var + " ");
-
-                if (contains) {
-                    n.relation = Glossary.DUL_HAS_QUALITY;
-                    n.var = FRED + firstUpper(n.getInstance().var);
-                    this.removeInstance(n);
-                    //n.list.remove(n.getInstance());*/
-                } else if (demonstratives) {
-                    n.relation = Glossary.QUANT_HAS_DETERMINER;
-                    n.var = FRED + firstUpper(n.getInstance().var);
-                    this.removeInstance(n);
-                } else {
-                    n.relation = Glossary.DUL_ASSOCIATED_WITH;
-                }
-
-                n.setStatus(OK);
-
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_MOD)
-                    && n.getInstance() == null
-                    && this.getInstance(n.getNodeId()) != null) {
-                //caso :mod
-                String var = this.getInstance(n.getNodeId()).var;
-
-                boolean contains = Glossary.ADJECTIVE.contains(var);
-                boolean demonstratives = Glossary.DEMONSTRATIVES.contains(var);
-
-                if (contains) {
-                    n.relation = Glossary.DUL_HAS_QUALITY;
-                    n.var = FRED + firstUpper(var);
-                    n.setStatus(OK);
-
-                } else if (demonstratives) {
-                    n.relation = Glossary.QUANT_HAS_DETERMINER;
-                    n.var = FRED + firstUpper(var);
-                    n.setStatus(OK);
-                } else {
-                    n.relation = Glossary.DUL_ASSOCIATED_WITH;
-                }
-
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null) {
@@ -1106,7 +1005,7 @@ public class Parser {
     Rende una stringa con la prima lettera in maiuscolo e tutte le altre in minuscolo
      */
     private String firstUpper(String string) {
-        string = string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+        string = string.substring(0, 1).toUpperCase() + string.substring(1); //.toLowerCase();
         return string;
     }
 
@@ -1415,20 +1314,6 @@ public class Parser {
                 Node quant = root.getChild(Glossary.AMR_QUANT);
                 root.getInstance().var = quant.getInstance().var.replace(Glossary.QUANTITY, "");
             }
-        }
-
-        if (root.getChild(Glossary.AMR_MOD) != null
-                && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_DEGREE) != null
-                && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_COMPARED_TO) != null
-                && root.getChild(Glossary.AMR_MOD).getInstance() != null) {
-
-            //caso :mod + :degree + :compared-to
-            Node arg = root.getChild(Glossary.AMR_MOD);
-            instance.var = arg.getInstance().var + firstUpper(instance.var);
-            //arg.list.remove(arg.getInstance());
-            this.removeInstance(arg);
-            root.list.remove(arg);
-            root.addAll(arg.list);
         }
 
         if (instance.var.length() > 3 && instance.var.substring(instance.var.length() - 3).matches(Glossary.AMR_VERB)
@@ -1817,6 +1702,18 @@ public class Parser {
         }
     }
 
+    private void processInstance(Node root) {
+        Node ins = getInstance(root.getNodeId());
+        if (ins != null) {
+            for (Node n : this.getEquals(root)) {
+                n.var = ins.var;
+            }
+            if (root.getInstance() != null) {
+                root.list.remove(root.getInstance());
+            }
+        }
+    }
+
     private void treatInstance(Node root) {
         for (Node n : this.getEquals(root)) {
             n.var = root.var;
@@ -1921,6 +1818,118 @@ public class Parser {
         }
         for (Node n : root.list) {
             n = control_ops(n);
+        }
+        return root;
+    }
+
+    private Node mod_verify(Node root) {
+        Node instance = this.getInstance(root.getNodeId());
+        Node dom = root.getChild(Glossary.AMR_DOMAIN);
+        ArrayList<Node> mods = root.getChildren(Glossary.AMR_MOD);
+        for (Node mod : mods) {
+
+            if (mod != null
+                    && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_DEGREE) != null
+                    && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_COMPARED_TO) != null
+                    && root.getChild(Glossary.AMR_MOD).getInstance() != null
+                    && instance != null) {
+
+                //caso :mod + :degree + :compared-to
+                instance.var = mod.getInstance().var + firstUpper(instance.var);
+                this.removeInstance(mod);
+                root.list.remove(mod);
+                root.addAll(mod.list);
+
+            } else if (mod != null
+                    && (mod.getInstance() != null || this.getInstance(mod.getNodeId()) != null)
+                    && instance != null
+                    && !isVerb(mod.getInstance().var)
+                    && !mod.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
+                    && !mod.getInstance().var.equalsIgnoreCase(Glossary.CONJUNCT) //&& !root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)
+                    ) {
+                String mod_ins;
+                if (mod.getInstance() != null) {
+                    mod_ins = mod.getInstance().var;
+                } else {
+                    mod_ins = this.getInstance(mod.getNodeId()).var;
+                }
+
+                boolean contains = Glossary.ADJECTIVE.contains(mod_ins);
+                boolean demonstratives = Glossary.DEMONSTRATIVES.contains(" " + mod_ins + " ");
+
+                if (contains) {
+                    mod.relation = Glossary.DUL_HAS_QUALITY;
+                    mod.var = FRED + firstUpper(mod.getInstance().var);
+                    this.removeInstance(mod);
+                } else if (demonstratives) {
+                    mod.relation = Glossary.QUANT_HAS_DETERMINER;
+                    mod.var = FRED + firstUpper(mod.getInstance().var);
+                    this.removeInstance(mod);
+                } else {
+
+                    if (dom == null) {
+                        String root_ins = instance.var;
+                        root.var = FRED + root_ins.toLowerCase() + "_" + this.occurrence(root_ins);
+                        this.removeInstance(root);
+                        mod.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                        this.removeInstance(mod);
+                        mod.relation = Glossary.RDF_TYPE;
+                        mod.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                        mod.list.add(new Node(FRED + this.firstUpper(mod_ins), Glossary.DUL_ASSOCIATED_WITH));
+
+                    } else {
+                        String root_ins = instance.var;
+                        root.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                        instance.var = root.var;
+                        this.removeInstance(root);
+                        mod.var = FRED + this.firstUpper(mod_ins);
+                        mod.relation = Glossary.DUL_ASSOCIATED_WITH;
+                        this.removeInstance(mod);
+                        root.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                    }
+                }
+                mod.setStatus(OK);
+            }
+        }
+
+        if (dom != null) {
+            topic = false;
+            dom.relation = TOP;
+            String n_var;
+            if (dom.getInstance() == null
+                    && this.getInstance(dom.getNodeId()) != null) {
+                n_var = this.getInstance(dom.getNodeId()).var;
+
+            } else if (dom.getInstance() != null) {
+                n_var = dom.getInstance().var;
+            } else {
+                n_var = FRED + dom.var.replace(Glossary.LITERAL, "");
+                dom.var = n_var;
+
+            }
+
+            String rel = "";
+            if (instance == null) {
+                rel = Glossary.DUL_HAS_QUALITY;
+            } else if (Glossary.ADJECTIVE.contains(instance.var)) {
+                rel = Glossary.DUL_HAS_QUALITY;
+                this.treatInstance(root);
+                root.var = FRED + firstUpper(root.getInstance().var);
+
+            } else {
+
+                rel = Glossary.RDF_TYPE;
+                root.var = FRED + firstUpper(instance.var);
+                this.removeInstance(root);
+            }
+
+            Node new_node = root.getCopy(rel);
+            dom.list.add(new_node);
+            this.nodes.add(new_node);
+        }
+
+        for (Node n : root.list) {
+            n = mod_verify(n);
         }
         return root;
     }
