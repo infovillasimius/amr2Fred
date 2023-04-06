@@ -613,7 +613,8 @@ public class Parser {
                 }
                 name = Glossary.LITERAL + name.substring(1);
                 n.var = name;
-                this.removeInstance(n);
+                this.treatInstance(n);
+                //this.removeInstance(n);
 
             }
 
@@ -1828,68 +1829,79 @@ public class Parser {
         ArrayList<Node> mods = root.getChildren(Glossary.AMR_MOD);
         for (Node mod : mods) {
 
-            if (mod != null
-                    && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_DEGREE) != null
-                    && root.getChild(Glossary.AMR_MOD).getChild(Glossary.AMR_COMPARED_TO) != null
-                    && root.getChild(Glossary.AMR_MOD).getInstance() != null
-                    && instance != null) {
+            if (mod != null) {
 
-                //caso :mod + :degree + :compared-to
-                instance.var = mod.getInstance().var + firstUpper(instance.var);
-                this.removeInstance(mod);
-                root.list.remove(mod);
-                root.addAll(mod.list);
-
-            } else if (mod != null
-                    && (mod.getInstance() != null || this.getInstance(mod.getNodeId()) != null)
-                    && instance != null
-                    && !isVerb(mod.getInstance().var)
-                    && !mod.getInstance().var.equalsIgnoreCase(Glossary.DISJUNCT)
-                    && !mod.getInstance().var.equalsIgnoreCase(Glossary.CONJUNCT) //&& !root.relation.equalsIgnoreCase(Glossary.AMR_DOMAIN)
-                    ) {
-                String mod_ins;
+                Node mod_instance = null;
                 if (mod.getInstance() != null) {
-                    mod_ins = mod.getInstance().var;
-                } else {
-                    mod_ins = this.getInstance(mod.getNodeId()).var;
+                    mod_instance = mod.getInstance();
+                } else if (this.getInstance(mod.getNodeId()) != null) {
+                    mod_instance = this.getInstance(mod.getNodeId());
                 }
 
-                boolean contains = Glossary.ADJECTIVE.contains(mod_ins);
-                boolean demonstratives = Glossary.DEMONSTRATIVES.contains(" " + mod_ins + " ");
+                if (mod.getChild(Glossary.AMR_DEGREE) != null
+                        && mod.getChild(Glossary.AMR_COMPARED_TO) != null
+                        && mod_instance != null
+                        && instance != null) {
 
-                if (contains) {
-                    mod.relation = Glossary.DUL_HAS_QUALITY;
-                    mod.var = FRED + firstUpper(mod.getInstance().var);
+                    //caso :mod + :degree + :compared-to
+                    instance.var = mod_instance.var + firstUpper(instance.var);
                     this.removeInstance(mod);
-                } else if (demonstratives) {
-                    mod.relation = Glossary.QUANT_HAS_DETERMINER;
-                    mod.var = FRED + firstUpper(mod.getInstance().var);
-                    this.removeInstance(mod);
-                } else {
+                    root.list.remove(mod);
+                    root.addAll(mod.list);
 
-                    if (dom == null) {
-                        String root_ins = instance.var;
-                        root.var = FRED + root_ins.toLowerCase() + "_" + this.occurrence(root_ins);
-                        this.removeInstance(root);
-                        mod.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
-                        this.removeInstance(mod);
-                        mod.relation = Glossary.RDF_TYPE;
-                        mod.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
-                        mod.list.add(new Node(FRED + this.firstUpper(mod_ins), Glossary.DUL_ASSOCIATED_WITH));
-
+                } else if (mod_instance != null
+                        && instance != null
+                        && !isVerb(mod_instance.var)
+                        && !mod_instance.var.equalsIgnoreCase(Glossary.DISJUNCT)
+                        && !mod_instance.var.equalsIgnoreCase(Glossary.CONJUNCT)
+                        && mod.getChild(Glossary.AMR_NAME) == null) {
+                    String mod_ins;
+                    if (mod.getInstance() != null) {
+                        mod_ins = mod.getInstance().var;
                     } else {
-                        String root_ins = instance.var;
-                        root.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
-                        instance.var = root.var;
-                        this.removeInstance(root);
-                        mod.var = FRED + this.firstUpper(mod_ins);
-                        mod.relation = Glossary.DUL_ASSOCIATED_WITH;
-                        this.removeInstance(mod);
-                        root.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                        mod_ins = this.getInstance(mod.getNodeId()).var;
                     }
+
+                    boolean contains = Glossary.ADJECTIVE.contains(mod_ins);
+                    boolean demonstratives = Glossary.DEMONSTRATIVES.contains(" " + mod_ins + " ");
+
+                    if (contains) {
+                        mod.relation = Glossary.DUL_HAS_QUALITY;
+                        mod.var = FRED + firstUpper(mod.getInstance().var);
+                        this.removeInstance(mod);
+                    } else if (demonstratives) {
+                        mod.relation = Glossary.QUANT_HAS_DETERMINER;
+                        mod.var = FRED + firstUpper(mod.getInstance().var);
+                        this.removeInstance(mod);
+                    } else {
+
+                        if (dom == null) {
+                            String root_ins = instance.var;
+                            root.var = FRED + root_ins.toLowerCase() + "_" + this.occurrence(root_ins);
+                            this.removeInstance(root);
+                            mod.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                            this.removeInstance(mod);
+                            mod.relation = Glossary.RDF_TYPE;
+                            mod.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                            mod.list.add(new Node(FRED + this.firstUpper(mod_ins), Glossary.DUL_ASSOCIATED_WITH));
+
+                        } else {
+                            String root_ins = instance.var;
+                            root.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                            instance.var = root.var;
+                            this.removeInstance(root);
+                            mod.var = FRED + this.firstUpper(mod_ins);
+                            mod.relation = Glossary.DUL_ASSOCIATED_WITH;
+                            this.removeInstance(mod);
+                            root.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                        }
+                    }
+                    mod.setStatus(OK);
+                } else {
+                    System.out.println(mod);
                 }
-                mod.setStatus(OK);
             }
+
         }
 
         if (dom != null) {
