@@ -1827,6 +1827,7 @@ public class Parser {
         Node instance = this.getInstance(root.getNodeId());
         Node dom = root.getChild(Glossary.AMR_DOMAIN);
         ArrayList<Node> mods = root.getChildren(Glossary.AMR_MOD);
+
         for (Node mod : mods) {
 
             if (mod != null) {
@@ -1879,21 +1880,25 @@ public class Parser {
                             String root_ins = instance.var;
                             root.var = FRED + root_ins.toLowerCase() + "_" + this.occurrence(root_ins);
                             this.removeInstance(root);
-                            mod.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                            mod.var = FRED + this.firstUpper(mod_ins.replace(FRED, "")) + this.firstUpper(root_ins.replace(FRED, ""));
                             this.removeInstance(mod);
                             mod.relation = Glossary.RDF_TYPE;
-                            mod.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
-                            mod.list.add(new Node(FRED + this.firstUpper(mod_ins), Glossary.DUL_ASSOCIATED_WITH));
+                            if (mod.getChild(Glossary.RDFS_SUBCLASS_OF) == null) {
+                                mod.list.add(new Node(FRED + this.firstUpper(root_ins.replace(FRED, "")), Glossary.RDFS_SUBCLASS_OF));
+                            }
+                            mod.list.add(new Node(FRED + this.firstUpper(mod_ins.replace(FRED, "")), Glossary.DUL_ASSOCIATED_WITH));
 
                         } else {
                             String root_ins = instance.var;
-                            root.var = FRED + this.firstUpper(mod_ins) + this.firstUpper(root_ins);
+                            root.var = FRED + this.firstUpper(mod_ins.replace(FRED, "")) + this.firstUpper(root_ins.replace(FRED, ""));
                             instance.var = root.var;
                             this.removeInstance(root);
-                            mod.var = FRED + this.firstUpper(mod_ins);
+                            mod.var = FRED + this.firstUpper(mod_ins.replace(FRED, ""));
                             mod.relation = Glossary.DUL_ASSOCIATED_WITH;
                             this.removeInstance(mod);
-                            root.list.add(new Node(FRED + this.firstUpper(root_ins), Glossary.RDFS_SUBCLASS_OF));
+                            if (root.getChild(Glossary.RDFS_SUBCLASS_OF) == null) {
+                                root.list.add(new Node(FRED + this.firstUpper(root_ins.replace(FRED, "")), Glossary.RDFS_SUBCLASS_OF));
+                            }
                         }
                     }
                     mod.setStatus(OK);
