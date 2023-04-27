@@ -1868,11 +1868,11 @@ public class Parser {
 
                     if (contains) {
                         mod.relation = Glossary.DUL_HAS_QUALITY;
-                        mod.var = FRED + firstUpper(mod.getInstance().var);
+                        mod.var = FRED + firstUpper(mod_ins);
                         this.removeInstance(mod);
                     } else if (demonstratives) {
                         mod.relation = Glossary.QUANT_HAS_DETERMINER;
-                        mod.var = FRED + firstUpper(mod.getInstance().var);
+                        mod.var = FRED + firstUpper(mod_ins);
                         this.removeInstance(mod);
                     } else {
 
@@ -1902,9 +1902,7 @@ public class Parser {
                         }
                     }
                     mod.setStatus(OK);
-                } else {
-                    System.out.println(mod);
-                }
+                } 
             }
 
         }
