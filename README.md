@@ -1,5 +1,3 @@
-# amr2Fred
-
 ---
 component-id: AMR2FRED
 name: AMR2FRED
@@ -16,6 +14,7 @@ credits:
 - https://github.com/infovillasimius
 ---
 
+# amr2Fred
 
 Application amr2fred translates from AMR to RDF according to the syntax of FRED (http://wit.istc.cnr.it/stlab-tools/fred/)
 
