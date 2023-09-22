@@ -7,7 +7,7 @@ release-date: 22/09/2023
 release-number: v1.0
 work-package: 
 - WP4
-licence: CC BY
+licence: GPL-3.0 license
 links:
 - https://github.com/polifonia-project/amr2fred
 credits:
