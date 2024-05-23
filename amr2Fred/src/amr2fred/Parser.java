@@ -685,8 +685,8 @@ public class Parser {
                 n.relation = FRED + (this.getInstance(root.getNodeId()).var.replaceAll(FRED, "") + Glossary.OF);
                 n.setStatus(OK);
 
-            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
-                    || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER))) && n.getInstance() == null) {
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER)))
+                    && n.getInstance() == null) {
 
                 //casi :quant  e :frequency con valore numerico 
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
@@ -697,7 +697,7 @@ public class Parser {
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null
-                    && !n.getInstance().var.matches(Glossary.AMR_QUANTITY)) {
+                    && !n.getInstance().var.matches(Glossary.AMR_QUANTITY) ) {
 
                 //caso :quant  con instance non nulla - valore non numerico
                 ArrayList<Node> ops = n.getOps();
@@ -710,9 +710,9 @@ public class Parser {
                         n1.setStatus(OK);
                     }
                 }
-
-                n.relation = Glossary.DUL_HAS_AMOUNT;
-                n.var = FRED + firstUpper(n.getInstance().var.replaceAll(FRED, ""));
+                
+                n.relation = Glossary.QUANT_HAS_QUANTIFIER;
+                n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
                 this.removeInstance(n);
                 n.setStatus(OK);
 
@@ -937,20 +937,19 @@ public class Parser {
                     }
                     //break;
                 }
-
+                Node type = root.getChild(Glossary.RDF_TYPE);
                 for (String var : newNodesVars) {
                     Node newNode = new Node(var, Glossary.FS_SCHEMA_SUBSUMED_UNDER, OK);
-                    root.list.add(newNode);
+                    type.list.add(newNode);
                     newNode.visibility = false;
                 }
-
+                
                 for (Node n : root.getArgs()) {
                     String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
                     ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
                     if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal()) != null) {
                         n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
                     }
-
                     n.setStatus(OK);
                 }
             }
@@ -1800,7 +1799,14 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-        if (!root.getOps().isEmpty() && (ins == null || !ins.var.equalsIgnoreCase(Glossary.OP_NAME))) {
+        
+        if(ins != null && (!ins.var.equalsIgnoreCase(Glossary.OP_NAME) || !ins.var.equalsIgnoreCase(Glossary.FRED_MULTIPLE))){
+            return root;
+        }
+        
+        
+        if (!root.getOps().isEmpty()) {
+            System.out.println("Sono qui");
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
                     if (n.var.matches(Glossary.NN_INTEGER)) {
