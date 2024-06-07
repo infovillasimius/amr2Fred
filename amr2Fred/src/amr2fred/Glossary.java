@@ -451,11 +451,17 @@ public class Glossary {
 
     public static final String PB_DATA_NS = "https://w3id.org/framester/pb/data/";
     public static final String PB_DATA = "pbdata:";
+    
+    public static final String PB_ROLESET_NS = "https://w3id.org/framester/data/propbank-3.4.0/RoleSet/";
+    public static final String PB_ROLESET = "roleset:";
 
-    public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/pb/localrole/";
-    public static final String PB_LOCALROLE = "pblr:";
+    public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/LocalRole/";
+    public static final String PB_LOCALROLE = "localrole:";
+    
+    public static final String PB_GENERICROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/GenericRole/";
+    public static final String PB_GENERICROLE = "genericrole:";
 
-    public static final String PB_SCHEMA_NS = "https://w3id.org/framester/pb/schema/";
+    public static final String PB_SCHEMA_NS = "https://w3id.org/framester/schema/propbank/";
     public static final String PB_SCHEMA = "pbschema:";
 
     public static final String FN_FRAME_NS = "https://w3id.org/framester/framenet/abox/frame/";
@@ -476,7 +482,8 @@ public class Glossary {
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
-        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
+        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_ROLESET, PB_LOCALROLE, PB_GENERICROLE, 
+        PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
         WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL};
 
     /**
@@ -485,7 +492,8 @@ public class Glossary {
     public static String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
-        FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
+        FS_SCHEMA_NS, PB_DATA_NS, PB_ROLESET_NS, PB_LOCALROLE_NS, PB_GENERICROLE_NS, 
+        PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
         WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS};
 
     /**
@@ -702,6 +710,19 @@ public class Glossary {
      * Field names of propbankrole table
      */
     public enum PropbankRoleFields {
+        PB_Frame,
+        PB_Role,
+        PB_RoleLabel,
+        PB_GenericRole,
+        PB_Tr,
+        PB_ARG,
+        VA_Role
+    }
+    
+    /**
+     * Field names of propbankrole table
+     */
+    public enum old_PropbankRoleFields {
         PB_Role,
         PB_RoleLabel,
         PB_RoleSup,

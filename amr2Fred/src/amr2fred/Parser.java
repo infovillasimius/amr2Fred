@@ -448,7 +448,7 @@ public class Parser {
                 root.setVerb(Glossary.ID + instance.var.replace('-', '.'));
 
                 args(root);
-                instance.var = Glossary.PB_DATA + instance.var;
+                instance.var = Glossary.PB_ROLESET + instance.var;
                 if (!instance.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instance.setStatus(OK);
                 } else {
@@ -685,7 +685,7 @@ public class Parser {
                 n.relation = FRED + (this.getInstance(root.getNodeId()).var.replaceAll(FRED, "") + Glossary.OF);
                 n.setStatus(OK);
 
-            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER)))
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) || n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY)) && n.var.matches(Glossary.NN_INTEGER)
                     && n.getInstance() == null) {
 
                 //casi :quant  e :frequency con valore numerico 
@@ -712,8 +712,12 @@ public class Parser {
                 }
                 
                 n.relation = Glossary.QUANT_HAS_QUANTIFIER;
-                n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
-                this.removeInstance(n);
+                if(n.getInstance().var.equalsIgnoreCase(Glossary.FRED_MULTIPLE)){
+                    n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
+                    this.removeInstance(n);
+                }
+                //n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
+                //this.removeInstance(n);
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF) && n.getInstance() != null) {
@@ -916,7 +920,8 @@ public class Parser {
 
             Propbank pb = Propbank.getPropbank();
             String lemma2 = lemma.substring(3).replace(".", "-");
-            ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_DATA + lemma2, Glossary.PropbankFrameFields.PB_Frame);
+            ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_ROLESET + lemma2, Glossary.PropbankFrameFields.PB_Frame);
+
             if (!roles.isEmpty()) {
                 String label = roles.get(0).get(Glossary.PropbankFrameFields.PB_FrameLabel.ordinal());
                 if (label.length() > 0) {
@@ -943,12 +948,15 @@ public class Parser {
                     type.list.add(newNode);
                     newNode.visibility = false;
                 }
-                
+
+                // search for roles
                 for (Node n : root.getArgs()) {
-                    String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
-                    ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
-                    if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal()) != null) {
-                        n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
+
+                    String r = Glossary.PB_ROLESET + lemma2; //+ "__" + n.relation.substring(4);
+                    ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Frame, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_ARG);
+
+                    if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_Role.ordinal()) != null) {
+                        n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_Role.ordinal());
                     }
                     n.setStatus(OK);
                 }
@@ -1086,7 +1094,7 @@ public class Parser {
      */
     private boolean isVerb(String word) {
         Propbank prb = Propbank.getPropbank();
-        ArrayList<ArrayList<String>> result = prb.find(Glossary.PB_DATA + word, Glossary.PropbankFrameFields.PB_Frame);
+        ArrayList<ArrayList<String>> result = prb.find(Glossary.PB_ROLESET + word, Glossary.PropbankFrameFields.PB_Frame);
         return result != null && !result.isEmpty();
     }
 
@@ -1804,9 +1812,7 @@ public class Parser {
             return root;
         }
         
-        
         if (!root.getOps().isEmpty()) {
-            System.out.println("Sono qui");
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
                     if (n.var.matches(Glossary.NN_INTEGER)) {
