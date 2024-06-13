@@ -384,6 +384,8 @@ public class Parser {
                 this.vars.add(n.var);
             }
         }
+        
+        root = dom_verify(root);
 
         //verifica ops
         root = control_ops(root);
@@ -396,12 +398,12 @@ public class Parser {
 
         //verifica :mod
         root = mod_verify(root);
-
+        
         //Elaborazione della lista dei nodi contenuti nel nodo attualmente in lavorazione
         root = this.listElaboration(root);
-
+        
         root = add_parent_list(root);
-
+                
         //elaborazione del nodo figlio denominato instance in amr
         root = this.instanceElaboration(root);
 
@@ -697,7 +699,7 @@ public class Parser {
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) && n.getInstance() != null
-                    && !n.getInstance().var.matches(Glossary.AMR_QUANTITY) ) {
+                    && !n.getInstance().var.matches(Glossary.AMR_QUANTITY)) {
 
                 //caso :quant  con instance non nulla - valore non numerico
                 ArrayList<Node> ops = n.getOps();
@@ -710,9 +712,9 @@ public class Parser {
                         n1.setStatus(OK);
                     }
                 }
-                
+
                 n.relation = Glossary.QUANT_HAS_QUANTIFIER;
-                if(n.getInstance().var.equalsIgnoreCase(Glossary.FRED_MULTIPLE)){
+                if (n.getInstance().var.equalsIgnoreCase(Glossary.FRED_MULTIPLE)) {
                     n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
                     this.removeInstance(n);
                 }
@@ -1807,11 +1809,11 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-        
-        if(ins != null && (!ins.var.equalsIgnoreCase(Glossary.OP_NAME) || !ins.var.equalsIgnoreCase(Glossary.FRED_MULTIPLE))){
+
+        if (ins != null && (!ins.var.equalsIgnoreCase(Glossary.OP_NAME) || !ins.var.equalsIgnoreCase(Glossary.FRED_MULTIPLE))) {
             return root;
         }
-        
+
         if (!root.getOps().isEmpty()) {
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
@@ -1914,11 +1916,20 @@ public class Parser {
                         }
                     }
                     mod.setStatus(OK);
-                } 
+                }
             }
 
         }
 
+        for (Node n : root.list) {
+            n = mod_verify(n);
+        }
+        return root;
+    }
+
+    private Node dom_verify(Node root) {
+        Node dom = root.getChild(Glossary.AMR_DOMAIN);
+        Node instance = this.getInstance(root.getNodeId());
         if (dom != null) {
             topic = false;
             dom.relation = TOP;
@@ -1932,9 +1943,7 @@ public class Parser {
             } else {
                 n_var = FRED + dom.var.replace(Glossary.LITERAL, "");
                 dom.var = n_var;
-
             }
-
             String rel = "";
             if (instance == null) {
                 rel = Glossary.DUL_HAS_QUALITY;
@@ -1949,14 +1958,12 @@ public class Parser {
                 root.var = FRED + firstUpper(instance.var);
                 this.removeInstance(root);
             }
-
             Node new_node = root.getCopy(rel);
             dom.list.add(new_node);
             this.nodes.add(new_node);
         }
-
         for (Node n : root.list) {
-            n = mod_verify(n);
+            n = dom_verify(n);
         }
         return root;
     }
