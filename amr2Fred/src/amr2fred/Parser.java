@@ -123,7 +123,6 @@ public class Parser {
     public Node parse(String amr) {
         amr = StringUtils.stripAccents(amr);
 
-
         /*
         Il nodo root contiene la struttura dati che si ottiene
         passando la stringa amr al metodo string2Array e passando 
@@ -152,6 +151,8 @@ public class Parser {
             root = topic(root);
             //verifica e tenta correzione errori residui
             root = residual(root);
+            //AMR INTEGRATION
+            root = amr_integration(root);
         }
 
         return root;
@@ -384,7 +385,7 @@ public class Parser {
                 this.vars.add(n.var);
             }
         }
-        
+
         root = dom_verify(root);
 
         //verifica ops
@@ -398,12 +399,12 @@ public class Parser {
 
         //verifica :mod
         root = mod_verify(root);
-        
+
         //Elaborazione della lista dei nodi contenuti nel nodo attualmente in lavorazione
         root = this.listElaboration(root);
-        
+
         root = add_parent_list(root);
-                
+
         //elaborazione del nodo figlio denominato instance in amr
         root = this.instanceElaboration(root);
 
@@ -726,9 +727,9 @@ public class Parser {
                 n.relation = Glossary.FRED + this.getInstance(root.getNodeId()).var + Glossary.OF;
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null && n.getInstance() == null) {
 
-                //caso :age
+                //caso :age con valore numerico
                 String age = n.var;
                 n.relation = TOP;
                 n.var = "a";
@@ -737,6 +738,25 @@ public class Parser {
                 this.nodes.add(n1);
                 n.add(n1);
                 n.add(new Node(age, AMR_ARG2));
+                n = listElaboration(n);
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null && n.getInstance() != null) {
+
+                //caso :age con valore Entity
+                n.relation = TOP;
+
+                Node n1 = root.getCopy(AMR_ARG1);
+                this.nodes.add(n1);
+
+                Node new_age_node = new Node("zz1", AMR_ARG2);
+                this.nodes.add(new_age_node);
+                new_age_node.addAll(n.list);
+                n.list = new ArrayList<>();
+                n.add(n1);
+                n.var = "a";
+                n.add(new Node("age-01", Glossary.INSTANCE));
+                n.add(new_age_node);
+                //n.add(new Node(age, AMR_ARG2));
                 n = listElaboration(n);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE) //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
@@ -1809,7 +1829,6 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-
         if (ins != null && (!ins.var.equalsIgnoreCase(Glossary.OP_NAME) || !ins.var.equalsIgnoreCase(Glossary.FRED_MULTIPLE))) {
             return root;
         }
@@ -1964,6 +1983,28 @@ public class Parser {
         }
         for (Node n : root.list) {
             n = dom_verify(n);
+        }
+        return root;
+    }
+
+    private Node amr_integration(Node root) {
+        
+        String obj = root.var; // or  root.relation
+        for (String a: Glossary.AMR_INTEGRATION){
+            //System.out.println(Glossary.AMR+a.substring(1));
+            if(obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && !a.endsWith("_of")){
+                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1), Glossary.OWL_EQUIVALENT_PROPERTY, OK));
+                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
+                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+                
+            } else if (obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && a.endsWith("_of")){
+                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1).replace("_of", ""), Glossary.OWL_INVERSE_OF, OK));
+                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
+                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+            }
+        }
+        for (Node n : root.list) {
+            n = amr_integration(n);
         }
         return root;
     }

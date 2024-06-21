@@ -162,6 +162,9 @@ public class Glossary {
     public static final String OWL_THING = OWL + "Thing";
     public static final String OWL_EQUIVALENT_CLASS = OWL + "equivalentClass";
     public static final String OWL_SAME_AS = OWL + "sameAs";
+    public static final String OWL_OBJECT_PROPERTY = OWL + "ObjectProperty";
+    public static final String OWL_INVERSE_OF = OWL + "inverseOf";
+    public static final String OWL_EQUIVALENT_PROPERTY = OWL + "equivalentProperty";
 
     /**
      * Local name for rdf
@@ -476,6 +479,8 @@ public class Glossary {
     public static final String LITERAL = "literal:";
     public static final String LITERAL2 = "Literal:";
     public static final String LITERAL_NS = "";
+    
+    
 
     /**
      * Array of Fred elements local names
@@ -794,5 +799,38 @@ public class Glossary {
     
     public static final String OP_JOINER = "_";
     public static final String OP_NAME = "name";
+    
+    public static String[] AMR_INTEGRATION = {
+        AMR_ACCOMPANIER, 
+        AMR_BENEFICIARY, 
+        AMR_CAUSE, 
+        AMR_CONCESSION, 
+        AMR_DEGREE, 
+        AMR_DESTINATION,
+        AMR_DIRECTION,
+        AMR_DURATION,
+        AMR_EXAMPLE,
+        AMR_EXTENT,
+        AMR_FREQUENCY,
+        AMR_INSTRUMENT,
+        AMR_LOCATION,
+        AMR_MANNER,
+        AMR_MEDIUM,
+        AMR_MOD,
+        AMR_PART,
+        AMR_PATH,
+        AMR_POLARITY,
+        AMR_PURPOSE,
+        AMR_RANGE,
+        AMR_SOURCE,
+        AMR_SUB_EVENT_OF,
+        AMR_SUBSET,
+        AMR_SUBSET_OF,
+        AMR_TIME,
+        AMR_TOPIC,
+        AMR_AGE
+    };
+    
+    public static final String FS_SCHEMA_SEMANTIC_ROLE = FS_SCHEMA + "SemanticRole";
     
 }
