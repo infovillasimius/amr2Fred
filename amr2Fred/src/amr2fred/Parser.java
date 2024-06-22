@@ -123,7 +123,6 @@ public class Parser {
     public Node parse(String amr) {
         amr = StringUtils.stripAccents(amr);
 
-
         /*
         Il nodo root contiene la struttura dati che si ottiene
         passando la stringa amr al metodo string2Array e passando 
@@ -152,6 +151,8 @@ public class Parser {
             root = topic(root);
             //verifica e tenta correzione errori residui
             root = residual(root);
+            //AMR INTEGRATION
+            root = amr_integration(root);
         }
 
         return root;
@@ -385,6 +386,8 @@ public class Parser {
             }
         }
 
+        root = dom_verify(root);
+
         //verifica ops
         root = control_ops(root);
 
@@ -448,7 +451,7 @@ public class Parser {
                 root.setVerb(Glossary.ID + instance.var.replace('-', '.'));
 
                 args(root);
-                instance.var = Glossary.PB_DATA + instance.var;
+                instance.var = Glossary.PB_ROLESET + instance.var;
                 if (!instance.relation.startsWith(Glossary.AMR_RELATION_BEGIN)) {
                     instance.setStatus(OK);
                 } else {
@@ -685,8 +688,8 @@ public class Parser {
                 n.relation = FRED + (this.getInstance(root.getNodeId()).var.replaceAll(FRED, "") + Glossary.OF);
                 n.setStatus(OK);
 
-            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT)
-                    || (n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY) && n.var.matches(Glossary.NN_INTEGER))) && n.getInstance() == null) {
+            } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_QUANT) || n.relation.equalsIgnoreCase(Glossary.AMR_FREQUENCY)) && n.var.matches(Glossary.NN_INTEGER)
+                    && n.getInstance() == null) {
 
                 //casi :quant  e :frequency con valore numerico 
                 n.relation = Glossary.DUL_HAS_DATA_VALUE;
@@ -711,18 +714,22 @@ public class Parser {
                     }
                 }
 
-                n.relation = Glossary.DUL_HAS_AMOUNT;
-                n.var = FRED + firstUpper(n.getInstance().var.replaceAll(FRED, ""));
-                this.removeInstance(n);
+                n.relation = Glossary.QUANT_HAS_QUANTIFIER;
+                if (n.getInstance().var.equalsIgnoreCase(Glossary.FRED_MULTIPLE)) {
+                    n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
+                    this.removeInstance(n);
+                }
+                //n.var = Glossary.QUANT + Glossary.FRED_MULTIPLE;
+                //this.removeInstance(n);
                 n.setStatus(OK);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF) && n.getInstance() != null) {
                 n.relation = Glossary.FRED + this.getInstance(root.getNodeId()).var + Glossary.OF;
                 n.setStatus(OK);
 
-            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null) {
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null && n.getInstance() == null) {
 
-                //caso :age
+                //caso :age con valore numerico
                 String age = n.var;
                 n.relation = TOP;
                 n.var = "a";
@@ -731,6 +738,25 @@ public class Parser {
                 this.nodes.add(n1);
                 n.add(n1);
                 n.add(new Node(age, AMR_ARG2));
+                n = listElaboration(n);
+
+            } else if (n.relation.equalsIgnoreCase(Glossary.AMR_AGE) && root.getInstance() != null && n.getInstance() != null) {
+
+                //caso :age con valore Entity
+                n.relation = TOP;
+
+                Node n1 = root.getCopy(AMR_ARG1);
+                this.nodes.add(n1);
+
+                Node new_age_node = new Node("zz1", AMR_ARG2);
+                this.nodes.add(new_age_node);
+                new_age_node.addAll(n.list);
+                n.list = new ArrayList<>();
+                n.add(n1);
+                n.var = "a";
+                n.add(new Node("age-01", Glossary.INSTANCE));
+                n.add(new_age_node);
+                //n.add(new Node(age, AMR_ARG2));
                 n = listElaboration(n);
 
             } else if ((n.relation.equalsIgnoreCase(Glossary.AMR_DEGREE) //    || n.relation.equalsIgnoreCase(Glossary.AMR_TIME)
@@ -916,7 +942,8 @@ public class Parser {
 
             Propbank pb = Propbank.getPropbank();
             String lemma2 = lemma.substring(3).replace(".", "-");
-            ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_DATA + lemma2, Glossary.PropbankFrameFields.PB_Frame);
+            ArrayList<ArrayList<String>> roles = pb.find(Glossary.PB_ROLESET + lemma2, Glossary.PropbankFrameFields.PB_Frame);
+
             if (!roles.isEmpty()) {
                 String label = roles.get(0).get(Glossary.PropbankFrameFields.PB_FrameLabel.ordinal());
                 if (label.length() > 0) {
@@ -937,20 +964,22 @@ public class Parser {
                     }
                     //break;
                 }
-
+                Node type = root.getChild(Glossary.RDF_TYPE);
                 for (String var : newNodesVars) {
                     Node newNode = new Node(var, Glossary.FS_SCHEMA_SUBSUMED_UNDER, OK);
-                    root.list.add(newNode);
+                    type.list.add(newNode);
                     newNode.visibility = false;
                 }
 
+                // search for roles
                 for (Node n : root.getArgs()) {
-                    String r = Glossary.PB_DATA + lemma2 + "__" + n.relation.substring(4);
-                    ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Role, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_RoleSup);
-                    if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal()) != null) {
-                        n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_RoleLabel.ordinal());
-                    }
 
+                    String r = Glossary.PB_ROLESET + lemma2; //+ "__" + n.relation.substring(4);
+                    ArrayList<ArrayList<String>> pbroles = pb.find(r, Glossary.PropbankRoleFields.PB_Frame, Glossary.PB_SCHEMA + n.relation.substring(1), Glossary.PropbankRoleFields.PB_ARG);
+
+                    if (!pbroles.isEmpty() && pbroles.get(0).get(Glossary.PropbankRoleFields.PB_Role.ordinal()) != null) {
+                        n.relation = pbroles.get(0).get(Glossary.PropbankRoleFields.PB_Role.ordinal());
+                    }
                     n.setStatus(OK);
                 }
             }
@@ -1087,7 +1116,7 @@ public class Parser {
      */
     private boolean isVerb(String word) {
         Propbank prb = Propbank.getPropbank();
-        ArrayList<ArrayList<String>> result = prb.find(Glossary.PB_DATA + word, Glossary.PropbankFrameFields.PB_Frame);
+        ArrayList<ArrayList<String>> result = prb.find(Glossary.PB_ROLESET + word, Glossary.PropbankFrameFields.PB_Frame);
         return result != null && !result.isEmpty();
     }
 
@@ -1800,7 +1829,11 @@ public class Parser {
 
     Node control_ops(Node root) {
         Node ins = root.getInstance();
-        if (!root.getOps().isEmpty() && (ins == null || !ins.var.equalsIgnoreCase(Glossary.OP_NAME))) {
+        if (ins != null && (!ins.var.equalsIgnoreCase(Glossary.OP_NAME) || !ins.var.equalsIgnoreCase(Glossary.FRED_MULTIPLE))) {
+            return root;
+        }
+
+        if (!root.getOps().isEmpty()) {
             for (Node n : root.getOps()) {
                 if (n.getInstance() == null) {
                     if (n.var.matches(Glossary.NN_INTEGER)) {
@@ -1902,11 +1935,20 @@ public class Parser {
                         }
                     }
                     mod.setStatus(OK);
-                } 
+                }
             }
 
         }
 
+        for (Node n : root.list) {
+            n = mod_verify(n);
+        }
+        return root;
+    }
+
+    private Node dom_verify(Node root) {
+        Node dom = root.getChild(Glossary.AMR_DOMAIN);
+        Node instance = this.getInstance(root.getNodeId());
         if (dom != null) {
             topic = false;
             dom.relation = TOP;
@@ -1920,9 +1962,7 @@ public class Parser {
             } else {
                 n_var = FRED + dom.var.replace(Glossary.LITERAL, "");
                 dom.var = n_var;
-
             }
-
             String rel = "";
             if (instance == null) {
                 rel = Glossary.DUL_HAS_QUALITY;
@@ -1937,14 +1977,34 @@ public class Parser {
                 root.var = FRED + firstUpper(instance.var);
                 this.removeInstance(root);
             }
-
             Node new_node = root.getCopy(rel);
             dom.list.add(new_node);
             this.nodes.add(new_node);
         }
-
         for (Node n : root.list) {
-            n = mod_verify(n);
+            n = dom_verify(n);
+        }
+        return root;
+    }
+
+    private Node amr_integration(Node root) {
+        
+        String obj = root.var; // or  root.relation
+        for (String a: Glossary.AMR_INTEGRATION){
+            //System.out.println(Glossary.AMR+a.substring(1));
+            if(obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && !a.endsWith("_of")){
+                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1), Glossary.OWL_EQUIVALENT_PROPERTY, OK));
+                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
+                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+                
+            } else if (obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && a.endsWith("_of")){
+                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1).replace("_of", ""), Glossary.OWL_INVERSE_OF, OK));
+                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
+                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+            }
+        }
+        for (Node n : root.list) {
+            n = amr_integration(n);
         }
         return root;
     }
