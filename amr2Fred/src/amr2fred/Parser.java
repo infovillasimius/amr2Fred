@@ -604,6 +604,10 @@ public class Parser {
                         n.relation = Glossary.RDF_TYPE;
                         this.treatInstance(root);
                     }
+                    if (!n.list.isEmpty()){
+                        toAdd.addAll(n.list);
+                        n.list.clear();
+                    }
                     n.setStatus(REMOVE);
                 }
 

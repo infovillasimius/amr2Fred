@@ -456,13 +456,13 @@ public class Glossary {
     public static final String PB_DATA = "pbdata:";
     
     public static final String PB_ROLESET_NS = "https://w3id.org/framester/data/propbank-3.4.0/RoleSet/";
-    public static final String PB_ROLESET = "roleset:";
+    public static final String PB_ROLESET = "pbrs:";
 
     public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/LocalRole/";
-    public static final String PB_LOCALROLE = "localrole:";
+    public static final String PB_LOCALROLE = "pblr:";
     
     public static final String PB_GENERICROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/GenericRole/";
-    public static final String PB_GENERICROLE = "genericrole:";
+    public static final String PB_GENERICROLE = "pbgr:";
 
     public static final String PB_SCHEMA_NS = "https://w3id.org/framester/schema/propbank/";
     public static final String PB_SCHEMA = "pbschema:";
