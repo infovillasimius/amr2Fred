@@ -60,6 +60,7 @@ public class Parser {
 
     //contiene il valore numerico delle operazioni di visita dei nodi del grafo amr - interrompe le operazioni in caso di errore di ricorsività
     static int endless;
+    static int endless2;
 
     //flag per l'aggiunta del valore topic al nodo radice
     private boolean topic;
@@ -121,6 +122,7 @@ public class Parser {
      * @return Node Fred root node
      */
     public Node parse(String amr) {
+
         amr = StringUtils.stripAccents(amr);
 
         /*
@@ -133,6 +135,7 @@ public class Parser {
 
         if (root != null) {
             endless = 0;
+            endless2 = 0;
             this.rootCopy = root.getCopy(this.nodesCopy);
 
             //verifica errore per ricorsione
@@ -156,6 +159,7 @@ public class Parser {
         }
 
         return root;
+
     }
 
     /**
@@ -604,7 +608,7 @@ public class Parser {
                         n.relation = Glossary.RDF_TYPE;
                         this.treatInstance(root);
                     }
-                    if (!n.list.isEmpty()){
+                    if (!n.list.isEmpty()) {
                         toAdd.addAll(n.list);
                         n.list.clear();
                     }
@@ -894,12 +898,6 @@ public class Parser {
             root = listElaboration(root);
         }
 
-        for (Node n : root.list) {
-            //richiama il metodo di traduzione ricorsivamente
-            n = listElaboration(n);
-
-        }
-
         if (root.relation.equalsIgnoreCase(TOP)
                 && !root.getOps().isEmpty()) {
 
@@ -927,6 +925,17 @@ public class Parser {
             root.setStatus(AMR);
         } else {
             root.setStatus(OK);
+        }
+
+        if (endless2 > Glossary.ENDLESS2) {
+            //System.out.println(Parser.endless2);
+            return root;
+        }
+
+        for (Node n : root.list) {
+            //richiama il metodo di traduzione ricorsivamente
+            Parser.endless2 += 1;
+            n = listElaboration(n);
         }
 
         return root;
@@ -1992,16 +2001,16 @@ public class Parser {
     }
 
     private Node amr_integration(Node root) {
-        
+
         String obj = root.var; // or  root.relation
-        for (String a: Glossary.AMR_INTEGRATION){
+        for (String a : Glossary.AMR_INTEGRATION) {
             //System.out.println(Glossary.AMR+a.substring(1));
-            if(obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && !a.endsWith("_of")){
+            if (obj.equalsIgnoreCase(Glossary.AMR + a.substring(1)) && !a.endsWith("_of")) {
                 root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1), Glossary.OWL_EQUIVALENT_PROPERTY, OK));
                 root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
                 root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
-                
-            } else if (obj.equalsIgnoreCase(Glossary.AMR+a.substring(1)) && a.endsWith("_of")){
+
+            } else if (obj.equalsIgnoreCase(Glossary.AMR + a.substring(1)) && a.endsWith("_of")) {
                 root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1).replace("_of", ""), Glossary.OWL_INVERSE_OF, OK));
                 root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
                 root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));

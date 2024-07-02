@@ -34,6 +34,7 @@ public class Glossary {
      * Value for recursion errors control
      */
     public static final int ENDLESS = 1000;
+    public static final int ENDLESS2 = 800;
 
     /**
      * Message for recursive errors

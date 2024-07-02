@@ -32,6 +32,11 @@ public class Amr2fredWeb {
 
             Parser instance = Parser.getInstance();
             Node result = parse(amr, instance);
+            //System.out.println(Parser.endless2);
+            if(Parser.endless2 >= Glossary.ENDLESS2){
+                cb = true;
+                check = 1;
+            }
 
             /*
                     se il risultato dell'elaborazione del parser non è nullo avvia la visualizzazione dei risultati
