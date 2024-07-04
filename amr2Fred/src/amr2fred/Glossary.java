@@ -432,10 +432,10 @@ public class Glossary {
     public static final String DIGRAPH_END = "}";
 
     //Nuovi prefissi e nuovi Spazi Nomi
-    public static final String AMR_NS = "http://www.ontologydesignpatterns.org/ont/amr/";
+    public static final String AMR_NS = "https://w3id.org/framester/amr/";
     public static final String AMR = "amr:";
 
-    public static final String AMRB_NS = "http://www.ontologydesignpatterns.org/ont/amrb/";
+    public static final String AMRB_NS = "https://w3id.org/framester/amrb/";
     public static final String AMRB = "amrb:";
 
     public static final String VA_NS = "http://verbatlas.org/";
@@ -481,6 +481,9 @@ public class Glossary {
     public static final String LITERAL2 = "Literal:";
     public static final String LITERAL_NS = "";
     
+    public static final String SCHEMA = "schema:";
+    public static final String SCHEMA_NS = "https://schema.org/";
+    
     
 
     /**
@@ -490,7 +493,7 @@ public class Glossary {
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
         WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_ROLESET, PB_LOCALROLE, PB_GENERICROLE, 
         PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
-        WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL};
+        WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL, SCHEMA};
 
     /**
      * Array of fred elements name space
@@ -500,12 +503,12 @@ public class Glossary {
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
         FS_SCHEMA_NS, PB_DATA_NS, PB_ROLESET_NS, PB_LOCALROLE_NS, PB_GENERICROLE_NS, 
         PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
-        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS};
+        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS, SCHEMA_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 27;
+    public static final int PREFIX_NUM = 31;
 
     /**
      * Jena's writers output modes
