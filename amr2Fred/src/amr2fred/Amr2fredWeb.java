@@ -123,7 +123,12 @@ public class Amr2fredWeb {
             if (!amr.startsWith("(")) {
                 amr = "(" + amr + ")";
             }
-            result = instance.parse(amr);
+            try {
+                result = instance.parse(amr);
+                return result;
+            } catch(Exception e) {
+                return null;
+            }
         }
 
         return result;

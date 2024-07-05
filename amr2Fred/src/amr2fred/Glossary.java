@@ -166,6 +166,7 @@ public class Glossary {
     public static final String OWL_OBJECT_PROPERTY = OWL + "ObjectProperty";
     public static final String OWL_INVERSE_OF = OWL + "inverseOf";
     public static final String OWL_EQUIVALENT_PROPERTY = OWL + "equivalentProperty";
+    public static final String OWL_DATA_TYPE_PROPERTY = OWL + "DatatypeProperty";
 
     /**
      * Local name for rdf

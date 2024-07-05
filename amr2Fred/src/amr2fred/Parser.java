@@ -144,6 +144,8 @@ public class Parser {
                 return root;
             }
 
+            root = this.check_missing_instances(root);
+
             //metodo per controllo multi sentence
             root = multi_sentence(root);
             //richiama il metodo che effettua la traduzione delle relazioni e dei valori
@@ -155,7 +157,7 @@ public class Parser {
             //verifica e tenta correzione errori residui
             root = residual(root);
             //AMR INTEGRATION
-            root = amr_integration(root);
+            root = logic_triples_integration(root);
         }
 
         return root;
@@ -638,7 +640,7 @@ public class Parser {
                 //this.removeInstance(n);
 
             } else if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)
-                    && n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.OP_NAME) 
+                    && n.getInstance() != null && n.getInstance().var.equalsIgnoreCase(Glossary.OP_NAME)
                     && !n.getOps().isEmpty() && check_for_amr_instances(root)) {
 
                 ArrayList<Node> ops = n.getOps();
@@ -1742,9 +1744,43 @@ public class Parser {
             root.var = FRED + "Undefined";
             root.setMalformed(true);
         }
+        
+        /**
+         * not sure - start
+         */
+        ArrayList<Node> types = root.getChildren(Glossary.RDF_TYPE);
+        if (root.var.contains(FRED) && root.var.contains("_") && !types.isEmpty()) {
+            String var = root.var.split("_")[0].replace(FRED, "");
+            for (Node n : types) {
+                if (n.var.contains(FRED) && n.var.contains("_")) {
+                    String child_var = n.var.split("_")[0].replace(FRED, "");
+                    if (var.equalsIgnoreCase(child_var)) {
+                        for(Node nn : this.nodes){
+                            if(nn.var.equalsIgnoreCase(root.var)){
+                                nn.var = n.var;
+                            }
+                        }
+                        root.var = n.var;
+                        n.relation = TOP;
+                    }
+                }
+            }
+        }
+
+        if (root.var.contains(FRED)) {
+            String var = root.var.replace(FRED, "");
+            for (String AMR_INSTANCES : Glossary.AMR_INSTANCES) {
+                if (var.equalsIgnoreCase(AMR_INSTANCES)) {
+                    root.var = Glossary.AMR + var;
+                    break;
+                }
+            }
+        }
+        /*
+        not sure - end
+        */
 
         for (Node n : root.getList()) {
-
             n = residual(n);
         }
         return root;
@@ -1768,7 +1804,8 @@ public class Parser {
             root.list.remove(root.getInstance());
         }
     }
-
+    
+    /* not used
     private void processInstance(Node root) {
         Node ins = getInstance(root.getNodeId());
         if (ins != null) {
@@ -1779,7 +1816,7 @@ public class Parser {
                 root.list.remove(root.getInstance());
             }
         }
-    }
+    }*/
 
     private void treatInstance(Node root) {
         for (Node n : this.getEquals(root)) {
@@ -2024,25 +2061,51 @@ public class Parser {
         return root;
     }
 
-    private Node amr_integration(Node root) {
-        /*
-        String obj = root.var; // or  root.relation
+    private Node logic_triples_integration(Node root) {
+        for (Node n : root.list) {
+            n = logic_triples_integration(n);
+        }
+        boolean vis = false;
+        String obj = root.relation;
         for (String a : Glossary.AMR_INTEGRATION) {
  
             if (obj.equalsIgnoreCase(Glossary.AMR + a.substring(1)) && !a.endsWith("_of")) {
-                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1), Glossary.OWL_EQUIVALENT_PROPERTY, OK));
-                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
-                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+                Node rel = new Node(root.relation, TOP, OK, vis);
+                rel.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1), Glossary.OWL_EQUIVALENT_PROPERTY, OK, vis));
+                rel.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK, vis));
+                rel.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK, vis));
+                root.add(rel);
 
             } else if (obj.equalsIgnoreCase(Glossary.AMR + a.substring(1)) && a.endsWith("_of")) {
-                root.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1).replace("_of", ""), Glossary.OWL_INVERSE_OF, OK));
-                root.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK));
-                root.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK));
+                Node rel = new Node(root.relation, TOP, OK, vis);
+                rel.list.add(new Node(Glossary.PB_GENERICROLE + a.substring(1).replace("_of", ""), Glossary.OWL_INVERSE_OF, OK, vis));
+                rel.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK, vis));
+                rel.list.add(new Node(Glossary.FS_SCHEMA_SEMANTIC_ROLE, Glossary.RDF_TYPE, OK, vis));
+                root.add(rel);
             }
         }
-        for (Node n : root.list) {
-            n = amr_integration(n);
-        }*/
+        
+        if (!obj.startsWith(FRED) 
+                && !obj.startsWith(Glossary.RDFS)
+                && !obj.startsWith(Glossary.RDF)
+                && !obj.startsWith(Glossary.OWL)
+                && !obj.equalsIgnoreCase(Glossary.DUL_HAS_DATA_VALUE)
+                && !obj.equalsIgnoreCase(Glossary.DUL_HAS_AMOUNT)
+                && !obj.equalsIgnoreCase(TOP)
+                ){
+            Node rel = new Node(root.relation, TOP, OK, vis);
+            root.add(rel);
+            rel.list.add(new Node(Glossary.OWL_OBJECT_PROPERTY, Glossary.RDF_TYPE, OK, vis ));
+        } else if(obj.equalsIgnoreCase(Glossary.DUL_HAS_DATA_VALUE)
+                || obj.equalsIgnoreCase(Glossary.DUL_HAS_AMOUNT)){
+            Node rel = new Node(root.relation, TOP, OK, vis);
+            root.add(rel);
+            rel.list.add(new Node(Glossary.OWL_DATA_TYPE_PROPERTY, Glossary.RDF_TYPE, OK, vis ));
+        }
+        
+        
+        
+        
         return root;
     }
 
@@ -2059,5 +2122,25 @@ public class Parser {
             }
         }
         return false;
+    }
+
+    private Node check_missing_instances(Node root) {
+        if (!root.relation.equalsIgnoreCase(Glossary.INSTANCE) && root.getInstance() == null) {
+            //System.out.println("Root: "+ root + " " + root.getNodeId() + " -->");
+            ArrayList<Node> equ = this.nodes;
+            for (Node n : equ) {
+                //System.out.println("Equ: " + n + " " + n.getNodeId());
+                if (n.var.equals(root.var) && n.getInstance() != null) {
+                    //root.var = n.getInstance().var;
+                    root.makeEquals(n);
+                }
+            }
+        }
+
+        for (Node n : root.list) {
+            n = check_missing_instances(n);
+        }
+
+        return root;
     }
 }
