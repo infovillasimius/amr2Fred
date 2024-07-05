@@ -1748,6 +1748,8 @@ public class Parser {
         /**
          * not sure - start
          */
+        
+        /*
         ArrayList<Node> types = root.getChildren(Glossary.RDF_TYPE);
         if (root.var.contains(FRED) && root.var.contains("_") && !types.isEmpty()) {
             String var = root.var.split("_")[0].replace(FRED, "");
