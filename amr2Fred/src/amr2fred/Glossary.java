@@ -837,5 +837,8 @@ public class Glossary {
     };
     
     public static final String FS_SCHEMA_SEMANTIC_ROLE = FS_SCHEMA + "SemanticRole";
+    public static final String NON_LITERAL = ":";
+    public static final String WRONG_APOSTROPHE = "’";
+    public static final String RIGHT_APOSTROPHE = "'";
     
 }

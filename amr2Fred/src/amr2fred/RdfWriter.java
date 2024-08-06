@@ -115,7 +115,10 @@ public class RdfWriter {
             }
 
             for (Node n1 : n.list) {
-
+                String uri = this.getUri(n.var);
+                if (!uri.startsWith("http")){
+                    break;
+                }
                 Resource r = model.createResource(this.getUri(n.var));
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
 
