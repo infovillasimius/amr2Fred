@@ -575,15 +575,13 @@ public class Parser {
                 for (Node n1 : ops) {
                     n1.relation = Glossary.DUL_HAS_MEMBER;
                 }
-
             }
 
             if (Glossary.PERSON.contains(" " + n.var + " ")) {
                 //casi speciali con pronomi personali e aggettivi dimostrativi
-                n.var = "person";
+                n.var = Glossary.FRED_PERSON;
                 this.setEquals(root);
                 root.prefix = true;
-
             }
 
             if (n.relation.equalsIgnoreCase(Glossary.AMR_NAME)) {
@@ -637,7 +635,7 @@ public class Parser {
                 }
                 name = Glossary.LITERAL + name.substring(1);
                 n.var = name;
-                n.relation = Glossary.SCHEMA + "name";
+                n.relation = Glossary.SCHEMA + Glossary.OP_NAME;
                 this.treatInstance(n);
                 //this.removeInstance(n);
 
@@ -653,7 +651,7 @@ public class Parser {
                 }
                 name = Glossary.LITERAL + name.substring(1);
                 n.var = name;
-                n.relation = Glossary.SCHEMA + "name";
+                n.relation = Glossary.SCHEMA + Glossary.OP_NAME;
                 this.treatInstance(n);
                 this.removeInstance(n);
 
@@ -1297,9 +1295,7 @@ public class Parser {
      */
     private Node rootElaboration(Node root) {
         Node instance = this.getInstance(root.getNodeId()); //root.getInstance();
-        if (root.getInstance() != null) {
-
-        }
+        
         // casi "and" e "or" seguito da :opx
         if (root.getInstance() != null && (root.getInstance().var.equalsIgnoreCase(Glossary.AND) || root.getInstance().var.equalsIgnoreCase(Glossary.OR))) {
 
@@ -1643,9 +1639,6 @@ public class Parser {
     }
 
     private Node residual(Node root) {
-        
-        
-        
         if (root.var.contains(Glossary.LITERAL)) {
             root.var = root.var.replaceAll(Glossary.LITERAL, "");
             root.setStatus(OK);
