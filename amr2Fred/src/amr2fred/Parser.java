@@ -1118,18 +1118,25 @@ public class Parser {
             n.add(root);
             n.relation = TOP;
             return inverseChecker(n);
-        } else if (inversi.size() == 1) {
+        } /*else if (inversi.size() == 1) {
             Node n = root.getInverse();
             Node newNode = root.getCopy(n.relation.substring(0, n.relation.length() - 3));
             this.nodes.add(newNode);
             n.relation = TOP;
             n.add(newNode);
-        } else {
+        } */else {
             for (Node n : inversi) {
                 Node newNode = root.getCopy(n.relation.substring(0, n.relation.length() - 3));
                 this.nodes.add(newNode);
                 n.relation = TOP;
                 n.add(newNode);
+                if (!n.list.isEmpty() || (n.list.size() == 1 && n.getInstance() != null)){
+                    Node ancestor = this.getAncestor(root);
+                    Node new_parent = ancestor.getCopy(Glossary.DUL_PRECEDES);
+                    this.nodes.add(new_parent);
+                    new_parent.setStatus(AMR);
+                    n.add(new_parent);
+                            }
             }
 
         }
@@ -1139,6 +1146,19 @@ public class Parser {
         }
         return root;
     }
+        
+    private Node getAncestor(Node root) {
+    Node node = root;
+    while (node.getNodeId() > 0 && node.parent != null) {
+        Node parentInstance = this.getInstance(node.parent.getNodeId());
+        if (parentInstance != null && parentInstance.var.matches(Glossary.AMR_VERB2)) {
+            return node.parent;
+        } else if (node.parent != null) {
+            node = node.parent;
+        }
+    }
+    return node;
+}
 
     /*
     Imposta il valore del verbo di riferimento per i nodi figli

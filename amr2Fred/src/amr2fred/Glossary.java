@@ -97,7 +97,8 @@ public class Glossary {
     public static final String DUL_PERSON = DUL + "Person";
     public static final String DUL_NATURAL_PERSON = DUL + "NaturalPerson";
     public static final String DUL_SUBSTANCE = DUL + "Substance";
-
+    public static final String DUL_PRECEDES = DUL + "precedes";
+    
     public static final String D0_LOCATION = D0 + "Location";
     public static final String D0_TOPIC = D0 + "Topic";
 
