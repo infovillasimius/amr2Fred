@@ -30,8 +30,8 @@ import java.util.logging.Logger;
 public class Propbank {
 
     private static final String SEPARATOR = "\t";
-    private static final String FILE1 = "propbankrolematrix.tsv";
-    private static final String FILE2 = "propbankframematrix.tsv";
+    private static final String FILE1 = "propbankrolematrixaligned340.tsv";
+    private static final String FILE2 = "propbankframematrix340.tsv";
     private static Propbank p;
     private final ArrayList<ArrayList<String>> role_matrix;
     private final ArrayList<ArrayList<String>> frame_matrix;
@@ -63,7 +63,6 @@ public class Propbank {
         this.frame_matrix.stream().filter((l) -> (l.get(field.ordinal()).equalsIgnoreCase(word))).forEach((l) -> {
             list.add(l);
         });
-        //System.out.println(list);
         return list;
     }
 
@@ -73,7 +72,6 @@ public class Propbank {
                 && l.get(field2.ordinal()).equalsIgnoreCase(value)).forEach((l) -> {
             list.add(l);
         });
-        //System.out.println(list);
         return list;
     }
 
@@ -146,22 +144,21 @@ public class Propbank {
         ArrayList<ArrayList<String>> result = new ArrayList<>();
         int num = args.size();
         int cfr;
-        if (!word.contains(Glossary.PB_DATA)) {
-            word = Glossary.PB_DATA + word;
+        if (!word.contains(Glossary.PB_ROLESET)) {
+            word = Glossary.PB_ROLESET + word;
         }
         cfr = 0;
-        ArrayList<ArrayList<String>> list = find(word, Glossary.PropbankFrameFields.PB_Frame);
+        ArrayList<ArrayList<String>> list = find(word, Glossary.PropbankRoleFields.PB_Frame);
 
         for (Node n : args) {
-            String r = (word + "__" + n.relation.substring(4));
+
+            String r = (Glossary.PB_SCHEMA + n.relation.substring(1));
 
             for (ArrayList<String> l1 : list) {
-                //System.out.println(r + " " + l1.get(Glossary.PropbankFrameFields.PB_Role.ordinal()));
-                if (l1.get(Glossary.PropbankFrameFields.PB_Role.ordinal()).equalsIgnoreCase(r)) {
+                if (l1.get(Glossary.PropbankRoleFields.PB_ARG.ordinal()).equalsIgnoreCase(r)) {
                     //se il ruolo del nodo trova corrispondenza la variabile cfr viene incrementata
                     cfr++;
-                    result.addAll(find(r, Glossary.PropbankRoleFields.PB_Role));
-                    //System.out.println(r + " " + l1.get(Glossary.PropbankFrameFields.PB_Role.ordinal()));
+                    result.addAll(find(r, Glossary.PropbankRoleFields.PB_ARG, word, Glossary.PropbankRoleFields.PB_Frame));
                     break;
                 }
             }
@@ -169,7 +166,6 @@ public class Propbank {
 
         if (cfr >= num) {
             //se tutti i ruoli hanno trovato corrispondenza si restituisce la lista di righe
-            //System.out.println(result);
             return result;
         }
 
@@ -181,7 +177,6 @@ public class Propbank {
         this.role_matrix.stream().filter((l) -> (l.get(field.ordinal()) != null && l.get(field.ordinal()).equalsIgnoreCase(word))).forEach((l) -> {
             list.add(l);
         });
-        //System.out.println(list);
         return list;
     }
     
@@ -191,7 +186,6 @@ public class Propbank {
                 && l.get(field2.ordinal()).equalsIgnoreCase(value)).forEach((l) -> {
             list.add(l);
         });
-        //System.out.println(list);
         return list;
     }
 

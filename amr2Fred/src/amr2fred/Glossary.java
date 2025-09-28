@@ -34,6 +34,7 @@ public class Glossary {
      * Value for recursion errors control
      */
     public static final int ENDLESS = 1000;
+    public static final int ENDLESS2 = 800;
 
     /**
      * Message for recursive errors
@@ -96,7 +97,8 @@ public class Glossary {
     public static final String DUL_PERSON = DUL + "Person";
     public static final String DUL_NATURAL_PERSON = DUL + "NaturalPerson";
     public static final String DUL_SUBSTANCE = DUL + "Substance";
-
+    public static final String DUL_PRECEDES = DUL + "precedes";
+    
     public static final String D0_LOCATION = D0 + "Location";
     public static final String D0_TOPIC = D0 + "Topic";
 
@@ -162,6 +164,10 @@ public class Glossary {
     public static final String OWL_THING = OWL + "Thing";
     public static final String OWL_EQUIVALENT_CLASS = OWL + "equivalentClass";
     public static final String OWL_SAME_AS = OWL + "sameAs";
+    public static final String OWL_OBJECT_PROPERTY = OWL + "ObjectProperty";
+    public static final String OWL_INVERSE_OF = OWL + "inverseOf";
+    public static final String OWL_EQUIVALENT_PROPERTY = OWL + "equivalentProperty";
+    public static final String OWL_DATA_TYPE_PROPERTY = OWL + "DatatypeProperty";
 
     /**
      * Local name for rdf
@@ -428,10 +434,10 @@ public class Glossary {
     public static final String DIGRAPH_END = "}";
 
     //Nuovi prefissi e nuovi Spazi Nomi
-    public static final String AMR_NS = "http://www.ontologydesignpatterns.org/ont/amr/";
+    public static final String AMR_NS = "https://w3id.org/framester/amr/";
     public static final String AMR = "amr:";
 
-    public static final String AMRB_NS = "http://www.ontologydesignpatterns.org/ont/amrb/";
+    public static final String AMRB_NS = "https://w3id.org/framester/amrb/";
     public static final String AMRB = "amrb:";
 
     public static final String VA_NS = "http://verbatlas.org/";
@@ -451,11 +457,17 @@ public class Glossary {
 
     public static final String PB_DATA_NS = "https://w3id.org/framester/pb/data/";
     public static final String PB_DATA = "pbdata:";
+    
+    public static final String PB_ROLESET_NS = "https://w3id.org/framester/data/propbank-3.4.0/RoleSet/";
+    public static final String PB_ROLESET = "pbrs:";
 
-    public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/pb/localrole/";
+    public static final String PB_LOCALROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/LocalRole/";
     public static final String PB_LOCALROLE = "pblr:";
+    
+    public static final String PB_GENERICROLE_NS = "https://w3id.org/framester/data/propbank-3.4.0/GenericRole/";
+    public static final String PB_GENERICROLE = "pbgr:";
 
-    public static final String PB_SCHEMA_NS = "https://w3id.org/framester/pb/schema/";
+    public static final String PB_SCHEMA_NS = "https://w3id.org/framester/schema/propbank/";
     public static final String PB_SCHEMA = "pbschema:";
 
     public static final String FN_FRAME_NS = "https://w3id.org/framester/framenet/abox/frame/";
@@ -470,14 +482,20 @@ public class Glossary {
     public static final String LITERAL = "literal:";
     public static final String LITERAL2 = "Literal:";
     public static final String LITERAL_NS = "";
+    
+    public static final String SCHEMA = "schema:";
+    public static final String SCHEMA_NS = "https://schema.org/";
+    
+    
 
     /**
      * Array of Fred elements local names
      */
     public static final String[] PREFIX = {FRED, DUL, BOXER, BOXING, QUANT, VN_ROLE,
         RDF, RDFS, OWL, VN_DATA, DBPEDIA, SCHEMA_ORG, AMR, VA, BN, WN30_SCHEMA,
-        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
-        WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL};
+        WN30_INSTANCES, FS_SCHEMA, PB_DATA, PB_ROLESET, PB_LOCALROLE, PB_GENERICROLE, 
+        PB_SCHEMA, FN_FRAME, PB_LOCALROLE,
+        WIKIDATA, D0, TIME_SCHEMA2, AMRB, LITERAL, SCHEMA};
 
     /**
      * Array of fred elements name space
@@ -485,13 +503,14 @@ public class Glossary {
     public static String[] NAMESPACE = {FRED_NS, DUL_NS, BOXER_NS, BOXING_NS,
         QUANT_NS, VN_ROLE_NS, RDF_NS, RDFS_NS, OWL_NS, VN_DATA_NS, DBPEDIA_NS,
         SCHEMA_ORG_NS, AMR_NS, VA_NS, BN_NS, WN30_SCHEMA_NS, WN30_INSTANCES_NS,
-        FS_SCHEMA_NS, PB_DATA_NS, PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
-        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS};
+        FS_SCHEMA_NS, PB_DATA_NS, PB_ROLESET_NS, PB_LOCALROLE_NS, PB_GENERICROLE_NS, 
+        PB_SCHEMA_NS, FN_FRAME_NS, PB_LOCALROLE_NS,
+        WIKIDATA_NS, D0_NS, TIME_SCHEMA2_NS, AMRB_NS, LITERAL_NS, SCHEMA_NS};
 
     /**
      * Fred's element names number
      */
-    public static final int PREFIX_NUM = 27;
+    public static final int PREFIX_NUM = 31;
 
     /**
      * Jena's writers output modes
@@ -516,7 +535,7 @@ public class Glossary {
     public static final String FRED_RELATIONS[] = {DUL_HAS_QUALITY, BOXING_HAS_TRUTH_VALUE,
         FRED_ABOUT, VN_ROLE_LOCATION, VN_ROLE_SOURCE, VN_ROLE_DESTINATION, VN_ROLE_DESTINATION,
         VN_ROLE_LOCATION, DUL_HAS_QUALITY, VN_ROLE_PREDICATE, FRED_WITH, VN_ROLE_BENEFICIARY, VN_ROLE_TIME,
-        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, FRED_FOR, VN_ROLE_CAUSE, FRED_LIKE, AMR + AMR_MEDIUM.substring(1), FRED_ALTHOUGH,
+        VN_ROLE_INSTRUMENT, DUL_HAS_QUALITY, AMR + AMR_DURATION.substring(1), VN_ROLE_CAUSE, FRED_LIKE, AMR + AMR_MEDIUM.substring(1), FRED_ALTHOUGH,
         FRED_IN, DUL_HAS_QUALITY, FRED_IN, FRED_INCLUDE, FRED_OF, DUL_ASSOCIATED_WITH, FRED_WITH};
 
     public static final String FRED_VARS[] = {"", BOXING_FALSE, "", "", "", "", "", "", "", "",
@@ -702,6 +721,19 @@ public class Glossary {
      * Field names of propbankrole table
      */
     public enum PropbankRoleFields {
+        PB_Frame,
+        PB_Role,
+        PB_RoleLabel,
+        PB_GenericRole,
+        PB_Tr,
+        PB_ARG,
+        VA_Role
+    }
+    
+    /**
+     * Field names of propbankrole table
+     */
+    public enum old_PropbankRoleFields {
         PB_Role,
         PB_RoleLabel,
         PB_RoleSup,
@@ -773,5 +805,41 @@ public class Glossary {
     
     public static final String OP_JOINER = "_";
     public static final String OP_NAME = "name";
+    
+    public static String[] AMR_INTEGRATION = {
+        AMR_ACCOMPANIER, 
+        AMR_BENEFICIARY, 
+        AMR_CAUSE, 
+        AMR_CONCESSION, 
+        AMR_DEGREE, 
+        AMR_DESTINATION,
+        AMR_DIRECTION,
+        AMR_DURATION,
+        AMR_EXAMPLE,
+        AMR_EXTENT,
+        AMR_FREQUENCY,
+        AMR_INSTRUMENT,
+        AMR_LOCATION,
+        AMR_MANNER,
+        AMR_MEDIUM,
+        AMR_MOD,
+        AMR_PART,
+        AMR_PATH,
+        AMR_POLARITY,
+        AMR_PURPOSE,
+        AMR_RANGE,
+        AMR_SOURCE,
+        AMR_SUB_EVENT_OF,
+        AMR_SUBSET,
+        AMR_SUBSET_OF,
+        AMR_TIME,
+        AMR_TOPIC,
+        AMR_AGE
+    };
+    
+    public static final String FS_SCHEMA_SEMANTIC_ROLE = FS_SCHEMA + "SemanticRole";
+    public static final String NON_LITERAL = ":";
+    public static final String WRONG_APOSTROPHE = "’";
+    public static final String RIGHT_APOSTROPHE = "'";
     
 }

@@ -113,14 +113,15 @@ public class RdfWriter {
                     Logger.getLogger(RdfWriter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            
+            String uri = this.getUri(n.var);
             for (Node n1 : n.list) {
-
-                Resource r = model.createResource(this.getUri(n.var));
+                if (!uri.startsWith("http")){
+                    break;
+                }
+                Resource r = model.createResource(uri);
                 if (!n1.relation.equalsIgnoreCase(TOP)) {
-
                     Property p = model.createProperty(getPref(n1.relation), getLocal(n1.relation));
-
                     if (n1.var.matches(Glossary.NN_INTEGER2)) {
                         Literal o = model.createTypedLiteral(n1.var, Glossary.NN_INTEGER_NS);
                         model.add(model.createStatement(r, p, o));

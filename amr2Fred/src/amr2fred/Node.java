@@ -88,6 +88,18 @@ public class Node {
         this.nodeId = id;
         Node.id += 1;
     }
+    
+        public Node(String var, String relation, NodeStatus status, boolean visibility) {
+        this.var = var;
+        this.relation = relation;
+        this.status = status;
+        this.list = new ArrayList<>();
+        this.parent_list = new ArrayList<>();
+        this.type = OTHER;
+        this.nodeId = id;
+        this.visibility = visibility;
+        Node.id += 1;
+    }
 
     public Node(String var, String relation, NodeStatus status) {
         this.relation = relation;
@@ -252,6 +264,7 @@ public class Node {
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
                     && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
+                    && !n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY_OF)
                     && n.status != REMOVE
                     && nodes.indexOf(n) == -1) {
                 nodes.add(n);
