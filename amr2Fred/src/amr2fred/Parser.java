@@ -31,6 +31,7 @@ import static amr2fred.Glossary.AMR_ARG1;
 import static amr2fred.Glossary.AMR_ARG2;
 import java.math.BigInteger;
 import org.apache.commons.lang3.StringUtils;
+import java.util.HashSet;
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -1104,7 +1105,7 @@ public class Parser {
             return root;
         }
         ArrayList<Node> invNodes = new ArrayList<>();
-        invNodes = root.getInverses(invNodes);
+        invNodes = root.getInverses(invNodes, new HashSet<>());
 
         if (invNodes.isEmpty()) {
             return root;

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import static amr2fred.Glossary.AMR_INVERSE;
 import static amr2fred.Glossary.NodeStatus.REMOVE;
+import java.util.Set;
 
 /**
  * Basic object for the data structure.
@@ -256,23 +257,28 @@ public class Node {
         return nodes;
     }
 
-    public ArrayList<Node> getInverses(ArrayList<Node> nodes) {
-        for (Node n : this.list) {
-            if (n.relation.matches(AMR_INVERSE) && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
-                    && !n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY_OF)
-                    && n.status != REMOVE
-                    && nodes.indexOf(n) == -1) {
-                nodes.add(n);
-            }
-            nodes = n.getInverses(nodes);
+public ArrayList<Node> getInverses(ArrayList<Node> nodes, Set<Node> visited) {
+    if (visited.contains(this)) return nodes;
+    visited.add(this);
+
+    for (Node n : this.list) {
+        if (n.relation.matches(AMR_INVERSE)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_PREP_ON_BEHALF_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_CONSIST_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_PART_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_SUB_EVENT_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_SUBSET_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_QUANT_OF)
+                && !n.relation.equalsIgnoreCase(Glossary.AMR_POLARITY_OF)
+                && n.status != REMOVE
+                && !nodes.contains(n)) {
+            nodes.add(n);
         }
-        return nodes;
+        n.getInverses(nodes, visited);
     }
+
+    return nodes;
+}
 
     private String spaces(int n) {
 
