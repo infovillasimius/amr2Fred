@@ -32,6 +32,8 @@ import static amr2fred.Glossary.AMR_ARG2;
 import java.math.BigInteger;
 import org.apache.commons.lang3.StringUtils;
 import java.util.HashSet;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 /**
  * Contains methods for parsing and translating from AMR to FRED
@@ -269,6 +271,98 @@ public class Parser {
     tonde ancora aperte una volta elaborato il contenuto della lista.
      */
     private Node getNodes(String relation, ArrayList<String> amrList) {
+    if (amrList == null || amrList.isEmpty()) {
+        return null;
+    }
+
+    Node root = new Node(amrList.get(1), relation);
+    this.nodes.add(root);
+
+    Deque<Node> stack = new ArrayDeque<>();
+    stack.push(root);
+
+    int liv = 0;
+    int i = 0;
+
+    while (i < amrList.size()) {
+        String word = amrList.get(i);
+        Node currentRoot = stack.isEmpty() ? root : stack.peek();
+
+        switch (word) {
+            case "(":
+                liv++;
+                if (liv >= 2) {
+                    String subRelation = amrList.get(i - 1);
+                    String subVar = amrList.get(i + 1);
+
+                    Node newSubNode = new Node(subVar, subRelation);
+                    currentRoot.add(newSubNode);
+                    this.nodes.add(newSubNode);
+
+                    stack.push(newSubNode);
+                }
+                break;
+
+            case ")":
+                liv--;
+                if (liv >= 1 && !stack.isEmpty()) {
+                    stack.pop();
+                }
+                break;
+
+            case "/":
+                for (Node find : this.nodes) {
+                    if (find.var.equalsIgnoreCase(currentRoot.var) && find.getInstance() == null) {
+                        find.makeEquals(currentRoot.getNodeId());
+                    }
+                }
+                if (i + 1 < amrList.size()) {
+                    currentRoot.add(new Node(amrList.get(i + 1), Glossary.INSTANCE));
+                    i++; // Avanza l'indice dato che abbiamo consumato l'elemento successivo
+                }
+                break;
+
+            default:
+                try {
+                    if (word.length() > 0 && word.charAt(0) == ':' && amrList.size() > i + 1 && amrList.get(i + 1).charAt(0) != '(') {
+                        boolean flag = false;
+                        String nextWord = amrList.get(i + 1);
+
+                        for (Node find : this.nodes) {
+                            if (find.var.equalsIgnoreCase(nextWord)) {
+                                Node newNode = find.getCopy(word);
+                                currentRoot.add(newNode);
+                                this.nodes.add(newNode);
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        if (!flag) {
+                            Node newNode = new Node(nextWord, word);
+                            currentRoot.add(newNode);
+                            this.nodes.add(newNode);
+                        }
+                    }
+                } catch (Exception e) {
+                    if (i + 1 < amrList.size()) {
+                        Node newNode = new Node(amrList.get(i + 1), word);
+                        currentRoot.add(newNode);
+                        this.nodes.add(newNode);
+                    }
+                }
+                break;
+        }
+        i++;
+    }
+
+    if (liv != 0) {
+        return null;
+    }
+
+    return root;
+}
+    private Node old_getNodes(String relation, ArrayList<String> amrList) {
 
         if (amrList == null) {
             return null;
